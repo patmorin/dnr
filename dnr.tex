@@ -89,29 +89,35 @@
 
 \section{Introduction}
 
-\section{Preliminaries}
-
-In this paper any graph $G$ is simple and undirected with vertex set $V(G)$ and edge set $E(G)$.
-
-A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
+In this paper every graph $G$ is undirected simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
 
 We reprove the following result of \citet{dvorak.norin:treewidth}
 \begin{thm}
   For every graph $G$, $\tw(G)\le 15\sep(G)$.
 \end{thm}
 
+
+
+\section{Preliminaries}
+
+
 A \defin{flow} $(f,g)$ in a graph $G$ is a pair of functions $f:V(G)^2\to\R_{\ge 0}$ and $g:V(G)\to\R_{\ge 0}$ such that $f(v,w)=0$ for each $vw\not\in E(G)$ and
 \begin{equation}
   \sum_{w\in N_G(v)} f(v,w) + g(v) \ge \sum_{w\in N_G(v)} f(w,v)
   \label{conservation_of_flow}
 \end{equation}
-Any vertex $v\in V(G)$ in which \cref{conservation_of_flow} does not hold with equality is called a \defin{sink}.  The \defin{congestion} of $\mathcal{F}$ at a vertex $v\in V(G)$ the quantity on the left-hand-side of \cref{conservation_of_flow}.  The \defin{congestion} of $\mathcal{F}$ is the maximum congestion of $\mathcal{F}$ at any vertex in $G$.  Without loss of generality we consider only flows in which at least one of $f(v,w)$ or $f(w,v)$ is zero for each edge $vw\in E(G)$.  (Otherwise, we can consider the modified flow $(f',g)$ where $f'(v,w)=f(v,w)-\min\{f(v,w),f(w,v)\}$ for each $vw\in E(G)$.)  The \defin{total supply} of $\mathcal{F}$ is $\sum_{v\in V(G)} g(v)$.
+Any vertex $v\in V(G)$ in which \cref{conservation_of_flow} does not hold with equality is called a \defin{sink}.  The \defin{congestion} of $\mathcal{F}$ at a vertex $v\in V(G)$ the quantity on the left-hand-side of \eqref{conservation_of_flow}.  The \defin{congestion} of $\mathcal{F}$ is the maximum congestion of $\mathcal{F}$ at any vertex in $G$.  Without loss of generality we consider only flows in which at least one of $f(v,w)$ or $f(w,v)$ is zero for each edge $vw\in E(G)$.  (Otherwise, we can consider the modified flow $(f',g)$ where $f'(v,w)=f(v,w)-\min\{f(v,w),f(w,v)\}$ for each $vw\in E(G)$.)  The \defin{total supply} of $\mathcal{F}$ is $\sum_{v\in V(G)} g(v)$.
 
 
-For a graph $G$ and a subset $W\subseteq V(G)$, \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only sinks of $\mathcal{F}$ are the vertices in $W$.  \citet{dvorak.norin:treewidth} make the following observation:
+For a graph $G$ and a subset $W\subseteq V(G)$, a \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only sinks of $\mathcal{F}$ are the vertices in $W$.  \citet{dvorak.norin:treewidth} make the following observation:
 
+<<<<<<< Updated upstream
 \begin{obs}\label{w_cloud_menger}
   For any graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $s$ and congestion at most $\alpha$ if and only if there is no separation $(A,B)$ of $G$ with $W\subseteq B$ such that $|B\setminus A| + \alpha|A\cap B| < s$.
+=======
+\begin{obs}
+  For any graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $s$ and congestion at most $\alpha$ if and only if there is no separation $(X,Y)$ of $G$ with $W\subseteq Y$ such that $|Y\setminus X| + \alpha|X\cap Y| < s$.
+>>>>>>> Stashed changes
 \end{obs}
 
 \section{The Proof}
