@@ -110,14 +110,59 @@ Any vertex $v\in V(G)$ in which \cref{conservation_of_flow} does not hold with e
 
 For a graph $G$ and a subset $W\subseteq V(G)$, \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only sinks of $\mathcal{F}$ are the vertices in $W$.  \citet{dvorak.norin:treewidth} make the following observation:
 
-\begin{obs}
+\begin{obs}\label{w_cloud_menger}
   For any graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $s$ and congestion at most $\alpha$ if and only if there is no separation $(A,B)$ of $G$ with $W\subseteq B$ such that $|B\setminus A| + \alpha|A\cap B| < s$.
 \end{obs}
 
-
-
 \section{The Proof}
 
+[TODO: I didn't work out the constants. Think of something like ${?}=100$ and ${??}=10$]
+
+\begin{lem}\label{balanced_on_w}
+  Let $n\ge {?}/{??}$, let $G$ be an $n$-vertex graph, let $W\subseteq V(G)$ have size ${?}a$, let $(A,B)$ be a balanced separation of $G$ of order $a$, and let $\mathcal{F}$ be a $W$-cloud of $G$ with total supply $n$ and congestion at most $\alpha:=({??}n)/({?}a)$.  Then
+  \[
+  |A\cap W|,|B\cap W|\le \left(1-\frac{(1-3{??}/{?})}{3{??}}\right)?a + 1
+  \]
+\end{lem}
+
+\begin{proof}
+  Let $(f,g):=\mathcal{F}$.  Construct a flow $\mathcal{F'}:=(f',g')$ in which,  $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  [TODO: Explain how to reduce flow on other edges and and supply on other vertices.] In words, $\mathcal{F}'$ is obtained from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  Since each vertex in $A\cap B$ has congestion at most $\alpha$, this can be done while reducing the total supply by at most $\alpha|A\cap B|$.  The resulting flow $\mathcal{F}'$ has congestion at most $\alpha$ and total supply $n-\alpha|A\cap B|=n-\alpha a\ge (1-{??/?})n$.
+
+  Consider the graph $G_A:=G-B$.  Since $f'(v,w)=0$ for any edge $vw$ of $G$ with an endpoint in $A\cap B$, the $W$-cloud $\mathcal{F}'$ of $G$ induces a $(W-B)$ cloud $\mathcal{F}'_A$ in $G_A$.  The total supply of $\mathcal{F'}_A$ is
+  \[
+     \sum_{v\in V(G_A)} g'(v) \ge |A\setminus B| -\alpha a \ge \left(\frac{n}{3}-a\right) - \frac{{??}n}{?} = \frac{(1-3{??}/?)n}{3} - a
+  \]
+  Since the congestion of $\mathcal{F}'$ is at most $\alpha$, the congestion of $\mathcal{F}'_A$ is at most $\alpha$.  In particular, the congestion at each vertex of $V(G_A)\cap W$ is at most $\alpha$.  Therefore,
+  \[
+     \alpha \ge \frac{\sum_{v\in V(G_A)} g'(v)}{|V(G_A)\cap W|}
+     \ge \frac{\frac{(1-3{??}/?)n}{3} - a}{|V(G_A)\cap W|}
+  \]
+  Rewriting this inequality yields
+  \[
+    |V(G_A)\cap W|\ge \frac{(1-3{??}/?)n}{3\alpha}  - \frac{a}{\alpha}
+    \ge \frac{(1-3{??}/{?})n}{3{??}n/{?}a} - \frac{?}{{??}n}
+    \ge \frac{(1-3{??}/{?})?a}{3{??}} - 1
+  \]
+  Since $B\cap W=B\setminus (V(G_A)\cap W)$, this proves the upper bound on $|B\cap W|=|W|-|V(G_A)\cap W|={?}a-|V(G_A)\cap W|$. The upper bound on $|A\cap W|$ is proven symmetrically, by considering the graph $G_B=G-A$.
+\end{proof}
+
+
+\begin{lem}
+  Let $a\ge 1$, let $G$ be a graph with $\sep(G)\le a$, let $W\subseteq V(G)$ have size ${?}a$, and let $(X,Y)$ be a separation of $G$ such that $W\subseteq Y$ and $|X|/|X\cap Y| > ({??}n)/({?}a)$.  Then there exists a separation $(A,B)$ of $G$ of order at most $(?a/??)+a$ such that
+  \[
+  |A\cap W|,|B\cap W|\le \left(\frac{1}{??}+1-\frac{(1-3{??}/{?})}{3{??}}\right)?a + 1 \enspace .
+  \]
+\end{lem}
+
+\begin{proof}
+  Among all separations $(X,Y)$ that satisfy the conditions of the lemma, choose one that minimizes $|Y|$.  By \cref{w_cloud_menger} $G[Y]$ has a $W$-cloud with total supply $|Y|$ and congestion at most ${??}n/{?a}$.    Let $(A',B')$ be a balanced separation of $G[Y]$ of order at most $a$.  Then, by \cref{balanced_on_w}, $|A'\cap W|\le blah$ and $|B'\cap W|\le blah$.
+
+  We take $A:=A'\cup X$ and $B:=B'$.  Since $|X|\le n$, we have
+  \[
+     \frac{n}{|X\cap Y|} \ge \frac{|X|}{|X\cap Y|} \ge \frac{{??}n}{{?}a}
+  \]
+  which implies that $|X\cap Y|\le {?}a/{??}$.  Since $W\subseteq Y$, this implies that $|X\cap W|\le {?}a/{??}$.  Therefore, $|A\cap W|\le |X\cap W|+|A'\cap W| \le {?}a/{??} + blah$, as required.
+\end{proof}
 
 
 \bibliographystyle{plainurlnat}
