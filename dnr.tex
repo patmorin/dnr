@@ -180,15 +180,116 @@ $|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ b
 \end{lem}
 
 \begin{proof}
-  Among all separations $(X,Y)$ that satisfy the conditions of the lemma, choose one that minimizes $|Y|$. Create a new $n$-vertex graph $G'\supseteq G[Y\setminus X]$ by adding $|X|$ degree-1 vertices to $G[Y\setminus X]$ adjacent to the vertices in $N_G(X)$, and distributed as equally as possible.
+  Among all separations $(X,Y)$ that satisfy the conditions of the lemma, choose one that maximizes $|X|$.    Let $W':=W\setminus X$.
+  Create a new graph $G'\supseteq G[Y\setminus X]$ as follows:  Let
+  \[
+    n':=n\left(1-\frac{|W\cap X|}{\beta|W|}\right) \enspace .
+  \]
+  Add a set $L$ of $n'-|Y\setminus X|$ degree-$1$ vertices to $G[Y\setminus X]$ adjacent to the vertices in $N_G(X)$, and distributed as equally as possible.  For each $v\in N_G(X)$, let $L_v$ be the subset of $L$ adjacent to $v$.
 
-  Observe that $|N_G(X)|\ge |X|(\beta|W|/n)$ since, otherwise the separation $(N_G[X],Y\setminus(X\cap Y))$ is a separation that satisfies the conditions of the lemma and contradicts the minimality of $Y$ in the choice of $(X,Y)$.  Therefore, each vertex in $N_G(X)$ has at most $n/(\beta|W|)$ neighbours in $V(G')\setminus (Y\setminus X)$.\todo{Watch out for floors and ceilings.}
+  Let
+  \[
+    \beta' = \frac{\beta|W|n'}{|W'|n}
+  \]
+  We will show that $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W'|)=n/(\beta|W|)$.  By \cref{flow_vs_cut_n}, it suffices to show that $G'$ has no separation $(X',Y')$ with $W'\subseteq Y'$ and $|X'|/|X'\cap Y'|>n'/(\beta|W'|)$.  Assume for the sake of contradiction that such a separation exists and, among all such separations, choose one that maximizes $|X'|$ and, subject to this, minimizes $|Y'|$.
 
-  We claim that $G'$ has a $(W\setminus X)$-cloud with total supply $n$ and congestion at most $n/(\beta|W|)$.  By \cref{flow_vs_cut_n}, it suffices to show that $G'$ has no separation $(X',Y')$ with $W\subseteq Y'$ and $|X'|/|X'\cap Y'|>n/(\beta|W|)$.  Assume for the sake of contradiction that such a separation exists.  Let $X'':=X\cup X'\cap V(G)$.  Form the set $Y''$ from the set $Y'\cup W$ by replacing each vertex $v$ in $V(G')\setminus (Y\setminus X)$ with the unique neighbour of $v$ in $N_G(X)$.  We claim that $(X'',Y'')$ is a separation of $G$ with $W\subseteq Y''$ and such that $|X''|/|X''\cap Y''|\ge |X'|/|X'\cap Y'|$.  This is not possible, since it would contradicting the minimality of $Y$ in the choice of $(X,Y)$.
+  \begin{clm}\label{no_l_in_y}
+    $L\cap Y'=\emptyset$.
+  \end{clm}
 
-  We now prove this claim......
+  \begin{clmproof}
+    Let $v$ be a vertex in $N_G(X)$. Since $L=\bigcup_{v\in N_G(X)}L_v$, we need only show that $L_v\cap Y'=\emptyset$.
+    Let $v'$ be an arbitrary vertex in $L_v$.  If $\{v,v'\}\subseteq X'$, then the separation $(X',Y'\setminus\{v'\})$ contradicts the minimality of $Y'$ in the choice of $(X',Y')$.  If $v\in X'$ and $v'\not\in X'$ then the separation $(X'\cup\{v'\},Y'\setminus\{v'\})$ contradicts the maximality of $X'$ in the choice of $(X',Y')$.
 
-  Thus $G'$ has a $(W\setminus X)$-cloud with total supply $n$ and congestion at most $n/(\beta|W|)$.  Let $(A',B')$ be a balanced separation of $G[X\setminus Y]$ of order at most $a$.  For each vertex $v\in V(G')\setminus V(G)$, add $v$ to $A'$ if the unique neighbour of $v$ is in $A'$, otherwise add $v$ to $B'$.  This gives separation of $G'$ whose order is at most $a$.  By \cref{balanced_on_w}, $|A'\cap W\setminus X|\le (1-\tfrac{\beta}{3})|W\setminus X|+2a$ and $|B'\cap W\setminus X|\le (1-\tfrac{\beta}{3})|W\setminus X|+2a$.
+    Thus, $v\not\in X'$.  Let $X'':=X'\setminus L_v$, consider the separation $(X'',Y')$ and observe that
+    \[
+      \frac{X''}{|X''\cap Y'|}=\frac{|X'\setminus L_v|}{|(X'\setminus L_v)\cap Y'|}
+     = \frac{|X'|-|X'\cap L_v|}{|X'\cap Y'|-|X'\cap L_v|} > \frac{n'}{\beta|W'|}
+    \]
+    since $(a-x)/(b-x) \ge a/c$ for any $a,b,x$ with $0\le x<b<a$.  Then the separation $(X''',Y'''):=(X''\cup L_v\cup \{v\},Y'\setminus L_v)$ satisfies
+    \[
+      \frac{|X'''|}{|X'''\cap Y'''|} =
+      \frac{|X''\cup L_v\cup \{v\}|}{|(X''\cup L_v\cup\{v\})\cap (Y'\setminus L_v)|} = \frac{|X''|+n'/(\beta|W'|)+1}{|X''\cap Y'|+1} > \frac{n'}{\beta|W'|}
+    \]
+    since $(a+m)/(b+1)\ge m$ for any $m>0$ and any $a,b>0$ such that $a/b\ge m$.  Therefore, the separation $(X''',Y''')$ contradicts the maximality of $|X'|$ in the choice of $(X',Y')$.
+  \end{clmproof}
+
+  \begin{clm}
+    $N_G(X)\subseteq X'$.
+  \end{clm}
+
+  \begin{clmproof}
+    It must be the case that $N_{G'}[L]\subseteq X'$ since, otherwise, there would be an edge $vv'$ of $G'$ with $v\in N_{G'}(L)$ and $v'\in L$ such that $\{v,v'\}\not\subseteq X'$ and $\{v,v'\}\not\subseteq Y'$.  This would contradict the fact that $(X',Y')$ is a separation of $G$.
+    Therefore $N_G(X)\subseteq N_{G'}(L)\subseteq X'$.
+  \end{clmproof}
+
+  Let
+  \[
+    \widehat{X}:=X\cup X'\setminus L \text{ and let } \widehat{Y}:=Y'\cup W \enspace .
+  \]
+  \begin{clm}
+    $(\widehat{X},\widehat{Y})$ is a separation of $G$.
+  \end{clm}
+
+  \begin{clmproof}
+    We first show that $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
+    The vertices in $\widehat{X}\cup\widehat{Y}$ are contained $X\cup V(G')\subseteq V(G)\cup L$.
+    By definition $L\cap \widehat{X}=\emptyset$. By \cref{no_l_in_y}, $L\cap \widehat{X}=\emptyset$. Thus $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
+    Next we show that $\widehat{X}\cup\widehat{Y}\supseteq V(G)$.  Since $X\cup Y=V(G)$, each vertx of $G$ is in $X$ or is in $Y\setminus X$.
+    For each $v\in X$, $v\in \widehat{X}$.  For each $v\in Y\setminus X$,
+    \begin{enumerate*}[label=(\alph*)]
+      \item $v\in X'$, in which case $v\in \widehat{X}$;
+      or \item $v\in Y'$ in which case $v\in\widehat{Y}$.
+    \end{enumerate*}
+    Thus $V(G)\subseteq \widehat{X}\cup\widehat{Y}\subseteq V(G)$, so $\widehat{X}\cup\widehat{Y}= V(G)$.
+
+    What remains is to verify that for each edge $vw$ of $G$, $\{v,w\}\subseteq \widehat{X}$ or $\{v,w\}\subseteq\widehat{Y}$.
+    Without loss of generality (at least) one of the following applies:
+    \begin{enumerate}[nosep,nolistsep,label=(\roman*)]
+      % \item $v\in X\cap W$: In this case $v\in\widehat{X}$ and $v\in\widehat{Y}$.
+      \item $v\in X$: In this case $v\in\widehat{X}$ and $w\in N_G[X]\subseteq\widehat{X}$.
+      \item $v\in N_G(X)$: In this case $w\in X$ or $w\in Y\setminus X$.  In the former case $v\in N_G(X)\subseteq X$ and $w\in X\subseteq \widehat{X}$. In the latter case $v,w\in Y\setminus X$.  Since $(X',Y')$ is a separation of $G'\supseteq G[Y\setminus X]$, either $v,w\in X'\subseteq \widehat{X}$ or $v,w\in Y'\subseteq\widehat{Y}$. \qedhere
+    \end{enumerate}
+  \end{clmproof}
+
+  Next we show that $(\widehat{X},\widehat{Y})$ contradicts the maximality of $X$ in the choice of $(X,Y)$.
+
+  \begin{clm}
+    $|\widehat{X}|/|\widehat{X}\cap\widehat{Y}|>n/(\beta|W|)$.
+  \end{clm}
+
+  \begin{clmproof}
+    Since $Y'\subseteq Y\setminus X$, $X\cap \hat{Y}=X\cap W$. Since $X'\subseteq Y\setminus X$,
+    \[
+      X'\cap \widehat{Y}=X'\cap (Y'\cup W)=X'\cap (Y'\cup (W\cap X))=X'\cap Y' \enspace .
+    \]
+    Therefore, $|\widehat{X}\cap\widehat{Y}|=|X'\cap Y'|+|X\cap W|$.
+    On the other hand,
+    \begin{align*}
+      |\widehat{X}|
+        & = |X| + |X'| - |L| \\
+        & = |X| + |X'| - (n'-|Y\setminus X|) \\
+        & = |X| + |X'| - (n'-(n-|X|)) \\
+        & = |X'| - (n'-n)) \\
+        & = |X'| + \frac{|W\cap X|n}{\beta|W|} \\
+    \end{align*}
+    Now recall that
+    \begin{align*}
+      \frac{|X'|}{|X'\cap Y'|}
+        & >  \frac{n'}{\beta'|W'|} = \frac{n}{\beta|W|} \enspace .
+    \end{align*}
+
+
+    Therefore,
+    \begin{align*}
+      \frac{|\widehat{X}|}{|\widehat{X}\cap\widehat{Y}|}
+        & = \frac{|X'| + \frac{|W\cap X|n}{\beta|W|}}{|X'\cap Y'|+|X\cap W|}  \\
+        & > \frac{n}{\beta|W|} \qedhere
+    \end{align*}
+  \end{clmproof}
+  Since $|\widehat{X}|>|X|$, this contradicts the maximality of $|X|$ in the choice of $(X,Y)$
+
+  Thus $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W|)=n/(\beta|W|)$.  Let $(A',B')$ be a balanced separation of $G[X\setminus Y]$ of order at most $a$.  For each vertex $v\in V(G')\setminus V(G)$, add $v$ to $A'$ if the unique neighbour of $v$ is in $A'$, otherwise add $v$ to $B'$.  This gives separation of $G'$ whose order is at most $a$.  By \cref{balanced_on_w}, $|A'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$ and $|B'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$.
 
   Finally, let $A:=X\cup A'\cap V(G)$ and let $B:=(X\cap Y)\cup B'\cap V(G)$.  Then $(A,B)$ is a separation of $G$ with
   \[
@@ -196,11 +297,11 @@ $|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ b
   \]
   Furthermore,
   \begin{align*}
-    |A\cap W| & \le |X\cap W|+(1-\tfrac{\beta}{3})|W\setminus X| \\
-       & = |X\cap W|+(1-\tfrac{\beta}{3})(|W|-|W\cap X|) \\
-       & = \tfrac{\beta}{3}|X\cap W|+(1-\tfrac{\beta}{3})|W| \\
-       & \le \tfrac{\beta^2}{3}|W|+(1-\tfrac{\beta}{3})|W| \\
-       & = (1-\tfrac{\beta}{3}+\tfrac{\beta^2}{3})|W|
+    |A\cap W| & \le |X\cap W|+(1-\tfrac{\beta'}{3})|W\setminus X| \\
+       & = |X\cap W|+(1-\tfrac{\beta'}{3})(|W|-|W\cap X|) \\
+       & = \tfrac{\beta'}{3}|X\cap W|+(1-\tfrac{\beta}{3})|W| \\
+       & \le \tfrac{\beta\beta'}{3}|W|+(1-\tfrac{\beta'}{3})|W| \\
+       & = (1-\tfrac{\beta}{3}+\tfrac{\beta\beta'}{3})|W|
   \end{align*}
 \end{proof}
 
