@@ -11,13 +11,6 @@
 % \usepackage{comment}
 
 \usepackage[inline]{enumitem}
-\newlist{tightenum}{enumerate}{2}
-\setlist[tightenum,1]{noitemsep,nosep,
-                        label=\rm(\alph*),
-                        ref  =\alph*}
-\setlist[tightenum,2]{noitemsep,nosep,
-                         label=\rm(\roman*),
-                         ref  =\roman*}
 
 \newenvironment{dummy}{}
 % david proposes the following additions
@@ -108,15 +101,12 @@ A \defin{flow} $(f,g)$ in a graph $G$ is a pair of functions $f:V(G)^2\to\R_{\ge
 \end{equation}
 Any vertex $v\in V(G)$ in which \eqref{conservation_of_flow} does not hold with equality is called an \defin{$\mathcal{F}$-sink}.  The \defin{congestion} of $\mathcal{F}$ at a vertex $v\in V(G)$ is the quantity on the left-hand-side of \eqref{conservation_of_flow}.  The \defin{congestion} of $\mathcal{F}$ is the maximum congestion of $\mathcal{F}$ at any vertex in $G$.  The \defin{total supply} of $\mathcal{F}$ is $\sum_{v\in V(G)} g(v)$.
 
-A \defin{pseudocycle} in $G$ is a sequence of vertices $v_0,\ldots,v_{\ell-1}$ of $G$ such that $v_iv_{(i+1)\bmod\ell}\in E(G)$ for each $i\in\{0,\ldots,\ell-1\}$.
-Without loss of generality we consider only flows in which, for each pseudocycle $v_0,\ldots,v_{\ell-1}$ of $G$, there exists at least one $i\in\{0,\ldots,\ell-1\}$ such that $f(v_i,v_{(i+1)\bmod\ell})=0$.  (Otherwise, we can reduce $f(v_i,v_{(i+1)\bmod \ell})$ by $\min\{f(v_j,v_{(j+1)\bmod\ell}):j\in\{0,\ldots,\ell-1\}\}$ for each $i\in\{0,\ldots,\ell-1\}$.
+A \defin{pseudocycle} in a graph $G$ is a sequence of $\ell\ge 2$ vertices $v_0,\ldots,v_{\ell-1}$ of $G$ such that $v_iv_{(i+1)\bmod\ell}\in E(G)$ for each $i\in\{0,\ldots,\ell-1\}$.
+Without loss of generality we consider only flows in which, for each pseudocycle $v_0,\ldots,v_{\ell-1}$ of $G$, there exists at least one $i\in\{0,\ldots,\ell-1\}$ such that $f(v_i,v_{(i+1)\bmod\ell})=0$.  (Otherwise, we can reduce $f(v_i,v_{(i+1)\bmod \ell})$ by $\min\{f(v_j,v_{(j+1)\bmod\ell}):j\in\{0,\ldots,\ell-1\}\}$ for each $i\in\{0,\ldots,\ell-1\}$.  Note that this implies that for any edge $vw$ of $G$, at least one of $f(v,w)$ or $f(w,v)$ is equal to $0$.
 
 Any flow $\mathcal{F}:=(f,g)$ in $G$ defines a directed graph $\mathdefin{G_{\mathcal{F}}}$ that includes the directed edge $vw$ if and only if $f(v,w)>0$ and includes a vertex $v$ of $G$ if and only if $g(v)\neq 0$ or there exists an edge $vw$ of $G$ such that $f(v,w)\neq 0$ or $f(w,v)\neq 0$.  A vertex $v$ of $G_\mathcal{F}$ is \defin{$\mathcal{F}$-saturated} if $g(v)=1$, otherwise $v$ is \defin{$\mathcal{F}$-unsaturated}.  By the assumptions of the previous paragraph $G_{\mathcal{F}}$ is always acyclic.
 
-Let $G$ be a graph and let $W$ be a subset of $V(G)$.  A \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only $\mathcal{F}$-sinks of $G$ are in $W$.  A vertex $v$ of $G_{\mathcal{F}}$ is \defin{$\mathcal{F}$-saturated} if $g(v)=1$.
-
-
-\citet{dvorak.norin:treewidth} make the following observation, which is an immediate consequence of Menger's Theorem:
+Let $G$ be a graph and let $W$ be a subset of $V(G)$.  A \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only $\mathcal{F}$-sinks of $G$ are in $W$.  A vertex $v$ of $G_{\mathcal{F}}$ is \defin{$\mathcal{F}$-saturated} if $g(v)=1$. \citet{dvorak.norin:treewidth} make the following observation, which is a  consequence of Menger's Theorem:
 
 \begin{obs}\label{flow_vs_cut}
   For any graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $s$ and congestion at most $\alpha$ if and only if there is no separation $(X,Y)$ of $G$ with $W\subseteq Y$ such that $|Y\setminus X| + \alpha|X\cap Y| < s$.
@@ -124,34 +114,36 @@ Let $G$ be a graph and let $W$ be a subset of $V(G)$.  A \defin{$W$-cloud} of $G
 
 The arguments used in the proof of the following lemma are similar to those used by \citet{dvorak.norin:treewidth} in their discussion of strongly $\alpha$-tame $W$-clouds.
 
-\begin{lem}
-  If $G$ has a $W$-cloud with total supply $s\ge |W|$ and congestion $\alpha\ge 1$ then $G$ has a $W$-cloud $\mathcal{F}$ with total supply $s$ and congestion at most $\alpha$ in which the number of $F$-saturated vertices in $G$ is at least $\lfloor|V(G_{\mathcal{F}})|/2\rfloor$.
+\begin{lem}\label{tame_w_cloud}
+  If $G$ has a $W$-cloud with total supply $s\ge |W|$ and congestion $\alpha\ge 1$ then $G$ has a $W$-cloud $\mathcal{F}$ with total supply $s$ and congestion at most $\alpha$ in which the number of $\mathcal{F}$-saturated vertices in $G_\mathcal{F}$ is at least $\lfloor|V(G_{\mathcal{F}})|/2\rfloor$.
 \end{lem}
+
+\pat{We don't use the assumption $s\ge |W|$ in the proof, but we could use it to show that each vertex in $W$ is saturated.  Let's see if that's helpful later.}
 
 \begin{proof}
   Let $\mathcal{F}$ be a $W$-cloud in $G$ with total supply $s$ and congestion $\alpha$.  Let $\sigma$ be an ordering of the vertices in $G_\mathcal{F}$ in which a vertex $u$ appears before a vertex $v$ if $G_{\mathcal{F}}$ contains a directed path from $u$ to $v$.
-  
+
   Suppose that $G_{\mathcal{F}}$ contains a vertex that is unsaturated and has in-degree greater than $0$.  Let $w$ be the first such vertex that appears in $\sigma$.
-  
-  Since $G_{\mathcal{F}}$ is acyclic, it contains a directed path $v_0,\ldots,v_\ell$ from a vertex $v_0$ with in-degree $0$ to $v_\ell:=w$. Let $\delta:=\min(\{f(v_{i-1},v_i):i\in\{1,\ldots,\ell\}\}\cup\{(1-g(w))\})$.  
-  For each $i\in\{1,\ldots,\ell\}$, reduce $f(v_{i-1},v_i)$ by $\delta$, reduce $g(v_0)$ by $\delta$, and increase $g(w)$ by $\delta$.  This does not change the total supply, does not increase the congestion, but
+
+  Since $G_{\mathcal{F}}$ is acyclic, it contains a directed path $v_0,\ldots,v_\ell$ from a vertex $v_0$ with in-degree $0$ to $v_\ell:=w$. Let $\Delta:=\min(\{f(v_{i-1},v_i):i\in\{1,\ldots,\ell\}\}\cup\{(1-g(w))\})$.
+  For each $i\in\{1,\ldots,\ell\}$, reduce $f(v_{i-1},v_i)$ by $\Delta$, reduce $g(v_0)$ by $\Delta$, and increase $g(w)$ by $\Delta$.  This does not change the total supply, does not increase the congestion, but
   \begin{enumerate}[nosep,nolistsep]
-     \item results in the removal of an edge from $G_\mathcal{F}$ (if $\delta=f(v_{i-1},v_i)$ for some $i\in\{1,\ldots,\ell\}$); or
-     \item makes $w$ a $\mathcal{F}$-saturated vertex and does not increase the number of edges in $G_\mathcal{F}$.  
+     \item results in the removal of an edge from $G_\mathcal{F}$ (if $\Delta=f(v_{i-1},v_i)$ for some $i\in\{1,\ldots,\ell\}$); or
+     \item makes $w$ a $\mathcal{F}$-saturated vertex and does not increase the number of edges in $G_\mathcal{F}$.
   \end{enumerate}
    In the second case, this operation decreases the number of vertices of $G_{\mathcal{F}}$ that have in-degree $0$ and are not $\mathcal{F}$-saturated.
    By repeating this operation as long as $G_{\mathcal{F}}$ has an vertex with in-degree $0$ that is not $\mathcal{F}$-saturated we eventually obtain a $W$-cloud with total supply $s$ and congestion at most $\alpha$ in which any vertex of $G_{\mathcal{F}}$ that is not $\mathcal{F}$-saturated has in-degree $0$.
 
-   Now suppose that $W$ contains two unsaturated vertices $w_1$ and $w_2$. Without loss of generality, assume that $g(u_1)\ge g(u_2)$.  Let $\delta:=\min\{g(w_2),1-g(w_1)\}$.  Decrease $w_2$ by $\delta$ and increase $w_1$ by $\delta$.  This either increases the number of $\mathcal{F}$-saturated vertices in $W$ (if $\delta=1-g(w_1)$) or decreases the number of vertices in $G_\mathcal{F}$ (if $\delta=g(w_2)$).  By repeating this operation exhaustively, we obtain a $W$-cloud in which $G_{\mathcal{F}}$ contains at most one vertex of $W$ that is not $\mathcal{F}$-saturated.
+   Now suppose that $W$ contains two unsaturated vertices $w_1$ and $w_2$. Without loss of generality, assume that $g(u_1)\ge g(u_2)$.  Let $\Delta:=\min\{g(w_2),1-g(w_1)\}$.  Decrease $w_2$ by $\Delta$ and increase $w_1$ by $\Delta$.  This either increases the number of $\mathcal{F}$-saturated vertices in $W$ (if $\Delta=1-g(w_1)$) or decreases the number of vertices in $G_\mathcal{F}$ (if $\Delta=g(w_2)$).  By repeating this operation exhaustively, we obtain a $W$-cloud in which $G_{\mathcal{F}}$ contains at most one vertex of $W$ that is not $\mathcal{F}$-saturated.
 
-   Next, suppose that some $\mathcal{F}$-saturated vertex $v$ of $G_\mathcal{F}$ has two incoming edges $u_1v$ and $u_2v$ and neither $u_1$ nor $u_2$ is $\mathcal{F}$-saturated.  Without loss of generality, suppose that $g(u_1)\le g(u_2)$, and let $\delta=\min\{1-g(u_1),g(u_2)$.  Decrease $g(u_2)$ and $f(u_2,v)$ by $\delta$ and increase $g(u_1)$ and $f(u1,v)$ by $\delta$.  This does not change the total supply of $\mathcal{F}$.  It may increase the congestion of $u_1$ but, since $u_1$ has in-degree $0$ in $G_\mathcal{F}$, the congestion at $u_1$ is at most $g(u_1)\le 1\le \alpha$.  Thus, this does not increase the congestion of $\mathcal{F}$.  On the other hand, this either
+   Next, suppose that some $\mathcal{F}$-saturated vertex $v$ of $G_\mathcal{F}$ has two incoming edges $u_1v$ and $u_2v$ and neither $u_1$ nor $u_2$ is $\mathcal{F}$-saturated.  Without loss of generality, suppose that $g(u_1)\le g(u_2)$, and let $\Delta=\min\{1-g(u_1),g(u_2)$.  Decrease $g(u_2)$ and $f(u_2,v)$ by $\Delta$ and increase $g(u_1)$ and $f(u1,v)$ by $\Delta$.  This does not change the total supply of $\mathcal{F}$.  It may increase the congestion of $u_1$ but, since $u_1$ has in-degree $0$ in $G_\mathcal{F}$, the congestion at $u_1$ is at most $g(u_1)\le 1\le \alpha$.  Thus, this does not increase the congestion of $\mathcal{F}$.  On the other hand, this either
    \begin{enumerate}[nosep,nolistsep]
-     \item results in the removal of a vertex and edge from $G_\mathcal{F}$ (if $\delta=f(v_{u_2},w)$); or
-     \item makes $u_1$ an $\mathcal{F}$-saturated vertex (if $\delta=1-g(u_1)$) and does not increase the number of vertices in $G_\mathcal{F}$.  
+     \item results in the removal of a vertex and edge from $G_\mathcal{F}$ (if $\Delta=f(v_{u_2},w)$); or
+     \item makes $u_1$ an $\mathcal{F}$-saturated vertex (if $\Delta=1-g(u_1)$) and does not increase the number of vertices in $G_\mathcal{F}$.
   \end{enumerate}
   In the second case, this operation increases the number of vertices of $G_{\mathcal{F}}$ that are $\mathcal{F}$-saturated.  By repeating this operation exhaustively, we obtain a $W$-cloud in which each saturated vertex $v$ in $G_{\mathcal{F}}$ has at most one incoming edge $uv$ in which $u$ is not $\mathcal{F}$-saturated.
 
-   Now, any vertex $u$ of $G_{\mathcal{F}}$ that is not $\mathcal{F}$-saturated is either the unique such vertex in $W$ or has in-degree $0$ and is incident to an edge $uv$ where $v$ is $\mathcal{F}$-saturated. Each $\mathcal{F}$-saturated vertex $v$ is adjacent to at most one such edger $uw$.  Therefore, the number of vertices of $G_{\mathcal{F}}$ that are not $\mathcal{F}$-saturated exceeds the number of $\mathcal{F}$-saturated vertices of $G_{\mathcal{F}}$ by at most one.
+   Now, any vertex $u$ of $G_{\mathcal{F}}$ that is not $\mathcal{F}$-saturated is either the unique such vertex in $W$ or has in-degree $0$ and is incident to an edge $uv$ where $v$ is $\mathcal{F}$-saturated. Each $\mathcal{F}$-saturated vertex $v$ is adjacent to at most one such edger $uw$. Therefore, the number of $\mathcal{F}$-saturated vertices in $G_{\mathcal{F}}$ is $k$, then $|V(G)|\le 2k+1$, and $k\ge\lfloor |V(G)|/2\rfloor$.
 \end{proof}
 
 
@@ -181,23 +173,23 @@ The arguments used in the proof of the following lemma are similar to those used
 % \end{lem}
 
 % \begin{proof}
-%   Let $(f,g):=\mathcal{F}$.  Since the total supply of $\mathcal{F}$ is $n$, $g(v)=1$ for each $v\in V(G)$.  We construct a flow $\mathcal{F}':=(f',g')$ from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  More precisely, $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  \pat{TODO: Explain how to reduce flow on other edges and supply on other vertices to reestablish \eqref{conservation_of_flow}}.  
-  
-%   Observe that the total supply in $\mathcal{F}'$ is equal to the total supply in $\mathcal{F}$' minus the total congestion at the vertices in $A\cap B$.   Since each vertex in $A\cap B$ has congestion at most $\alpha$, the total supply in $\mathcal{F}'$ is at least $n-\alpha|A\cap B|$.  Since $g'(v)\le g(v)$ for all for $v\in V(G)$, this implies that, for any $S\subseteq V(G)$, 
+%   Let $(f,g):=\mathcal{F}$.  Since the total supply of $\mathcal{F}$ is $n$, $g(v)=1$ for each $v\in V(G)$.  We construct a flow $\mathcal{F}':=(f',g')$ from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  More precisely, $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  \pat{TODO: Explain how to reduce flow on other edges and supply on other vertices to reestablish \eqref{conservation_of_flow}}.
+
+%   Observe that the total supply in $\mathcal{F}'$ is equal to the total supply in $\mathcal{F}$' minus the total congestion at the vertices in $A\cap B$.   Since each vertex in $A\cap B$ has congestion at most $\alpha$, the total supply in $\mathcal{F}'$ is at least $n-\alpha|A\cap B|$.  Since $g'(v)\le g(v)$ for all for $v\in V(G)$, this implies that, for any $S\subseteq V(G)$,
 %   \[
 %     \sum_{v\in S} g'(v)\ge \sum_{v\in S}g(v) - \alpha|A\cap B| = |S| - \alpha a \enspace .
 %   \]
 
 %   Now consider the graph $G_A:=G-B$.  Since $f'(v,w)=0$ for any edge $vw$ of $G$ with an endpoint in $A\cap B$, the $W$-cloud $\mathcal{F}'$ of $G$ induces a $(W-B)$ cloud $\mathcal{F}'_A$ in $G_A$.  The total supply of $\mathcal{F}'_A$ is
 %   \begin{equation}
-%      \sum_{v\in V(G_A)} g'(v) \ge |A\setminus B| -\alpha a \ge \left(\frac{n}{3}-a\right) - \frac{an}{\beta|W|} \label{total_supply_a} 
+%      \sum_{v\in V(G_A)} g'(v) \ge |A\setminus B| -\alpha a \ge \left(\frac{n}{3}-a\right) - \frac{an}{\beta|W|} \label{total_supply_a}
 %      % = \left(\frac{C-c}{3C}\right)n - a = \left(\frac{1}{3}-\frac{c}{C}-\frac{a}{n}\right)n
 %      % = \left(\frac{1-\epsilon}{3}\right)n
 %   \end{equation}
 
 %   Since the congestion of $\mathcal{F}'$ is at most $\alpha$, the congestion of $\mathcal{F}'_A$ is at most $\alpha$.  In particular, the congestion at each vertex of $V(G_A)\cap W$ is at most $\alpha$.  Therefore,
 %   \[
-%      \frac{n}{\beta|W|} = \alpha =  \ge \frac{\sum_{v\in V(G_A)} g'(v)}{|V(G_A)\cap W|} 
+%      \frac{n}{\beta|W|} = \alpha =  \ge \frac{\sum_{v\in V(G_A)} g'(v)}{|V(G_A)\cap W|}
 %   \]
 %   Substituting \cref{total_supply_a} and rewriting this inequality yields
 %   \begin{align*}
@@ -207,7 +199,7 @@ The arguments used in the proof of the following lemma are similar to those used
 %     & \ge \frac{\beta|W|}{3} - 2a \enspace ,
 %   \end{align*}
 %   since $|W|\le n$ and $\beta\le 1$.
-%   Since $B=V(G)\setminus V(G_A)$, 
+%   Since $B=V(G)\setminus V(G_A)$,
 %   \begin{align*}
 %     |B\cap W|
 %       & = |(V(G)\cap W)\setminus(V(G_A)\cap W)| \\
@@ -220,68 +212,197 @@ The arguments used in the proof of the following lemma are similar to those used
 
 % \pat{Second Try}
 
-\begin{lem}
-  Let $a\ge 1$ be an integer and let $G$ be a graph with $\sep(G)\le a$.  For any $W\subseteq V(G)$, at least one of the following is true:
-  \begin{tightenum}[nosep,nolistsep,label=(\alph*),ref=\alph*]
-    \item\label[p]{small_w} $|W|\le 480a$;
-    \item\label[p]{small_y} $G$ has a separation $(X,Y)$ of order at most $\tfrac{2}{3}|W|$, with $Y\subseteq W$, $|Y|<2|W|$; or
-    \item\label[p]{balances_w} $G$ has a separation $(A,B)$ of order at most $\tfrac{2}{3}|W|+{?}a$ such that $\max\{|A\cap W|,|B\cap W|\} \le \frac{39}{40}|W|$.
-  \end{tightenum}
+\begin{lem}\label{amplifier}
+  Let $H$ be a graph with $\sep(H)\le a$ and let $W\subseteq V(H)$. For any integers $r\ge 0$ and $\Delta\ge 1$, there exists a separation $(P,Q)$ of $H$ of order at most $ar$ such that
+  \begin{enumerate}[nosep,nolistsep,label=\rm(A\arabic*),ref=\rm A\arabic*]
+    \item\label[p]{splits_w} $|P\cap W| \le \tfrac{1}{2}|W|+(a+\Delta)r$ and $|Q\cap W|\le |W|-\Delta$; or
+    \item\label[p]{smaller_y} $W\subseteq Q$ and $|Q|\le (\tfrac{2}{3})^r\cdot |V(H)|+3(1-(\tfrac{2}{3})^{r})(a+\Delta) < (\tfrac{2}{3})^r\cdot |V(H)|+3(a+\Delta)$.
+  \end{enumerate}
 \end{lem}
 
 \begin{proof}
-    If $|W|\le 9a$ then there is nothing to prove, so assume that $|W|>9a$.
-    Let $(X,Y)$ be a separation of $G$ such that
-    \begin{enumerate}[nosep,nolistsep,label=(\roman*),ref=\roman*]
-        \item\label[p]{has_w} $W\subseteq Y$; 
-        \item\label[p]{small_order} $|X\cap Y|\le \varepsilon|W|$; and 
-        \item\label[p]{minimal_size} $|Y\setminus X|$ is minimum (among all separations that satisfy \cref{has_w} and \cref{small_order}).  
-    \end{enumerate}
-    If $|Y|\le 2|W|$ then $(X,Y)$ satisfies \cref{small_y} and there is nothing more to prove.  Now assume that $|Y|> 2|W|$.
+  The proof is by induction on $r$. When $r=0$, taking $(P,Q)=(\emptyset,V(H))$ satisfies condition \cref{smaller_y}.  Now assume $r\ge 1$.  Let $(A,B)$ be a balanced separation of $H$ of order at most $a$.  Without loss of generality, suppose $|A\cap W|\le |B\cap W|$.  Since $|A\cap W|+|B\cap W|= |W|+|A\cap B\cap W|\le |W|+a$, we have $|A\cap W|\le \tfrac{1}{2}(|W|-a)<\tfrac{1}{2}|W|+(a+\Delta)r$.  If $|B\cap W|\le |W|-\Delta$, then the separation $(P,Q):=(A,B)$ satisfies \cref{splits_w} and we are done.
 
-    Let 
-    \[
-        s:=11\cdot |Y\setminus X|\text{ and let }\alpha:=40\cdot\frac{|Y\setminus X|}{\epsilon |W|}\enspace.
-    \]
-    We now show that $G$ has a $W$-cloud with total supply $s$ and congestion at most $\alpha$.  Suppose, for the sake of contradiction, that this is not the case. Then, by \cref{flow_vs_cut} $G$ has a separation $(X',Y')$ with $W\subseteq Y'$ and $\alpha |X'\cap Y'|+|Y'\setminus X'|< s$.  This implies that $|Y'\setminus X'|<s$ and that  $\alpha|X'\cap Y'|\le s$.  The latter inequality can be rewritten as
-    \[
-        |X'\cap Y'|\le s/\alpha = \frac{11\cdot\varepsilon\cdot|W|}{40} \enspace .
-    \]
-    Let $(A',B')$ be a balanced separation of $G[Y'\setminus X']$ of order at most $a$.  
-    % Observe that $|A'\cap W|+|B'\cap W|\le |W\setminus B'|+|W\setminus A'|+|A'\cap B'|\le |W|+a$. 
-    \pat{TODO: Cut this argument short if $\max\{|A'\cap W|,|B'\cap W|\le (1-2\epsilon)|W|$.}
-    Assume, without loss of generality, $|B'\cap W|\le 2\epsilon|W|+a$.  Then, the separation $(X',Y'\cup B')$ has order at most $11\cdot\varepsilon\cdot|W|/40+2a<\varepsilon|W|$ and $|Y'\cup W|\le \tfrac{2}{3}|Y|+\varepsilon|W|+\tfrac{3}{2}a< |Y|$ for $|W|>9a$ and $|Y|>2|W|$.  This contradicts the minimality of $|Y\setminus X|$ in the choice of $(X,Y)$.
-    \pat{Continue here....}
-    Thus $G$ has a $W$-cloud $\mathcal{F}:=(f,g)$ with total supply $s$ and congestion at most $\alpha$.  Let $F$ be the support of $\mathcal{F}$.  By \cref{tame_w_cloud} we may assume that the number of $\mathcal{F}$-saturated vertices in $F$ is at least $|F|/2$.  The saturated vertices in $\mathcal{F}$ contribute at least $|F|/2$ to the total supply of $\mathcal{F}$.  The unsaturated vertices contribute at most $|F|/2$ to the total supply of $\mathcal{F}$.  By removing unsaturated vertices we obtain a $W$-cloud $\mathcal{F}':=(f',g')$ with total supply at least $s/2$ and congestion at most $\alpha$ in which all vertices are saturated.
-    Let $F'$ be the set of vertices of $G$ in the support of $\mathcal{F}'$.  Then
-    \[   
-      s/2 \le |F'| \le s 
-    \]
-    Consider the graph $G':=G[F'\cup (Y\setminus X)]$.  Let $(A',B')$ be a balanced separation of $G'$ of order at most $a$.  Then $|A'\setminus B'|\ge \tfrac{1}{3}|V(G')|-a$.  Therefore
-    \begin{align*}
-      \tfrac{1}{3}|V(G')|- a 
-      & \le |A'\setminus B'| \\
-      & =  \tfrac{1}{3}\left(|(A'\cap F')\setminus B'|+ |(A'\setminus F')\setminus B'|\right)-a     
-    \end{align*}
-    Observe that the total supply in $\mathcal{F}'$ originating at vertices in $A'\setminus B'$ is $|(A'\cap F')\setminus B'|\ge \tfrac{1}{3}V(G')-a-\tfrac{2}{3}|(A'\setminus F')\setminus B'|\ge \tfrac{1}{3}F'-a-\tfrac{2}{3}|Y\setminus X|\ge \tfrac{1}{6}s-a-\tfrac{2}{3}|Y\setminus X|=\frac{7}{6}|Y\setminus X|-a$.   
-    
-    
-    Construct a flow $\mathcal{F}''$ from $\mathcal{F}'$ by making each vertex $v$ in $A'\cap B'$ into a sink with $g(v)=0$ and $f(v,w)=0$ for all $w\in N_{G'}(w)$.   
-    % In $\mathcal{F}''$, the total supply that reaches vertices in $W$ is at least $s/2-\alpha a$.   
-    In $\mathcal{F}''$, the total supply originating at vertices in $A'\setminus B'$ that reaches vertices in $(A'\setminus B')\cap W$ is at least $|(A'\cap F')\setminus B'|-\alpha a>\frac{7}{6}|Y\setminus X|-(\alpha+1)a$.  Therefore
-    \begin{align*}
-      \alpha & \ge \frac{|(A'\cap F')\setminus B'|-\alpha a}{|(A'\setminus B')\cap W|} \\
-      & \ge \frac{\tfrac{7}{6}|Y\setminus X|-(\alpha+1) a}{|A'\setminus B')\cap W|}
-    \end{align*}
-    Rewriting this gives
-    \begin{align*}
-      |A'\setminus B')\cap W| & \ge \frac{\tfrac{7}{6}|Y\setminus X|-(\alpha+1) a}{\alpha} \\
-      & = \frac{7|W|}{240} - \frac{(\alpha+1)a}{\alpha} \\
-      & \ge \frac{7|W|}{240} - 2a \\
-      % & \ge \frac{6|W|}{240}  = \frac{|W|}{40}
-    \end{align*}
-    % for $|W|>480a$.
-    Let $A:=X\cup A'$ and let $B:=B'$.  Then $|A\cap W|\le |X\cap W| +|A'\cap W|\le |W|/2+$.....\pat{Sigh......}
+  If $|B\cap W|>|W|-\Delta$, then consider consider the graph $H':=H[B\cup W]$, which has
+  \begin{align*}
+    |V(H')| & = |B|+|W\setminus B| \\
+      & =|B\setminus A|+|B\cap A|+|W\setminus B| \\
+      & < \tfrac{2}{3}|V(H)|+a+\Delta
+  \end{align*}
+  vertices.  Apply the inductive hypothesis to $H'$ to obtain a separation $(P',Q')$ of $H'$ of order at most $(a+\Delta)(r-1)$, which satisifes \cref{splits_w} or \cref{smaller_y} with $r$ replaced by $r-1$.  Consider the separation $(P,Q):=(A\cup P',Q')$. The order of $(P,Q)$ is
+  \begin{align*}
+    |P\cap Q| & \le |A\cap Q'|+|P'\cap Q'| \\
+    & \le |A\cap Q'|+ (a+\Delta)(r-1) \\
+    & \le |A\cap (B\cup W)|+(a+\Delta)(r-1)\\
+    & = |A\cap B| + |A\cap (W\setminus B)|+(a+\Delta)(r-1)\\
+    & = |A\cap B| + |W\setminus B|+(a+\Delta)(r-1)\\
+    & \le (a+\Delta)r \enspace .
+  \end{align*}
+
+  First suppose that $(X',Y')$ satisfies \cref{splits_w}.  Then
+  \[
+     |A\cap W| = |W|-|B\cap W|+|A\cap B\cap W|
+      \le a+\Delta \enspace ,
+  \]
+  and
+  \begin{align*}
+    |P\cap W| & =|(A\cup P')\cap W| \\
+     & \le |A\cap W|+|P'\cap W|  \\
+     & \le (a+\Delta)+\tfrac{1}{2}|W|+(a+\Delta)(r-1)  \\
+    & = \tfrac{1}{2}|W|+(a+\Delta)r \enspace .
+  \end{align*}
+  Since $|Y\cap W|=|Y'\cap W|\le |W|-\Delta$, the separation $(P,Q)$ satisfies \cref{splits_w}.
+
+  If $(P',Q')$ satisfies \cref{smaller_y} then $W\subseteq Q=Q'$ and
+  \begin{align*}
+     |Q|=|Q'|
+      & \le (\tfrac{2}{3})^{r-1}|V(H')|+3(1-(\tfrac{2}{3})^{r-1})(a+\Delta) \\
+      & \le (\tfrac{2}{3})^{r-1}(\tfrac{2}{3}|V(H)|+a+\Delta)+3(1-(\tfrac{2}{3})^{r-1})(a+\Delta) \\
+      & = (\tfrac{2}{3})^r\cdot|V(H)|+ (\tfrac{2}{3})^{r-1}(a+\Delta)+3(1-(\tfrac{2}{3})^{r-1})(a+\Delta) \\
+      & = (\tfrac{2}{3})^r\cdot|V(H)|+ 3(1-(\tfrac{2}{3})^{r})(a+\Delta) \enspace .
+  \end{align*}
+  Therefore, $(P,Q)$ satisfies \cref{smaller_y}.
+\end{proof}
+
+
+\begin{lem}
+  Let $a\ge 1$ be an integer and let $G$ be a graph with $\sep(G)\le a$.  For any $W\subseteq V(G)$, at least one of the following is true:
+  \begin{enumerate}[nosep,nolistsep,label=(\alph*),ref=\alph*]
+    \item\label[p]{small_w} $|W|\le c_1a$\todo{$c_1\gg 1$};
+    \item\label[p]{small_y} $G$ has a separation $(X,Y)$ with $|X\cap Y|\le c_1a$, $W\subseteq Y$, and $|Y|\le c_3 a$\todo{$c_3\ge c_1$}; or
+    \item\label[p]{balances_w} $G$ has a separation $(A,B)$ such that $W\neq A$, $W\neq B$, and $\max\{|A\cap (B\cup W)|,|B\cap (A\cup W)|\} \le |W|$.
+  \end{enumerate}
+\end{lem}
+
+\begin{proof}
+  We may assume that $|W|>c_1a$, otherwise \cref{small_w} holds and there is nothing to prove. Let $(X,Y)$ be a separation of $G$ such that
+  \begin{enumerate}[nosep,nolistsep,label=(\roman*),ref=\roman*]
+      \item\label[p]{has_w} $W\subseteq Y$;
+      \item\label[p]{small_order} $|X\cap Y|\le c_6a$;\todo{$0<c_6<c_1$} and
+      \item\label[p]{minimal_size} $|Y|$ is minimum (among all separations that satisfy \cref{has_w} and \cref{small_order}).
+  \end{enumerate}
+  If $|Y|\le c_3a$ then $(X,Y)$ satisfies \cref{small_y} and there is nothing more to prove.  Now assume that $|Y|> c_3a$. Let\todo{$c_7,c_8\gg 1$\newline $c_8\ge c_1$}
+  \[
+      s:=c_7\cdot |Y\setminus X|\text{ and let }\alpha:=\frac{c_8\cdot s}{c_1\cdot c_6\cdot a}\enspace.
+  \]
+  Note that $|Y\setminus X|= |Y|-|Y\cap X|\ge (c_3-c_6)a$, so
+  \[
+     \alpha \ge \frac{c_8\cdot c_7\cdot(c_3-c_6)}{c_1\cdot c_6} \mathcolor{red}{\ge 1} \enspace . \\
+  \]
+  Our intention is to use \cref{flow_vs_cut} with the parameters $s$ and $\alpha$. We first deal with the case in which $G$ has no $W$-cloud with total supply $s$ and congestion at most $\alpha$.
+
+  Suppose that $G$ has a separation $(X',Y')$ with $W\subseteq Y'$ and $\alpha |X'\cap Y'|+|Y'\setminus X'|< s$.  This implies that $|Y'\setminus X'|<s$ and that  $\alpha|X'\cap Y'|\le s$.  The latter inequality can be rewritten as
+  \[
+      |X'\cap Y'|\le s/\alpha = \frac{c_1\cdot c_6\cdot a}{c_8} \enspace .
+  \]
+  Let $H:=G[Y']$ and observe that $W\subseteq V(H)$.
+  Apply \cref{amplifier} to $H$ to obtain a separation $(P,Q)$ of order $|P\cap Q|\le ar$\todo{$1\le r\le 10$} that satifies condition \cref{splits_w} or condition \cref{smaller_y}.\todo{Choose $\Delta\ll c_1a$}
+
+  First suppose that $(P,Q)$ satisfies \cref{smaller_y}.  We will show that, in this case, the separation $(X^\star,Y^\star):=(X'\cup P,Q)$ contradicts the choice of $(X,Y)$. By \cref{smaller_y} we have
+  \begin{align*}
+    |Q| & \le (\tfrac{2}{3})^r\cdot |V(H)| + 3(a+\Delta) \\
+    & \le (\tfrac{2}{3})^r\cdot |Y'| + 3(a+\Delta) \\
+    & \le (\tfrac{2}{3})^r\cdot (|Y'\setminus X'|+|X'\cap Y'| + 3(a+\Delta) \\
+    & \le (\tfrac{2}{3})^r\cdot (|Y'\setminus X'|+\alpha|X'\cap Y'| + 3(a+\Delta) & \mathcolor{red}{\text{(since $\alpha \ge 1$)}} \\
+    & \le (\tfrac{2}{3})^r\cdot s + 3(a+\Delta) \\
+    & = (\tfrac{2}{3})^r\cdot c_7\cdot|Y\setminus X| + 3(a+\Delta) \\
+    & \le (\tfrac{2}{3})^r\cdot c_7\cdot |Y| + 3(a+\Delta) \\
+    & = |Y|-(1-\tfrac{2}{3})^r\cdot c_7\cdot|Y| + 3(a+\Delta) \\
+    & < |Y|-(1-\tfrac{2}{3})^r\cdot c_7\cdot c_3\cdot a + 3(a+\Delta)
+    \mathcolor{red}{\le |Y|} \enspace .
+  \end{align*}
+  The separation $(X^\star,Y^\star)$ has order
+  \begin{align*}
+    |X^\star\cap Y^\star|
+      & = |(X'\cup P)\cap Q| \\
+      & \le |X'\cap Q| + |P\cap Q| \\
+      & \le |X'\cap Y'| + |P\cap Q| & \text{(since $Q\subseteq V(H)=Y'$)}\\
+      & \le \frac{c_1\cdot c_6\cdot a}{c_8} + ar \le c_6\cdot a , \enspace
+  \end{align*}
+  since \textcolor{red}{$c_8\ge c_1$}.
+  Thus $(X^\star,Y^\star)$ is a separation of $G$ with $W\subseteq Y^\star$, $|X^\star\cap Y^\star|\le c_6\cdot a$ and $|Y^\star|=|Q|<|Y|$, which contradicts the choice of $(X,Y)$.  We conclude that $(P,Q)$ must satisfy outcome \cref{splits_w} of \cref{amplifier}.
+
+  We will now show that the separation $(A,B):=(X\cup X'\cup P,Q\cap Y)$ satisfies \cref{balances_w}.  This separation has order
+  \begin{align*}
+    |A\cap B|
+    & = |(X\cup X'\cup P)\cap (Q\cap Y)| \\
+    & \le |X\cap Y|+|X'\cap Q|+|P\cap Q| \\
+    & \le |X\cap Y| + |X'\cap Y'| + |P\cap Q| \\
+    & \le c_6\cdot a + \frac{c_1\cdot c_6\cdot a}{c_8} + ar \\
+    & = \left(c_6 + \frac{c_1\cdot c_6}{c_8} + r\right)a \enspace .
+  \end{align*}
+  Therefore,
+  \begin{align*}
+    |A\cap (B\cup W)|
+    & \le |A\cap B| + |B\cap W| \\
+    & \le c_6\cdot a + \frac{c_1\cdot c_6\cdot a}{c_8} + ar + |W| - \Delta \\
+    & \le \left(c_6 + \frac{c_1\cdot c_6}{c_8} + r\right)a + |W| - \Delta \\
+    &\mathcolor{red}{\le |W|}
+    % & = |(X\cup X'\cup P)\cap (Q\cap Y)| \\
+    % & \le |X\cap Y|+|X'\cap Q|+|P\cap Q| \\
+    % & \le |X\cap Y| + |X'\cap Y'| + |P\cap Q| \\
+    % & \le c_6\cdot a + \frac{c_1\cdot c_6\cdot a}{c_8} + ar \enspace .
+  \end{align*}
+  A symmetric argument shows that $|B\cap (A\cup W)|\le |W|$.  Therefore, $(A,B)$ satisfies \cref{balances_w}.
+
+  Finally, we are left with the case in which $G$ does not contain a separation $(X',Y')$ with $W\subseteq Y'$ and $\alpha|X'\cap Y'|+|Y'\setminus X'|<s$.  In this case, \cref{flow_vs_cut} implies that $G$ has a $W$-cloud $\mathcal{F}:=(f,g)$ with total supply $s$ and congestion at most $\alpha$.
+  Let $n:=|V(G_{\mathcal{F}})|$.  By \cref{tame_w_cloud}, we may assume that at least $\lfloor n/2\rfloor$ vertices of  $G_{\mathcal{F}}$ are $\mathcal{F}$-saturated.
+  % Therefore $\floor n/2\rfloor\le s$. The remaining $\lceil n/2\rceil$ vertices contribute less than $\lceil n/2\rceil$ to the total supply of $\mathcal{F}$.
+  Since $s=\sum_{v\in V(G_{\mathcal{F}})} g(v)\le \sum_{v\in V(G_{\mathcal{F}})} 1=n$, we have $\lfloor n/2\rfloor \ge (n-1)/2 \ge (s-1)/2$.  Therefore, by removing unsaturated vertices from $\mathcal{F}$ we obtain a $W$-cloud $\mathcal{F}':=(f',g')$ with total supply $s'\ge(s-1)/2$ and congestion at most $\alpha$ in which all vertices are saturated.
+  % Let $n'=s'$ be the number of vertices in $G_{\mathcal{F}'}$.
+  Then\pat{I'm cheating here. I dropped the $-1/2$}
+  \begin{align*}
+     s' & \ge s/2 \\
+        & = \frac{c_7\cdot|Y\setminus X|}{2}
+  \end{align*}
+  % Since all vertices in $G_{\mathcal{F}'}$ are $\mathcal{F}'$-saturated the total supply in $\mathcal{F}'$ is an integer, so the total supply of $.
+
+  Consider the graph $G':=G[V(G_{\mathcal{F}'})\cup (Y\setminus X)]$.  Let $n':=V(G')$ be the number of vertices of $G'$.  Then
+  \begin{align*}
+     n' & = |V(G_{\mathcal{F}'})\cup (Y\setminus X)| \\
+        & = |V(G_{\mathcal{F}'})| + |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+        & = s' + |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+        % & = s' + |Y\setminus X| \\
+        % & = s' + s/c_7 \\
+        % & \le s' + 2s'/c_7 \\
+        % & = (1+2/c_7)s' \enspace .
+  \end{align*}
+  Let $(A',B')$ be a balanced separation of $G'$ of order at most $a$.  Then $|A'\setminus B'|\ge \tfrac{1}{3}n'-a$.
+  \begin{align*}
+    |(A'\setminus B')\cap V(G_{\mathcal{F}'})|
+    & = |A'\setminus B'| - |(A'\setminus B')\setminus V(G_{\mathcal{F}'})| \\
+    & = |A'\setminus B'| - |(A'\setminus B')\cap (Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge |A'\setminus B'| - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}n' - a - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & = \tfrac{1}{3}s' - a - \tfrac{2}{3}|Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}s' - a - \tfrac{2}{3}|Y\setminus X| \\
+    & \ge \frac{c_7\cdot|Y\setminus X|}{6} - a - \tfrac{2}{3}|Y\setminus X| \\
+    & = \frac{(c_7-4)\cdot |Y\setminus X|}{6} - a \\
+  \end{align*}
+  Construct a flow $\mathcal{F}'':=(f'',g'')$ from $\mathcal{F}'$ in which each vertex $v$ in $A'\cap B'$ is a sink.  We do this by setting $f''(v,w)=0$ for each vertex $v$ in $A'\cap B'$ and each $w\in N_{G'}(w)$, and reducing flows on other edges in order to satisfy \eqref{conservation_of_flow}.  For each edge $vw$ of $G$, $f''(v,w)\le f'(v,w)\le f(v,w)$. Therefore, the congestion of $\mathcal{F}''$ is at most the congestion of $\mathcal{F}$, which is at most $\alpha$.  Therefore, the sinks of $\mathcal{F}''$ in $A'\cap B'$ consume\todo{define consume} at most $\alpha|A'\cap B'|\le \alpha a$. Therefore, in $\mathcal{F}''$, the total supply originating at vertices in $A'\setminus B'$ that is consumed by vertices in $(A'\setminus B')\cap W$ is at least
+  \[
+    |(A'\setminus B')\cap V(G_{\mathcal{F}'})| - \alpha a
+    \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6} - (\alpha+1)a
+  \]
+  Since the congestion of $\mathcal{F}''$ is at most $\alpha$, each vertex in $(A'\setminus B')\cap W$ consumes at most $\alpha$, so
+  \[
+    \frac{(c_7-4)\cdot |Y\setminus X|}{6} - (\alpha+1)a \le \alpha\cdot|(A'\setminus B')\cap W| \enspace .
+  \]
+  Rewriting this gives
+  \begin{align*}
+    |A'\cap W|\ge
+   |(A'\setminus B')\cap W|
+    & \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6\alpha} - \frac{(\alpha+1)a}{\alpha} \\
+    & = \frac{(c_7-4)\cdot c_1\cdot c_6\cdot a}{6\cdot c_8\cdot c_7} - \frac{(\alpha+1)a}{\alpha}
+  \end{align*}
+  Therefore,
+  \begin{align*}
+   |(B'\setminus A')\cap W|
+    & = |W|-|A'\cap W| \\
+    & \le |W|- \frac{(c_7-4)\cdot c_1\cdot c_6\cdot a}{6\cdot c_8\cdot c_7} + \frac{(\alpha+1)a}{\alpha}
+  \end{align*}
+
+
 \end{proof}
 
 
