@@ -135,7 +135,7 @@ $|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ b
 \end{lem}
 
 \begin{proof}
-  \ [TODO: This proof uses some old notation. Update.]
+  \ [TODO: This proof uses some old notation.  In the new language, $\beta:=c/C$. Update.]
   Let $(f,g):=\mathcal{F}$.  Since the total supply of $\mathcal{F}$ is $n$, $g(v)=1$ for each $v\in V(G)$.  We construct a flow $\mathcal{F}':=(f',g')$  from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  More precisely, $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  [TODO: Explain how to reduce flow on other edges and and supply on other vertices.]   Since each vertex in $A\cap B$ has congestion at most $\alpha$, the flow $\mathcal{F}'$ has total supply at least $n-\alpha|A\cap B|$.  Since $g'(v)\le g(v)$ for all for $v\in V(G)$, this implies that, for any $S\subseteq V(G)$, $\sum_{v\in S} g'(v)\ge \sum_{v\in S}g(v) - \alpha|A\cap B|\ge |S| - \alpha a$.
 
   Consider the graph $G_A:=G-B$.  Since $f'(v,w)=0$ for any edge $vw$ of $G$ with an endpoint in $A\cap B$, the $W$-cloud $\mathcal{F}'$ of $G$ induces a $(W-B)$ cloud $\mathcal{F}'_A$ in $G_A$.  The total supply of $\mathcal{F}'_A$ is
