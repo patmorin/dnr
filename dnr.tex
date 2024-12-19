@@ -281,6 +281,8 @@ The arguments used in the proof of the following lemma are similar to those used
       \item\label[p]{small_order} $|X\cap Y|\le c_6a$;\todo{$0<c_6<c_1$} and
       \item\label[p]{minimal_size} $|Y|$ is minimum (among all separations that satisfy \cref{has_w} and \cref{small_order}).
   \end{enumerate}
+  The separtion $(X,Y)$ is well-defined because the separation $(\emptyset,V(G))$ satisfies \cref{has_w} and \cref{small_order}.
+
   If $|Y|\le c_3a$ then $(X,Y)$ satisfies \cref{small_y} and there is nothing more to prove.  Now assume that $|Y|> c_3a$. Let\todo{$c_7,c_8\gg 1$\newline $c_8\ge c_1$}
   \[
       s:=c_7\cdot |Y\setminus X|\text{ and let }\alpha:=\frac{c_8\cdot s}{c_1\cdot c_6\cdot a}\enspace.
@@ -317,9 +319,9 @@ The arguments used in the proof of the following lemma are similar to those used
       & = |(X'\cup P)\cap Q| \\
       & \le |X'\cap Q| + |P\cap Q| \\
       & \le |X'\cap Y'| + |P\cap Q| & \text{(since $Q\subseteq V(H)=Y'$)}\\
-      & \le \frac{c_1\cdot c_6\cdot a}{c_8} + ar \le c_6\cdot a , \enspace
+      & \le \frac{c_1\cdot c_6\cdot a}{c_8} + ar \\
+      & \mathcolor{red}{\le c_6\cdot a}  \enspace .
   \end{align*}
-  since \textcolor{red}{$c_8\ge c_1$}.
   Thus $(X^\star,Y^\star)$ is a separation of $G$ with $W\subseteq Y^\star$, $|X^\star\cap Y^\star|\le c_6\cdot a$ and $|Y^\star|=|Q|<|Y|$, which contradicts the choice of $(X,Y)$.  We conclude that $(P,Q)$ must satisfy outcome \cref{splits_w} of \cref{amplifier}.
 
   We will now show that the separation $(A,B):=(X\cup X'\cup P,Q\cap Y)$ satisfies \cref{balances_w}.  This separation has order
@@ -367,42 +369,70 @@ The arguments used in the proof of the following lemma are similar to those used
         % & \le s' + 2s'/c_7 \\
         % & = (1+2/c_7)s' \enspace .
   \end{align*}
-  Let $(A',B')$ be a balanced separation of $G'$ of order at most $a$.  Then $|A'\setminus B'|\ge \tfrac{1}{3}n'-a$.
+  Let $(A',B')$ be a balanced separation of $G'$ of order at most $a$.  Then $|A'|\ge n - |B'\setminus A'|\ge \tfrac{1}{3}n'$.  In $\mathcal{F}'$, the total supply $\sum_{v\in A'}g'(v)$ originating at vertices in $A'$ is at least:
   \begin{align*}
-    |(A'\setminus B')\cap V(G_{\mathcal{F}'})|
-    & = |A'\setminus B'| - |(A'\setminus B')\setminus V(G_{\mathcal{F}'})| \\
-    & = |A'\setminus B'| - |(A'\setminus B')\cap (Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
-    & \ge |A'\setminus B'| - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
-    & \ge \tfrac{1}{3}n' - a - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
-    & = \tfrac{1}{3}s' - a - \tfrac{2}{3}|Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
-    & \ge \tfrac{1}{3}s' - a - \tfrac{2}{3}|Y\setminus X| \\
-    & \ge \frac{c_7\cdot|Y\setminus X|}{6} - a - \tfrac{2}{3}|Y\setminus X| \\
-    & = \frac{(c_7-4)\cdot |Y\setminus X|}{6} - a \\
+    |A'\cap V(G_{\mathcal{F}'})|
+    & = |A'| - |(A'\setminus V(G_{\mathcal{F}'})| \\
+    & = |A'| - |A'\cap (Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge |A'| - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}n' - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & = \tfrac{1}{3}s' - \tfrac{2}{3}|Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}s' - \tfrac{2}{3}|Y\setminus X| \\
+    & \ge \frac{c_7\cdot|Y\setminus X|}{6} - \tfrac{2}{3}|Y\setminus X| \\
+    & = \frac{(c_7-4)\cdot |Y\setminus X|}{6} \\
   \end{align*}
-  Construct a flow $\mathcal{F}'':=(f'',g'')$ from $\mathcal{F}'$ in which each vertex $v$ in $A'\cap B'$ is a sink.  We do this by setting $f''(v,w)=0$ for each vertex $v$ in $A'\cap B'$ and each $w\in N_{G'}(w)$, and reducing flows on other edges in order to satisfy \eqref{conservation_of_flow}.  For each edge $vw$ of $G$, $f''(v,w)\le f'(v,w)\le f(v,w)$. Therefore, the congestion of $\mathcal{F}''$ is at most the congestion of $\mathcal{F}$, which is at most $\alpha$.  Therefore, the sinks of $\mathcal{F}''$ in $A'\cap B'$ consume\todo{define consume} at most $\alpha|A'\cap B'|\le \alpha a$. Therefore, in $\mathcal{F}''$, the total supply originating at vertices in $A'\setminus B'$ that is consumed by vertices in $(A'\setminus B')\cap W$ is at least
+  Construct a flow $\mathcal{F}'':=(f'',g'')$ from $\mathcal{F}'$ in which each vertex $v$ in $A'\cap B'$ is a sink.  We do this by setting $f''(v,w)=0$ for each vertex $v$ in $A'\cap B'$ and each $w\in N_{G'}(w)$, and reducing flows on other edges in order to satisfy \eqref{conservation_of_flow}.  For each edge $vw$ of $G$, $f''(v,w)\le f'(v,w)\le f(v,w)$. Therefore, the congestion of $\mathcal{F}''$ is at most the congestion of $\mathcal{F}$, which is at most $\alpha$.  Therefore, the sinks of $\mathcal{F}''$ in $A'\cap B'$ consume\todo{define consume} at most $\alpha|A'\cap B'|\le \alpha a$. Therefore, in $\mathcal{F}''$, the total supply originating at vertices in $A'$ that is consumed by vertices in $A'\cap W$ is at least
   \[
-    |(A'\setminus B')\cap V(G_{\mathcal{F}'})| - \alpha a
-    \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6} - (\alpha+1)a
+    |A'\cap V(G_{\mathcal{F}'})| - \alpha a
+    \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6} - \alpha a
   \]
-  Since the congestion of $\mathcal{F}''$ is at most $\alpha$, each vertex in $(A'\setminus B')\cap W$ consumes at most $\alpha$, so
+  Since the congestion of $\mathcal{F}''$ is at most $\alpha$, each vertex in $A'\cap W$ consumes at most $\alpha$, so
   \[
-    \frac{(c_7-4)\cdot |Y\setminus X|}{6} - (\alpha+1)a \le \alpha\cdot|(A'\setminus B')\cap W| \enspace .
+    \frac{(c_7-4)\cdot |Y\setminus X|}{6} - \alpha a \le \alpha\cdot|(A'\setminus B')\cap W| \enspace .
   \]
   Rewriting this gives
   \begin{align*}
-    |A'\cap W|\ge
-   |(A'\setminus B')\cap W|
-    & \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6\alpha} - \frac{(\alpha+1)a}{\alpha} \\
-    & = \frac{(c_7-4)\cdot c_1\cdot c_6\cdot a}{6\cdot c_8\cdot c_7} - \frac{(\alpha+1)a}{\alpha}
+   |A'\cap W|
+    & \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6\alpha} - a \\
+    & = \left(\frac{(c_7-4)\cdot c_1\cdot c_6\cdot|Y\setminus X|-1}{6\cdot c_8\cdot s}\right)a \\
+    & = \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a
   \end{align*}
+  % Therefore,
+  % \begin{align*}
+  %  |(B'\setminus A')\cap W|
+  %   & = |W|-|A'\cap W| \\
+  %   & \le |W|- \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \enspace .
+  % \end{align*}
   Therefore,
   \begin{align*}
-   |(B'\setminus A')\cap W|
-    & = |W|-|A'\cap W| \\
-    & \le |W|- \frac{(c_7-4)\cdot c_1\cdot c_6\cdot a}{6\cdot c_8\cdot c_7} + \frac{(\alpha+1)a}{\alpha}
+    |B'\cap (A'\cup W)|
+    & =  |B'\cap A'| + |W|-|(B'\cap A')\cap W|-|(B'\setminus A')\cap W| \\
+    & =  |B'\cap A'| + |W|-|A'\cap W| \\
+    & \le |W|- \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \\
+    & \mathcolor{red}{\le |W|-c_6\cdot a}
   \end{align*}
+  A symmetric argument shows the same bound for $|A'\cap (B'\cup W)|$.
 
-
+  Finally, consider the separation $(A,B):=(X\cup A',B'\cap Y)$.  Then
+  \begin{align*}
+    |A\cap (B\cup W)|
+    & = |(X\cup A')\cap ((B'\cap Y)\cup W)| \\
+    & \le |X\cap Y| + |A'\cap (B'\cup W)|\\
+    & \le c_6\cdot a + |W| - c_6\cdot a = |W| \enspace .
+    % |B'\cap (A'\cup W)|
+    % & =  |B'\cap A'| + |W|-|(B'\cap A')\cap W|-|(B'\setminus A')\cap W| \\
+    % & =  |B'\cap A'| + |W|-|A'\cap W| \\
+    % & \le |W|- \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \enspace .
+  \end{align*}
+  and
+  \begin{align*}
+    |B\cap (A\cup W)|
+    & = |(B'\cap Y)\cap (X\cup A')| \\
+    & \le |Y\cap X| + |B'\cap A'| \\
+    & \le c_6\cdot a + a \\
+    & \le \mathcolor{red}{|W|}
+  \end{align*}
+  Therefore, the separation $(A,B)$ satisfies \cref{balances_w}.
 \end{proof}
 
 
