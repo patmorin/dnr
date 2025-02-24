@@ -11,13 +11,8 @@
 % \usepackage{comment}
 
 \usepackage[inline]{enumitem}
-\newlist{tightenum}{enumerate}{2}
-\setlist[tightenum,1]{noitemsep,nosep,
-                        label=\rm(\alph*),
-                        ref  =\alph*}
-\setlist[tightenum,2]{noitemsep,nosep,
-                         label=\rm(\roman*),
-                         ref  =\roman*}
+\usepackage{soul}
+\usepackage[normalem]{ulem}
 
 \newenvironment{dummy}{}
 % david proposes the following additions
@@ -26,10 +21,7 @@
 % \renewcommand{\geq}{\geqslant}
 % \renewcommand{\leq}{\leqslant}
 
-\newcommand{\vida}[1]{{\color{DarkGreen} Vida: #1}}
 \newcommand{\pat}[1]{\textcolor{Blue}{[Pat: #1]}}
-\newcommand{\gwen}[1]{\textcolor{Purple}{Gwen: #1}}
-\newcommand{\piotr}[1]{\textcolor{red}{Piotr: #1}}
 
 % \numberwithin{equation}{lem}
 
@@ -68,7 +60,13 @@
 \newcommand{\Oh}{\mathcal{O}}
 \DeclareMathOperator{\thick}{th}
 
+\DeclareMathOperator{\interior}{int}
+\DeclareMathOperator{\boundary}{\partial}
+
 \DeclarePairedDelimiter\set{\{}{\}}
+
+
+\newcommand{\hussein}[1]{\textcolor{purple}{HH: #1}}
 
 \title{\MakeUppercase{Dvo\v{r}ák-Norin Revisited}}
 
@@ -89,12 +87,357 @@
 
 \section{Introduction}
 
-In this paper every graph $G$ is undirected simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
+In this paper every graph $G$ is undirected simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)|$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
 
-We reprove the following result of \citet{dvorak.norin:treewidth}
-\begin{thm}
-  For every graph $G$, $\tw(G)\le 15\sep(G)$.
+We reprove the following result of \citet{dvorak.norin:treewidth}.
+\begin{thm}\label{main_result}
+  There exists a constant $c$ such that, for every graph $G$, $\tw(G)\le c\sep(G)$.
 \end{thm}
+
+\pat{Currently, the best bound I have on $c$ is $67$.}
+
+\section{Preliminaries}
+
+Let $G$ be a graph and let $S,T\subseteq V(G)$. An \defin{$S$-$T$ path} in $G$ is a path in $G$ whose first vertex is in $S$ and whose last vertex is in $T$.  We say that a set $Z\subseteq V(G)$ \defin{separates} $S$ and $T$ if $G-X$ has no $S$-$T$ path.  When $Z$ separates $S$ and $T$, any separation $(X,Y)$ of $G$ with $S\subseteq X$, $T\subseteq Y$ and $X\cap Y=Z$ is called an \defin{$(S,T,Z)$-separation}. To see that an $(S,T,Z)$-separation always exists, let $G_X$ be the union of all components of $G-Z$ that contain a vertex of $S$. Then $S\subseteq V(G_X)\cup Z$. Take $G_Y$ to be the union of all components of $G-Z$ not included in $G_X$. Since  every component of $G_X$ contains a vertex in $S$, no component of $G_X$ contains a vertex in $T$.  Therefore, $T\subseteq V(G_Y)\cup Z$.  Then the separation $(X,Y):=(V(G_X)\cup Z, V(G_Y)\cup Z)$ is an $(S,T,Z)$-separation.  We make use of Menger's Theorem:
+
+\begin{thm}[Menger's Theorem]\label{menger}
+  Let $G$ be a graph and let $S$ and $T$ be subsets of $V(G)$. For each $k\in\N$, exactly one of the following is true:
+  \begin{enumerate}[nosep,nolistsep,label=\rm(\roman*),ref=(\roman*)2]
+      \item $G$ contains $k$ pairwise vertex-disjoint $S$-$T$ paths; or
+      \item $G$ has a vertex subset $Z$ of size less than $k$ that separates $S$ and $T$.
+  \end{enumerate}
+\end{thm}
+
+A \defin{separation tree} of a graph $G$ is a rooted ordered binary tree that either has no nodes, or in which the root node $r_0$ is a triple $(G,A,B)$ where $(A,B)$ is a separation of $G$, the left child of $r_0$ is the root of a separation tree of $G[A]$ and the right child of $r_0$ is the root of a separation tree of $G[B]$. (If left or right child of $r_0$ is the tree with no nodes, then we treat $r_0$ as having no left or right child, respectively.)
+
+The \defin{depth} of a node $x$ in a separation tree $T$ is the number of edges on the path from $x$ to the root of $T$. 
+ The \defin{height} of a separation tree $T$ is the maximum depth of any node in $T$.
+
+Let $T$ be a separation tree of $G$ and let $r_0,\ldots,r_d$ be the path in $T$ from the root node $r_0$ to some node $r_d$ of depth $d$, and let $r_i:=(G_i,A_i,B_i)$ for each $i\in\{0,\ldots,d\}$.  
+For each $i\in\{0,\ldots,p-1\}$, let
+\[
+  (C_i,\overline{C}_i):=
+  \begin{cases}
+    (A_i,B_i) & \text{if $r_{i+1}$ is the left child of $r_{i}$} \\
+    (B_i,A_i) & \text{if $r_{i+1}$ is the right child of $r_{i}$.}
+  \end{cases}
+\]
+From these definitions, it follows that $G_p := G[\bigcap_{i=0}^{p-1} C_i]$.  
+We define the \defin{boundary} of $r_d$ as $\mathdefin{\boundary(r_d)}:=V(G_d)\cap(\bigcup_{i=0}^{d-1}(A_i\cap B_i))$ and the \defin{interior} of $r_d$ as $\mathdefin{\interior(r_d)}:=V(G_d) \setminus \boundary(r_d)$. These definition imply the following:
+\begin{enumerate}[nosep,nolistsep,label=(T\arabic*)]
+  \item $N_G(\interior(r_d))=\boundary(r_d)$;
+  \item\label{small_boundary} $N_G(\interior(r_d))\subseteq \bigcup_{i=0}^{d-1}(A_i\cap B_i)$; and
+  \item\label{small_interior} $\interior(r_d) = \bigcap_{i=0}^{d-1}(C_i\setminus\overline{C}_i)$.
+\end{enumerate}
+
+% it follows that the boundary of $r_d$ is exactly the set of vertices of $G$ incident to some vertex in $\interior(r_d)$.  That is, $N_G(\interior(r_d))=\boundary(r_d)$.  In particular,
+% $N_G(\interior(r_d))$ is contained in $\bigcup_{i=0}^{d-1}(A_i\cap B_i)$.  
+
+The following construction of a separation tree using balanced separations (or variants of this using balanced separators) are fairly standard.
+
+\begin{lem}\label{separation_tree}
+  Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then, for every $d\ge 0$, $G$ has a separation tree $T$ of height at most $h$ such that, for each $d\in\{0,\ldots,h\}$ and for each node $x\in V(T)$ of depth $d$, $|V(\interior(x))|\le n\cdot (\tfrac{2}{3})^d$ and $|\boundary(x)|\le da$.   
+\end{lem}
+
+\begin{proof}
+  The tree $T$ can be constructed recursively, as follows:  Fix a global value $N:=n\cdot(\tfrac{2}{3})^h$ that does not change during recursive invocations. Each recursive invocation takes a pair $(G',\partial)$ and the initial invocation is on the pair $(G,\emptyset)$.  When recursing on $(G',\partial)$, to construct a subtree $T'$ we apply the following rule:  If $|V(G')\setminus\partial|< N$, then return the empty tree. Otherwise, the root $r_0'$ of $T$ is $(G',A',B')$ where $(A',B')$ is a balanced separation of $G'-\partial$ of order at most $a$. The left child of $r_0'$ is the root of the tree obtained by recursing on $(G'[A'],A'\cap(\partial\cup B'))$ and the right child of $r_0'$ is the root of the tree obtained by recursing on $(G[B'],B'\cap(\partial\cup A'))$.
+
+  The bound $|\interior(x)|\le n\cdot (\tfrac{2}{3})^d$ follows from \ref{small_interior} and the bound $|\boundary(x)|\le da$ follows from \ref{small_boundary}.  
+  It is straightforward to verify that, for a node $x$ that is the root of a tree obtained by recursing on $(G',\partial)$, $\boundary(x)=\partial$. Therefore, $V(G')\setminus\partial=\interior(x)$.
+  The bound on the height $h$ of $T$ follows from the bound $|\interior(x)|\le n\cdot (\tfrac{2}{3})^d$ and the fact that the algorithm returns an empty tree when $|V(G')\setminus\partial|<N=n\cdot(\tfrac{2}{3})^h$.
+\end{proof}
+
+
+
+
+
+
+% When dealing with small graphs, we make use of the following easy lemma \pat{needs a reference}:
+
+% This lemma is no longer needed.
+% \begin{lem}\label{small_size}
+%   Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then $\tw(G)< \max\{a,a(1+\log_{3/2}(n/a))\}$.
+% \end{lem}
+
+% \begin{proof}
+%   The proof is by induction on $n$. If $n \le a$ then $\tw(G)< n\le a$.  Now assume $n> a$. Let $(A,B)$ be a balanced separation of $G$ of order at most $a$.  If $|A\setminus B|\le a$, then $\tw(G[A\setminus B])<a$.  If $|A\setminus B|> a$ then, by induction,
+%   \begin{align*}
+%     \tw(G[A\setminus B]) 
+%     & < \max\{a,a(1+\log_{3/2}(|A\setminus B|/a))\} \\
+%     & = a(1+\log_{3/2}(|A\setminus B|/a)) \\ 
+%     & \le a(1+\log_{3/2}(2n/3a)) \\ 
+%     & = a\log_{3/2}(n/a) \enspace . 
+%   \end{align*}
+%   By a symmetric argument, $\tw(G[B\setminus A])< a\log_{3/2}(n/a)$.  Let $(B_x:x\in V(T_A))$ be a minimum-width tree decomposition of $G[A\setminus B]$ and let $(B_x:x\in V(T_B))$ be a minimum-width tree decomposition of $G[B\setminus A]$.  Let $T$ be the tree obtained by creating a new node $y$ adjacent some node of $T_A$ and some node of $T_B$.  Let $C_y:=A\cap B$ and, for each node $x\in V(T_A)\cup V(T_B)$ let $C_x:=B_x\cup (A\cap B)$.  Then $(C_x:x\in V(T))$ is a tree decomposition of $G$ whose width is at most 
+%   \[
+%     \max\{\tw(G[B\setminus A]),\tw(G[A\setminus B])\}+a
+%     \le (a+1)\log_{3/2}(n/a) \enspace . \qedhere
+%   \]
+% \end{proof}
+
+
+\section{The Proof}
+
+\pat{In hindsight, the definition of $W$-sequence should have sets $W_0,\ldots,W_{\ell}$.  This would make many of the formulas cleaner.}
+
+The following definition replaces the notion of $W$-clouds in \cite{dvorak.norin:treewidth}.
+Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\subseteq W_1\subseteq\cdots\subseteq W_{\ell}\subseteq W_{\ell+1}\subseteq V(G)$ be a nested sequence of vertex subsets of $G$, and let $\Delta_i:=W_{i}\setminus W_{i-1}$ and $s_i:=|\Delta_i|$, for each $i\in\{0,\ldots,\ell+1\}$.  Then $W_0,\ldots,W_{\ell+1}$ is a \defin{$W$-sequence of width $w$} in $G$ if it satisfies the following conditions:
+\begin{enumerate}[nosep,nolistsep,label=\rm(\alph*),ref=(\alph*)]
+  \item $W_0=W$.\label{w_starts}
+  \item $s_i=w$, for each $i\in\{1,\ldots,\ell\}$.\label{uniform_size}
+  \item $G[W_i]$ contains $s_i$  pairwise vertex-disjoint $\Delta_i$-$W$ paths, for each $i\in\{0,\ldots,\ell+1\}$.\label{linked}
+  \item $s_{\ell+1}< w$.\label{remainder}  
+  \item There exists $Z\subseteq W_{\ell+1}$ with $|Z|=s_{\ell+1}$ that separates $V(G)\setminus W_{\ell}$ and $W$. \label{separated}
+\end{enumerate}
+
+\begin{lem}\label{w_sequence}
+  For any graph $G$, any $W\subseteq V(G)$ and any non-negative integer $w\le |W_0|$, there exists a $W$-sequence of width $w$ in $G$.
+\end{lem}
+
+\begin{proof}
+  Let $W_0:=W$ and suppose that sets $W_0,\ldots,W_{i}$ have been defined that satisfy \ref{w_starts}, \ref{uniform_size} and \ref{linked} for some $i\ge 0$.  (These conditions are trivially satisfied for $i=0$.)  We now show how to construct $W_{i+1}$.
+
+  Let $w'$ be the maximum number of pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$, let $r:=\min\{w,w'\}$, and let $P_1,\ldots,P_{r}$ be pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$.  For each $j\in\{1,\ldots,r\}$ let $v_j$ be the last vertex of $P_j$ contained in $V(G)\setminus W_i$ and let $P_j'$ be the subpath of $P_j$ that begins at $v_j$ and ends at the first vertex of $P_j$ contained in $W$.  Set $W_{i+1}:=\{v_1,\ldots,v_r\}$, which implies that $s_{i+1}=|W_{i+1}|=r$.  The paths $P_1',\ldots,P_{s_{i+1}}'$ certify that $W_0,\ldots,W_{i+1}$ satisfy \ref{linked}.
+
+  If $r=w$ then $W_{i+1}$ also satisfies \ref{uniform_size} so that we now have sets $W_0,\ldots,W_{i+1}$ that satisfy \ref{w_starts}, \ref{uniform_size} and \ref{linked}.  In this case we can continue to define $W_{i+2}$ as above.  
+  
+  If $r< w$ then we set $\ell:=i$. Since $r< w$, $s_{\ell+1}=r<w$, so this choice of $\ell$ satisfies \ref{remainder}.  Since $G$ does not contain $k:=r+1$ pairwise vertex-disjoint $(V(G)\setminus W_{i})$-$W$ paths, \cref{menger} implies that there exists $Z\subseteq V(G)$ with $|Z|\le r$ such that $G-Z$ has no $(V(G)\setminus W_{i})$-$W_0$ path.  Since the paths $P_1',\ldots,P_{r}'$ are pairwise vertex-disjoint  $(V(G)\setminus W_{\ell})$-$W_0$ paths, $Z$ must contain at least one vertex from each of these paths, so $|Z|\ge r$. Therefore, $r\le |Z|\le r$, so $|Z|=r=s_{\ell+1}$.  Since $V(P_j')\subseteq W_{\ell+1}$ for each $j\in\{1,\ldots,s_{\ell+1}\}$, $Z\subseteq W_{\ell+1}$.  Therefore, this choice of $Z$ satisfies \ref{separated}.  Therefore, the sequence $W_0,\ldots,W_{\ell+1}$ satisfies \ref{w_starts} (a condition on $W_0$), \ref{uniform_size} (conditions on $W_1,\ldots,W_{\ell}$), \ref{linked} (conditions on $W_0,\ldots,W_{\ell+1}$), \ref{remainder} (a condition $W_{\ell+1}$), and \ref{separated} (a condition on $W_{\ell+1}$).  Thus, $W_0,\ldots,W_{\ell+1}$ is a $W$-sequence of width $w$ in $G$.
+\end{proof}
+
+One should think of $W$ as the contents of a bag in a partially constructed tree decomposition of some larger graph $G^+$.  That is $W=V(G)\cap H$ where $(V(G),H)$ is a separation of $G^+$, we have already constructed a tree decomposition of $G^+[H]$, and some bag of this decomposition includes all the vertices in $W$.  The purpose of $W$-sequences is to find a separator $S$ that splits $G$ in such a way that each component of $G-(W\cup S)$ is incident to at most $|W|$ vertices in $W\cup S$.  We will use the next two lemmas construct a separator $S:=Z\cup S_1\cup\cdots\cup S_p$ where $S_i$ is a balanced separator of (some subgraph of) $G[W_{\ell+1}]$, for each $i\in\{1,\ldots,p\}$.
+
+
+\begin{lem}\label{uniform_balance}
+  Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$. Let $(A,B)$ be a separation of $G[W_{\ell+1}]$. Then
+  \[
+     |(A\setminus B)\cap W| \le \frac{|A\setminus B|}{\ell+1} + |A\cap B|
+  \]
+\end{lem}
+
+\begin{proof}
+  Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
+  We will lower bound the number of vertices in $B\cap W$, which is sufficient, since $|(A\setminus B)\cap W|=|W|-|B\cap W|$.  For each $j\in\{0,\ldots,\ell\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$, each of which contains exactly one vertex in $W$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)  
+  
+  The paths in $\mathcal{P}_0$ consist of a single vertex in $W$, which is also in $B$.
+  For $j\in\{1,\ldots,\ell+1\}$, since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $|A\cap B|$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-|A\cap B|$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\mathcal{P}_0\cup \bigcup_{j=1}^{\ell+1} \mathcal{P}_j'$. Then,
+  \[
+    |\mathcal{P}|=|\mathcal{P}_0|+\sum_{j=1}^{\ell+1}|\mathcal{P}_j'| \ge \sum_{j=0}^{\ell+1}|\mathcal{P}_j| - (\ell+1)\cdot|A\cap B|
+    = |B|-(\ell+1)\cdot|A\cap B| \enspace .
+  \]
+  Each path in $\mathcal{P}$ ends at a vertex in $B\cap W$.  A vertex $w\in B\cap W$ is \defin{full} if $w$ is the endpoint of $\ell+2$ paths in $\mathcal{P}$.  If $w$ is full, then $w$ is the endpoint of exactly one path in $\mathcal{P}'_j$ for each $j\in\{0,\ldots,\ell+1\}$.  Since $|\mathcal{P}'_{\ell+1}|\le s_{\ell+1}$, there are at most $s_{\ell+1}$ vertices in $W\setminus A$ that are full.  The full vertices of $W\setminus A$ account for at most $s_{\ell+1}\cdot (\ell+2)$ paths in $\mathcal{P}$. Each of the other vertices of $B\cap W$ accounts for at most $\ell+1$ paths in $\mathcal{P}$.  Therefore,
+  \begin{align*}
+     |B\cap W| 
+     & \ge \frac{s_{\ell+1}\cdot (\ell+2)}{\ell+2} + \frac{|\mathcal{P}|-s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+     & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-\frac{s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+     & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-s_{\ell+1}
+     - \frac{s_{\ell+1}}{\ell+1}\\
+     & = \frac{|\mathcal{P}|}{\ell+1}
+     - \frac{s_{\ell+1}}{\ell+1}\\
+     & \ge \frac{|B|-(\ell+1)\cdot|A\cap B|}{\ell+1}
+     - \frac{s_{\ell+1}}{\ell+1}\\
+     & = \frac{|W_{\ell+1}|-|A\setminus B|}{\ell+1}
+     - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+     & = \frac{s_{\ell+1}+(\ell+1)\cdot|W|-|A\setminus B|}{\ell+1}
+     - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+     % & = \frac{(\ell+1)\cdot|W|-|S|-(\ell+2)\cdot|A\cap B|}{\ell+1} \\
+     & = |W|-\frac{|A\setminus B|}{\ell+1}-|A\cap B|
+  \end{align*}
+  Therefore,
+  \[
+    |(A\setminus B)\cap W|=|W|-|B\cap W|\le \frac{|A\setminus B|}{\ell+1}+ |A\cap B| \enspace . \qedhere
+  \]
+\end{proof}
+
+
+% \begin{lem}\label{w_splitter}
+%   Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$. Let $i\in\{0,\ldots,\ell+1\}$ and let $(A,B)$ be a separation of $G[W_{i}]$ of order at most $a$. 
+%   \[ 
+%     |A\cap W_0|\le |W_0|-\frac{|B|}{i+1}+a \enspace .
+%   \]
+% \end{lem}
+
+% \begin{proof}
+%   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
+%   For each $j\in\{0,\ldots,\ell\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)  Since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $a$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-a$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\bigcup_{j=1}^{\ell} \mathcal{P}_j'$. Then,
+%   \[
+%     |\mathcal{P}|=\sum_{j=0}^{i}|\mathcal{P}_j'| \ge \sum_{j=0}^{i}|\mathcal{P}_j| - a(i+1)
+%     = |B|-a(i+1) \enspace .
+%   \]
+%   Each path in $\mathcal{P}$ ends at a vertex in $W_0\setminus A$.  Each vertex in $W_0\setminus A$ is an endpoint of at most one path in $\mathcal{P}'_j$, for each $j\in\{0,\ldots,i\}$.  Therefore, each vertex in $W_0\setminus A$ is the endpoint of at most $i+1$ paths in $\mathcal{P}$.  Therefore,
+%   \[
+%     |W_0\setminus A|\ge \frac{|\mathcal{P}|}{i+1} \ge \frac{|B|}{i+1}-a \enspace .
+%   \]
+%   Therefore, 
+%   \[
+%     |W_0\cap A|=|W_0|-|W_0\setminus A|\le |W_0|-\frac{|B|}{i+1}+a \enspace . \qedhere
+%   \]
+% \end{proof}
+
+
+% \begin{cor}\label{balanced_corollary}
+%   Let $G$ be a graph, let $W_0,\ldots,W_\ell,W_{\ell+1}$ be $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$, and let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$. 
+%   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$
+%   Let $(A,B)$ be a separation of $G[W_{\ell+1}]$ of order at most $a$.   Then 
+%   \[ 
+%     |A\cap W_0|\le |W_0|-\frac{|\Delta_{\ell+1}| + \ell w +|W_0|}{3(\ell+2)}+a \enspace .
+%   \]
+% \end{cor}
+
+% \begin{proof}
+%   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
+%   Since $(A,B)$ is balanced separation of $G[W_i]$, $|A\setminus B|\le \frac{2}{3}|W_{i}|$, so $|B|=|W_{i}|-|A\setminus B|\ge \tfrac{1}{3}|W_{i}|$.  Applying \cref{w_splitter} with $i=\ell+1$, we obtain
+%   \begin{align*}
+%     |A\cap W_0| 
+%     & \le |W_0|-\frac{|B|}{\ell+2}+a\\
+%     & \le |W_0|-\frac{|W_{\ell}|}{3(\ell+2)}+a \\
+%     & = |W_0|-\frac{\Delta_{\ell+1} + \ell w +|W_0|}{3(\ell+2)}+a \enspace . \qedhere
+%   \end{align*}
+    
+% \end{proof}
+
+% Setting $w:=|W_0|$ in \cref{balanced_corollary} we obtain:
+
+% \begin{cor}\label{uniform_balanced_corollary}
+%   Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$. 
+%   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$ 
+%   Let $(A,B)$ be a balanced separation of $G[W_{\ell+1}]$ of order at most $a$.  Then 
+%   \[ 
+%     |A\cap W_0|\le \left(\frac{2}{3}+\frac{1}{3(\ell+2)}\right)|W_0|+a \enspace .
+%   \]  
+% \end{cor}
+
+
+\begin{lem}\label{z_corollary}
+  Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$ and let $Z$ be as in the definition of $W$-sequences.
+  Then every $(V(G)\setminus W_{\ell},Z,W)$-separation $(X,Y)$ of $G$ has the property that, for any separation  
+  $(A,B)$ of $G[W_{\ell+1}]$,  
+  \[ 
+    |(A\setminus B)\cap X\cap Y|\le \frac{|A\setminus B|}{\ell+1}+ 2\cdot|A\cap B|  \enspace .
+  \]  
+\end{lem}
+
+\begin{proof}
+  Let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_\ell$.
+  From the definition of $W_0$-sequence, the set $Z\subseteq W_{\ell+1}$ of size $s_{\ell+1}:=|\Delta_{\ell+1}|$ that separates $V(G)\setminus W_\ell$ and $W$ in $G$.  Let $(X,Y)$ be an arbitrary $(V(G)\setminus W_\ell, W,Z)$-separation.
+
+  By the definition of $W$-sequence, $G[W_{\ell+1}]$ contains $|Z|=s_{\ell+1}$ pairwise vertex-disjoint $(V(G)\setminus W_{\ell}$)-$W_0$ paths $P_1,\ldots,P_{s_{\ell+1}}$. 
+  For each $j\in\{1,\ldots,s_{\ell+1}\}$, $P_j$ contains exactly one vertex in $Z$.  For each $j\in\{1,\ldots,s_{\ell+1}\}$, let $P'_j$ be the subpath of $P_j$ that begins at the unique vertex of $P_j$ in $Z$ and ends at the first vertex of $P_j$ in $W$.  
+
+  For each $z\in Z$, let $P_z$ be the path in $P'_1,\ldots,P'_{s_\ell+1}$ that begins at $z$. 
+  % For each $z\in Z$, $P_z$ is contained in $G[Y]$ since the first vertex of $P_z$ is in $Z\subseteq Y$, the last vertex of $P_z$ is in $W\subseteq Y$ and $P_z$ has no internal vertex in $Z=X\cap Y$.
+  The set $\{P_z:z\in Z\setminus B\}$ contains $|Z\setminus B|=|(A\setminus B)\cap X\cap Y|$ pairwise vertex-disjoint $Z$-$W$ paths.
+  % ,
+  % each of which is contained in $Y$.  
+  Since the paths in $\{P_z:z\in Z\setminus B\}$ are pairwise vertex disjoint, at most $|A\cap B|$ of these paths contain a vertex of $A\cap B$. Therefore, there are at least $|Z\setminus B|-|A\cap B|$ paths in $\{P_z:z\in Z\setminus B\}$ that are contained in $G[A\setminus B]$.  Each of these paths is contained in $G[A]$ and ends at a distinct vertex in $W\setminus B$.  Therefore,
+  \begin{align*}
+     |(A\setminus B)\cap X\cap Y|-|A\cap B| \le |W\setminus B| \le
+     \frac{|A\setminus B|}{\ell+1}+2\cdot |A\cap B| \enspace ,  
+  \end{align*}
+  where the second inequality is an application of \cref{uniform_balance}.  Adding $|A\cap B|$ to both sides of this inequality establishes the lemma.
+\end{proof}
+
+We are now ready to prove \cref{main_result}.
+
+\begin{proof}[Proof of \cref{main_result}]
+  Let $G$ be a graph and let $a:=\sep(G)$.  The proof is by induction on the number of vertices of $G$. We will prove the following stronger statement: For any graph $G$ and any non-empty subset $W\subseteq V(G)$ of size at most $ta$, $G$ has a tree decomposition $(B_x:x\in V(T))$ of width at most $(2t+1)a$ in which $W\subseteq B_x$ for some $x\in V(T)$.  
+
+ If $G$ has less than $ta$ vertices, then the proof is trivial. We use a tree $T$ with a single vertex $x$ with $B_x:=V(G)$.  We now assume that $|V(G)|\ge ta$. By adding vertices to $W$ arbitrarily, we may assume that $|W|=ta$. By \cref{w_sequence}, $G$ has a $W$-sequence $W_0,\ldots,W_{\ell+1}$ of width $|W|=ta$.
+ Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W$-sequence. Let $Z$ be the set of size $s_{\ell+1}<ta$ such that $Z$ separates $V(G)\setminus W_{\ell}$ and $W$ in $G$.  Let $(X,Y)$ be a $(V(G)\setminus W_{\ell},W,Z)$-separation. \pat{Don't forget to mention \cref{z_corollary} here.}
+ 
+ Since $|X\cap Y|=|Z|<|W|=ta$, the inductive hypothesis implies that $G[X]$ has a tree decomposition $(B_x:x\in V(T_1))$ of width at most $(t+1)a$ in which $X\cap Y\subseteq B_x$ for some $x_1\in V(T_1)$.
+
+ What remains is to construct a tree decomposition $(B_x:x\in V(T_0))$ of $G[Y]$ of width at most $(t+1)a$ in which some bag $B_{x_0}$ contains $W$ and some bag $B_{x_0'}$ contains $Z$.  Then the tree $T$ obtained by joining $T_0$ and $T_1$ using the edge $x_1x_0'$ gives the desired tree decomposition $(B_x:x\in V(T))$.  When $\ell=0$, we use the trivial tree decomposition in which $T_0$ has a a single node $x_0$ where $B_{x_0}:=W\cup Z$.  Since $W\cup Z\subseteq Y$ and $|Y|=|W_1|=|W|+|Z|< 2|W|=2ta$, this decomposition has width less than $2ta$. We now assume that $\ell\ge  1$.
+ 
+ % We distinguish between two cases, depending on the value of $\ell$.
+ 
+ % If $\ell=0$, then $T_0$ consists of a single edge $x_0x_0'$ with $B_{x_0}:=W$ and $B_{x_{0}'}:=Z$.  The tree decomposition $(B_x:x\in V(T_0))$ satisfies our requirements and has width less than $|W|=ta$.
+
+ % The root $r$ of $T_0$ will have the bag $B_r:=W\cup Z$.  (This already satisfies the requirement from the previous paragraph with $x_0:=x_0':=r$.)
+ Let $T_0$ be a separation tree of height at most $h$ (we will use $h=6$, below) obtained by applying \cref{separation_tree} to  $G[Y]$.  
+
+ \begin{clm} \label{cell_bound}
+   For each $d\in\{0,\ldots,h\}$ and each node $x$ of $T_0$ of depth $d$, 
+   \begin{equation}
+     |\interior(x)\cap (W\cup Z)|+|\boundary(x)| \le 2ta\cdot (\tfrac{2}{3})^{d-1}+4da \label{t_bound}
+   \end{equation}
+ \end{clm}
+
+  We observe that, for $d=6$ and $t\ge 34$, the bound in \eqref{t_bound} is at most $ta$.
+
+ \begin{clmproof}
+   Consider the separation $(A,B):=(\interior(x)\cup\boundary(x),W_{\ell+1}\setminus\interior(x))$ of $G[W_{\ell+1}]$.
+   By \cref{separation_tree}, $|A\cap B|=|\boundary(x)|\le da$ and $|A\setminus B|=|\interior(x)|\le |W_{\ell+1}|\cdot (\tfrac{2}{3})^{d}$.  By \cref{uniform_balance},
+   \begin{align*}
+     |\interior(x)\cap W| = |(A\setminus B)\cap W| & \le \frac{|A\setminus B|}{\ell+1} +  |A\cap B| \\
+     & \le (\tfrac{2}{3})^d\cdot \frac{|W_{\ell+1}|}{\ell+1} + da \\
+     & < (\tfrac{2}{3})^d\cdot \frac{|W|\cdot (\ell+1)+|Z|}{\ell+1} + da \\
+     & = (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|Z|}{\ell+1}\right) +  da \\
+     & \le (\tfrac{2}{3})^{d-1}\cdot|W| + da \enspace , \\
+   \end{align*}
+   since $\ell\ge 1$.
+   
+   By \cref{z_corollary},
+   \begin{align*}
+     |\interior(x)\cap Z| = |(A\setminus B)\cap Z| & \le \frac{|A\setminus B|}{\ell+1} + 2\cdot |A\cap B| \\
+     & \le (\tfrac{2}{3})^d\cdot \frac{|W_{\ell+1}|}{\ell+1} + 2da \\
+     & < (\tfrac{2}{3})^d\cdot \frac{|W|\cdot (\ell+1)+|Z|}{\ell+1} + 2da \\
+     & = (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|Z|}{\ell+1}\right) + 2da \\
+     & \le (\tfrac{2}{3})^{d-1}\cdot|W| + 2da \\
+   \end{align*}
+   Therefore
+   \begin{align*}
+      |\interior(x)\cap (W\cup Z)| + |\boundary(x)|  
+        & \le |\boundary(x)| + |\interior(x)\cap (W\cup Z))| + da\\
+        & \le |\interior(x)\cap (W\cup Z))| + da \\
+        & = |(A\setminus B)\cap (W\cup Z))| + da \\
+        & \le |(A\setminus B)\cap W| + |(A\setminus B)\cap Z))| + da \\
+        & \le 2ta\cdot(\tfrac{2}{3})^{d-1} + 4da \enspace . \qedhere
+   \end{align*}
+ \end{clmproof}
+
+ For each node $x=(G',A',B')$ of $T_0$, define $B_x:=(A'\cap B')\cup(\boundary(x)\cap Y)\cup(\interior(x)\cap (W\cup Z))$.     
+
+ \begin{clm}
+    $\mathcal{T}_0:=(B_x:x\in V(T_0))$ is a tree decomposition of $G[Z\cup W\cup (Y\cap (\bigcup_{x\in V(T_0)}\boundary(x))]$.
+ \end{clm}
+
+ \begin{clmproof}
+ \end{clmproof}
+ 
+ \begin{clm}
+    For each $d\in\{0,\ldots,h\}$ and each node $x\in V(T_0)$ of depth $d$,
+    \[
+      |B_x|\le \min\{2ta+(d+1)a -1, 2ta\cdot (\tfrac{2}{3})^{d-1} + 4da\} \enspace .
+    \]         
+ \end{clm}
+
+  \begin{clmproof}
+     Now consider an arbitrary node $x=(G',A',B')$ in $T_0$ whose depth is $d$.  By \cref{separation_tree}, we have 
+ \begin{equation} 
+   |B_x| \le |A'\cap B'| + |W\cup Z| + \boundary(x) \le 2ta + (d+1)a - 1 \label{tt_bound}
+  \end{equation}
+ for each node $x$ in $T$ whose depth is $d$. The bound in \eqref{tt_bound} is useful when $d\in\{0,1\}$. For larger $d$, \cref{cell_bound} gives
+ \begin{equation} 
+   |B_x| \le |A'\cap B'| + |\interior(x)\cap (W\cup Z)| + |\boundary(x)| \le 2ta\cdot (\tfrac{2}{3})^{d-1}+4da
+  \end{equation}
+  \end{clmproof}
+  
+ Note that the root $r_0$ of $R$ has $\interior(r_0)=W_{\ell+1}$ and $\boundary(r_0)=\emptyset$.  Therefore $B_{r_0}=(A\cap B)\cup (W_{\ell+1}\cap (W\cup Z))=(A\cap B)\cup W\cup Z$, where $(A,B)$ is a balanced separation of $G[W_{\ell+1}]$ of order $a$. (This already satisfies the requirement from the previous paragraph with $x_0:=x_0':=r_0$.)
+ 
+ 
+ 
+
+
+  Taking the minimum of the two preceding bounds for each $d\in\{0,\ldots,6\}$ and $t=34$, we obtain a maximum of $67a$.
+\end{proof}
+ 
+
+\bibliographystyle{plainurlnat}
+\bibliography{dnr}
+
+\end{document}
+
+
 
 
 
@@ -106,35 +449,125 @@ A \defin{flow} $(f,g)$ in a graph $G$ is a pair of functions $f:V(G)^2\to\R_{\ge
   \sum_{w\in N_G(v)} f(v,w) + g(v) \ge \sum_{w\in N_G(v)} f(w,v)
   \label{conservation_of_flow}
 \end{equation}
-Any vertex $v\in V(G)$ in which \cref{conservation_of_flow} does not hold with equality is called a \defin{sink}.  The \defin{congestion} of $\mathcal{F}$ at a vertex $v\in V(G)$ the quantity on the left-hand-side of \eqref{conservation_of_flow}.  The \defin{congestion} of $\mathcal{F}$ is the maximum congestion of $\mathcal{F}$ at any vertex in $G$.  Without loss of generality we consider only flows in which at least one of $f(v,w)$ or $f(w,v)$ is zero for each edge $vw\in E(G)$.  (Otherwise, we can consider the modified flow $(f',g)$ where $f'(v,w)=f(v,w)-\min\{f(v,w),f(w,v)\}$ for each $vw\in E(G)$.)  The \defin{total supply} of $\mathcal{F}$ is $\sum_{v\in V(G)} g(v)$.
+Any vertex $v\in V(G)$ in which \eqref{conservation_of_flow} does not hold with equality is called an \defin{$\mathcal{F}$-sink}.  The \defin{congestion} of $\mathcal{F}$ at a vertex $v\in V(G)$ is the quantity on the left-hand-side of \eqref{conservation_of_flow}.  The \defin{congestion} of $\mathcal{F}$ is the maximum congestion of $\mathcal{F}$ at any vertex in $G$.  The \defin{total supply} of $\mathcal{F}$ is $\sum_{v\in V(G)} g(v)$.
 
+A \defin{pseudocycle} in a graph $G$ is a sequence of $\ell\ge 2$ vertices $v_0,\ldots,v_{\ell-1}$ of $G$ such that $v_iv_{(i+1)\bmod\ell}\in E(G)$ for each $i\in\{0,\ldots,\ell-1\}$.
+Without loss of generality we consider only flows in which, for each pseudocycle $v_0,\ldots,v_{\ell-1}$ of $G$, there exists at least one $i\in\{0,\ldots,\ell-1\}$ such that $f(v_i,v_{(i+1)\bmod\ell})=0$.  (Otherwise, we can reduce $f(v_i,v_{(i+1)\bmod \ell})$ by $\min\{f(v_j,v_{(j+1)\bmod\ell}):j\in\{0,\ldots,\ell-1\}\}$ for each $i\in\{0,\ldots,\ell-1\}$.  Note that this implies that for any edge $vw$ of $G$, at least one of $f(v,w)$ or $f(w,v)$ is equal to $0$.
 
-For a graph $G$ and a subset $W\subseteq V(G)$, a \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only sinks of $\mathcal{F}$ are the vertices in $W$.  \citet{dvorak.norin:treewidth} make the following observation:
+Any flow $\mathcal{F}:=(f,g)$ in $G$ defines a directed graph $\mathdefin{G_{\mathcal{F}}}$ that includes the directed edge $vw$ if and only if $f(v,w)>0$ and includes a vertex $v$ of $G$ if and only if $g(v)\neq 0$ or there exists an edge $vw$ of $G$ such that $f(v,w)\neq 0$ or $f(w,v)\neq 0$.  A vertex $v$ of $G_\mathcal{F}$ is \defin{$\mathcal{F}$-saturated} if $g(v)=1$, otherwise $v$ is \defin{$\mathcal{F}$-unsaturated}.  By the assumptions of the previous paragraph $G_{\mathcal{F}}$ is always acyclic.
+
+Let $G$ be a graph and let $W$ be a subset of $V(G)$.  A \defin{$W$-cloud} of $G$ is a flow $\mathcal{F}:=(f,g)$ in which $g(v)\le 1$ for each $v\in V(G)$ and the only $\mathcal{F}$-sinks of $G$ are in $W$.  A vertex $v$ of $G_{\mathcal{F}}$ is \defin{$\mathcal{F}$-saturated} if $g(v)=1$. \citet{dvorak.norin:treewidth} make the following observation, which is a  consequence of Menger's Theorem:
 
 \begin{obs}\label{flow_vs_cut}
   For any graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $s$ and congestion at most $\alpha$ if and only if there is no separation $(X,Y)$ of $G$ with $W\subseteq Y$ such that $|Y\setminus X| + \alpha|X\cap Y| < s$.
 \end{obs}
 
-We will use \cref{flow_vs_cut} with $s:=n:=|V(G)|$.  In this setting,
-$|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ becomes $n-|X|+\alpha|X\cap Y|< n$.  Rewriting this inequality yields the following special case of \cref{flow_vs_cut}:
+The arguments used in the proof of the following lemma are similar to those used by \citet{dvorak.norin:treewidth} in their discussion of strongly $\alpha$-tame $W$-clouds.
 
-\begin{obs}\label{flow_vs_cut_n}
-  For any $n$-vertex graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $n$ and congestion at most $\alpha$ if and only if there is no separation $(X,Y)$ of $G$ with $W\subseteq Y$ such that $|X|/|Y\setminus X| > \alpha$.
-\end{obs}
+\begin{lem}\label{tame_w_cloud}
+  If $G$ has a $W$-cloud with total supply $s\ge |W|$ and congestion $\alpha\ge 1$ then $G$ has a $W$-cloud $\mathcal{F}$ with total supply $s$ and congestion at most $\alpha$ in which the number of $\mathcal{F}$-saturated vertices in $G_\mathcal{F}$ is at least $\lfloor|V(G_{\mathcal{F}})|/2\rfloor$.
+\end{lem}
+
+\pat{We don't use the assumption $s\ge |W|$ in the proof, but we could use it to show that each vertex in $W$ is saturated.  Let's see if that's helpful later.}
+
+\begin{proof}
+  Let $\mathcal{F}$ be a $W$-cloud in $G$ with total supply $s$ and congestion $\alpha$.  Let $\sigma$ be an ordering of the vertices in $G_\mathcal{F}$ in which a vertex $u$ appears before a vertex $v$ if $G_{\mathcal{F}}$ contains a directed path from $u$ to $v$.
+
+  Suppose that $G_{\mathcal{F}}$ contains a vertex that is unsaturated and has in-degree greater than $0$.  Let $w$ be the first such vertex that appears in $\sigma$.
+
+  Since $G_{\mathcal{F}}$ is acyclic, it contains a directed path $v_0,\ldots,v_\ell$ from a vertex $v_0$ with in-degree $0$ to $v_\ell:=w$. Let $\Delta:=\min(\{f(v_{i-1},v_i):i\in\{1,\ldots,\ell\}\}\cup\{(1-g(w))\})$.
+  For each $i\in\{1,\ldots,\ell\}$, reduce $f(v_{i-1},v_i)$ by $\Delta$, reduce $g(v_0)$ by $\Delta$, and increase $g(w)$ by $\Delta$.  This does not change the total supply, does not increase the congestion, but
+  \begin{enumerate}[nosep,nolistsep]
+     \item results in the removal of an edge from $G_\mathcal{F}$ (if $\Delta=f(v_{i-1},v_i)$ for some $i\in\{1,\ldots,\ell\}$); or
+     \item makes $w$ a $\mathcal{F}$-saturated vertex and does not increase the number of edges in $G_\mathcal{F}$.
+  \end{enumerate}
+   In the second case, this operation decreases the number of vertices of $G_{\mathcal{F}}$ that have in-degree $0$ and are not $\mathcal{F}$-saturated.
+   By repeating this operation as long as $G_{\mathcal{F}}$ has an vertex with in-degree $0$ that is not $\mathcal{F}$-saturated we eventually obtain a $W$-cloud with total supply $s$ and congestion at most $\alpha$ in which any vertex of $G_{\mathcal{F}}$ that is not $\mathcal{F}$-saturated has in-degree $0$.
+
+\hussein{We might need to add that the flow still reach W in case 1 (what happen in 1 is safe), I will write a small proof. That follows from $w$ being the first unsaturated vertex.}
+
+   Now suppose that $W$ contains two unsaturated vertices $w_1$ and $w_2$. Without loss of generality, assume that $g(u_1)\ge g(u_2)$.  Let $\Delta:=\min\{g(w_2),1-g(w_1)\}$.  Decrease $w_2$ by $\Delta$ and increase $w_1$ by $\Delta$.  This either increases the number of $\mathcal{F}$-saturated vertices in $W$ (if $\Delta=1-g(w_1)$) or decreases the number of vertices in $G_\mathcal{F}$ (if $\Delta=g(w_2)$).  By repeating this operation exhaustively, we obtain a $W$-cloud in which $G_{\mathcal{F}}$ contains at most one vertex of $W$ that is not $\mathcal{F}$-saturated.
+
+   Next, suppose that some $\mathcal{F}$-saturated vertex $v$ of $G_\mathcal{F}$ has two incoming edges $u_1v$ and $u_2v$ and neither $u_1$ nor $u_2$ is $\mathcal{F}$-saturated.  Without loss of generality, suppose that $g(u_1)\le g(u_2)$, and let $\Delta=\min\{1-g(u_1),g(u_2)\}$.  Decrease $g(u_2)$ and $f(u_2,v)$ by $\Delta$ and increase $g(u_1)$ and $f(u1,v)$ by $\Delta$.  This does not change the total supply of $\mathcal{F}$.  It may increase the congestion of $u_1$ but, since $u_1$ has in-degree $0$ in $G_\mathcal{F}$, the congestion at $u_1$ is at most $g(u_1)\le 1\le \alpha$.  Thus, this does not increase the congestion of $\mathcal{F}$.  On the other hand, this either
+   \begin{enumerate}[nosep,nolistsep]
+     \item results in the removal of a vertex and edge from $G_\mathcal{F}$ (if $\Delta=f(v_{u_2},w)$); or
+     \item makes $u_1$ an $\mathcal{F}$-saturated vertex (if $\Delta=1-g(u_1)$) and does not increase the number of vertices in $G_\mathcal{F}$.
+  \end{enumerate}
+  In the second case, this operation increases the number of vertices of $G_{\mathcal{F}}$ that are $\mathcal{F}$-saturated.  By repeating this operation exhaustively, we obtain a $W$-cloud in which each saturated vertex $v$ in $G_{\mathcal{F}}$ has at most one incoming edge $uv$ in which $u$ is not $\mathcal{F}$-saturated.
+
+   Now, any vertex $u$ of $G_{\mathcal{F}}$ that is not $\mathcal{F}$-saturated is either the unique such vertex in $W$ or has in-degree $0$ and is incident to an edge $uv$ where $v$ is $\mathcal{F}$-saturated. Each $\mathcal{F}$-saturated vertex $v$ is adjacent to at most one such edger $uw$. Therefore, the number of $\mathcal{F}$-saturated vertices in $G_{\mathcal{F}}$ is $k$, then $|V(G)|\le 2k+1$, and $k\ge\lfloor |V(G)|/2\rfloor$.
+\end{proof}
+
+
+
+
+
+% We will use \cref{flow_vs_cut} with $s:=n:=|V(G)|$.  In this setting,
+% $|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ becomes $n-|X|+\alpha|X\cap Y|< n$.  Rewriting this inequality yields the following special case of \cref{flow_vs_cut}:
+
+% \begin{obs}\label{flow_vs_cut_n}
+%   For any $n$-vertex graph $G$ and any $W\subseteq V(G)$, there exists a $W$-cloud of $G$ with total supply $n$ and congestion at most $\alpha$ if and only if there is no separation $(X,Y)$ of $G$ with $W\subseteq Y$ such that $|X|/|Y\setminus X| > \alpha$.
+% \end{obs}
 
 \section{The Proof}
 
-[TODO: I didn't work out the constants. Think of something like ${C}=100$ and ${c}=10$]
+% [TODO: I didn't work out the constants. Think of something like ${C}=100$ and ${c}=10$]
 
-\begin{lem}\label{balanced_on_w}
-  Let
-  $n\ge {C}/{c}$, let $G$ be an $n$-vertex graph, let $W\subseteq V(G)$, let $(A,B)$ be a balanced separation of $G$ of order $a$, and let $\mathcal{F}$ be a $W$-cloud of $G$ with total supply $n$ and congestion at most $\alpha:=n/(\beta|W|)$.  Then
-  \[
-  \max\{|A\cap W|,|B\cap W|\}\le \left(1-\tfrac{\beta}{3}\right)|W|+2a \enspace .
-  \]
+% \hussein{Here, $(A, B)$ intersects $W$, because if it is not, then it contradicts $\alpha$?}
+% \pat{$A\cap B$ may or may not intersect $W$.  For example, $W$ might be an independent set, in which case there is no reason $A\cap B$ needs to intersect $W$.}
+
+% \begin{lem}\label{balanced_on_w}
+%   Let $\beta >0$,
+%   let $n\ge 1/\beta$, let $G$ be an $n$-vertex graph, let $W\subseteq V(G)$, let $(A,B)$ be a balanced separation of $G$ of order $a$, and let $\mathcal{F}$ be a $W$-cloud of $G$ with total supply $n$ and congestion at most $\alpha:=n/(\beta|W|)$.  Then
+%   \[
+%   \max\{|A\cap W|,|B\cap W|\}\le \left(1-\tfrac{\beta}{3}\right)|W|+2a \enspace .
+%   \]
+% \end{lem}
+
+% \begin{proof}
+%   Let $(f,g):=\mathcal{F}$.  Since the total supply of $\mathcal{F}$ is $n$, $g(v)=1$ for each $v\in V(G)$.  We construct a flow $\mathcal{F}':=(f',g')$ from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  More precisely, $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  \pat{TODO: Explain how to reduce flow on other edges and supply on other vertices to reestablish \eqref{conservation_of_flow}}.
+
+%   Observe that the total supply in $\mathcal{F}'$ is equal to the total supply in $\mathcal{F}$' minus the total congestion at the vertices in $A\cap B$.   Since each vertex in $A\cap B$ has congestion at most $\alpha$, the total supply in $\mathcal{F}'$ is at least $n-\alpha|A\cap B|$.  Since $g'(v)\le g(v)$ for all for $v\in V(G)$, this implies that, for any $S\subseteq V(G)$,
+%   \[
+%     \sum_{v\in S} g'(v)\ge \sum_{v\in S}g(v) - \alpha|A\cap B| = |S| - \alpha a \enspace .
+%   \]
+
+%   Now consider the graph $G_A:=G-B$.  Since $f'(v,w)=0$ for any edge $vw$ of $G$ with an endpoint in $A\cap B$, the $W$-cloud $\mathcal{F}'$ of $G$ induces a $(W-B\usepackage[normalem]{ulem})$ cloud $\mathcal{F}'_A$ in $G_A$.  The total supply of $\mathcal{F}'_A$ is
+%   \begin{equation}
+%      \sum_{v\in V(G_A)} g'(v) \ge |A\setminus B| -\alpha a \ge \left(\frac{n}{3}-a\right) - \frac{an}{\beta|W|} \label{total_supply_a}
+%      % = \left(\frac{C-c}{3C}\right)n - a = \left(\frac{1}{3}-\frac{c}{C}-\frac{a}{n}\right)n
+%      % = \left(\frac{1-\epsilon}{3}\right)n
+%   \end{equation}
+
+%   Since the congestion of $\mathcal{F}'$ is at most $\alpha$, the congestion of $\mathcal{F}'_A$ is at most $\alpha$.  In particular, the congestion at each vertex of $V(G_A)\cap W$ is at most $\alpha$.  Therefore,
+%   \[
+%      \frac{n}{\beta|W|} = \alpha =  \ge \frac{\sum_{v\in V(G_A)} g'(v)}{|V(G_A)\cap W|}
+%   \]
+%   Substituting \cref{total_supply_a} and rewriting this inequality yields
+%   \begin{align*}
+%     |V(G_A)\cap W|
+%     & \ge \left(\left(\frac{n}{3}-a\right)-\frac{an}{\beta|W|}\right)\cdot\frac{\beta|W|}{n} \\
+%     & = \frac{\beta|W|}{3} - a\left(1+\frac{\beta|W|}{n}\right) \\
+%     & \ge \frac{\beta|W|}{3} - 2a \enspace ,
+%   \end{align*}
+%   since $|W|\le n$ and $\beta\le 1$.
+%   Since $B=V(G)\setminus V(G_A)$,
+%   \begin{align*}
+%     |B\cap W|
+%       & = |(V(G)\cap W)\setminus(V(G_A)\cap W)| \\
+%       & = |W|-(V(G_A)\cap W)| \\
+%       & \le |W|-\frac{\beta|W|}{3} + 2a \\
+%       & = \left(1-\tfrac{\beta}{3}\right)|W| + 2a \enspace . \qedhere
+%   \end{align*}
+% \end{proof}
+
+\begin{lem}\label{number_lemma}
+    Let $W$ and $M$ be positive numbers and
+    let $x_1,\ldots,x_r$ be a sequence of positive numbers with $0<x_1\le x_2\le \cdots\le x_r\le M$ and $\sum_{i=1}^r x_i=W$.  Then there exists $j\in\{1,\ldots,r\}$ such that $\sum_{i=1}^j x_i\le \tfrac{1}{2}(W+M)$ and $\sum_{i=j+1}^r x_i\le \tfrac{1}{2}(W+M)$. 
 \end{lem}
 
 \begin{proof}
+<<<<<<< HEAD
   \ [TODO: This proof uses some old notation.  In the new language, $\beta:=c/C$. Update.]
   Let $(f,g):=\mathcal{F}$.  Since the total supply of $\mathcal{F}$ is $n$, $g(v)=1$ for each $v\in V(G)$.  We construct a flow $\mathcal{F}':=(f',g')$  from $\mathcal{F}$ by preventing any flow from entering or leaving vertices in $A\cap B$.  More precisely, $g'(v):=0$, $f'(v,w):=0$, and $f'(w,v):=0$ for each $v\in A\cap B$ and each $w\in N_G(v)$.  [TODO: Explain how to reduce flow on other edges and and supply on other vertices.]   Since each vertex in $A\cap B$ has congestion at most $\alpha$, the flow $\mathcal{F}'$ has total supply at least $n-\alpha|A\cap B|$.  Since $g'(v)\le g(v)$ for all for $v\in V(G)$, this implies that, for any $S\subseteq V(G)$, $\sum_{v\in S} g'(v)\ge \sum_{v\in S}g(v) - \alpha|A\cap B|\ge |S| - \alpha a$.
 
@@ -170,140 +603,600 @@ $|Y\setminus X|=n-|X|$. Thus, the condition $|Y\setminus X|+\alpha|X\cap Y|<s$ b
       & \le |W|-\left(\frac{1-\epsilon}{3c}\right)Ca \\
       & = \left(1-\frac{1-\epsilon}{3c}\right)Ca \qedhere
   \end{align*}
+=======
+  % If $\Delta\ge w$ then the lemma is trivially satisfied by taking $j=r$. Thus, we may assume that $0<\Delta<w$. By the symmetry between $\Delta$ and $w-\Delta$, we may assume without loss of generality, that $\Delta\le w/2$.
+  Select the unique $j'\in\{1,\ldots,r\}$ such that $\sum_{i=1}^{j'-1}x_i\le W/2$ and $\sum_{i=j'+1}^r x_i<W/2$.  Then, $\sum_{i=1}^{j'} x_i+\sum_{i=j'}^r x_i = W+ x_{j'}\le W+M$, so $\sum_{i=1}^{j'} x_i\le \tfrac{1}{2}(W+M)$ or $\sum_{i=j'}^{r} x_i\le \tfrac{1}{2}(W+M)$.  In the former case, taking $j=j'$ satisfies the conditions of the lemma.  In the latter case, taking $j=j'-1$ satisfies the conditions of the lemma.
+>>>>>>> a39e9f7cf28833ee2c94a690bd1fe753b7c4df5a
 \end{proof}
 
-\begin{lem}
-  Let $a\ge 1$, let $G$ be a graph with $\sep(G)\le a$, let $W\subseteq V(G)$, and let $(X,Y)$ be a separation of $G$ such that $W\subseteq Y$ and $|X|/|X\cap Y| > n/(\beta|W|)$.  Then there exists a separation $(A,B)$ of $G$ of order at most $\beta|W|+a$ such that
-  \[
-  \max\{|A\cap W|,|B\cap W|\}\le \left(1-\tfrac{\beta}{3}+\tfrac{\beta^2}{3}\right)|W| \enspace .
-  \]
+
+
+% \pat{Second Try}
+% \noindent \hussein{I think in $A1$, the separation can have order $ar$, but in $A2$ it has order $(a + \Delta)r$.}
+\begin{lem}\label{amplifier}
+  Let $H$ be a graph with $\sep(H)\le a$ and let $W\subseteq V(H)$. For any integers $r\ge 0$ and $\Delta$ with $\Delta\le |W|/2$, there exists a separation $(P,Q)$ of $H$ such that
+  \begin{enumerate}[nosep,nolistsep,label=\rm(A\arabic*),ref=\rm A\arabic*]
+    \item\label[p]{splits_w} $|P\cap Q|\le ar$ and $\max\{|(P\setminus Q)\cap W|,|(Q\setminus P)\cap W|\}\le \max\{\tfrac{2}{3}|W|,|W|-\Delta\}$; or 
+    \item\label[p]{smaller_y} $|P\cap Q|\le ar +\Delta$,  $W\subseteq Q$, and $|Q|\le (\tfrac{2}{3})^r\cdot |V(H)|+ ar + \Delta$.
+  \end{enumerate}
 \end{lem}
 
 \begin{proof}
-  Among all separations $(X,Y)$ that satisfy the conditions of the lemma, choose one that maximizes $|X|$.    Let $W':=W\setminus X$.
-  Create a new graph $G'\supseteq G[Y\setminus X]$ as follows:  Let
-  \[
-    n':=n\left(1-\frac{|W\cap X|}{\beta|W|}\right) \enspace .
-  \]
-  Add a set $L$ of $n'-|Y\setminus X|$ degree-$1$ vertices to $G[Y\setminus X]$ adjacent to the vertices in $N_G(X)$, and distributed as equally as possible.  For each $v\in N_G(X)$, let $L_v$ be the subset of $L$ adjacent to $v$.
+  The proof is by induction on $r$. When $r=0$, taking $(P,Q)=(\emptyset,V(H))$ satisfies condition \cref{smaller_y}.  Now assume $r\ge 1$.  Let $(A,B)$ be a balanced separation of $H$ of order at most $a$.  Without loss of generality, suppose $|A\cap W|\le |B\cap W|$.  Since $|(A\setminus B)\cap W|+|(B\setminus A)\cap W|= |W|+|A\cap B\cap W|\le |W|$, we have $|(A\setminus B)\cap W|\le \tfrac{1}{2}|W|< \tfrac{2}{3}|W|$.  If $|(B\setminus A)\cap W|\le |W|-\Delta$, then the separation $(P,Q):=(A,B)$ satisfies \cref{splits_w} and we are done.  We now assume that $|(B\setminus A)\cap W|>|W|-\Delta$.
 
-  Let
-  \[
-    \beta' = \frac{\beta|W|n'}{|W'|n}
-  \]
-  We will show that $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W'|)=n/(\beta|W|)$.  By \cref{flow_vs_cut_n}, it suffices to show that $G'$ has no separation $(X',Y')$ with $W'\subseteq Y'$ and $|X'|/|X'\cap Y'|>n'/(\beta|W'|)$.  Assume for the sake of contradiction that such a separation exists and, among all such separations, choose one that maximizes $|X'|$ and, subject to this, minimizes $|Y'|$.
-
-  \begin{clm}\label{no_l_in_y}
-    $L\cap Y'=\emptyset$.
-  \end{clm}
-
-  \begin{clmproof}
-    Let $v$ be a vertex in $N_G(X)$. Since $L=\bigcup_{v\in N_G(X)}L_v$, we need only show that $L_v\cap Y'=\emptyset$.
-    Let $v'$ be an arbitrary vertex in $L_v$.  If $\{v,v'\}\subseteq X'$, then the separation $(X',Y'\setminus\{v'\})$ contradicts the minimality of $Y'$ in the choice of $(X',Y')$.  If $v\in X'$ and $v'\not\in X'$ then the separation $(X'\cup\{v'\},Y'\setminus\{v'\})$ contradicts the maximality of $X'$ in the choice of $(X',Y')$.
-
-    Thus, $v\not\in X'$.  Let $X'':=X'\setminus L_v$, consider the separation $(X'',Y')$ and observe that
-    \[
-      \frac{X''}{|X''\cap Y'|}=\frac{|X'\setminus L_v|}{|(X'\setminus L_v)\cap Y'|}
-     = \frac{|X'|-|X'\cap L_v|}{|X'\cap Y'|-|X'\cap L_v|} > \frac{n'}{\beta|W'|}
-    \]
-    since $(a-x)/(b-x) \ge a/c$ for any $a,b,x$ with $0\le x<b<a$.  Then the separation $(X''',Y'''):=(X''\cup L_v\cup \{v\},Y'\setminus L_v)$ satisfies
-    \[
-      \frac{|X'''|}{|X'''\cap Y'''|} =
-      \frac{|X''\cup L_v\cup \{v\}|}{|(X''\cup L_v\cup\{v\})\cap (Y'\setminus L_v)|} = \frac{|X''|+n'/(\beta|W'|)+1}{|X''\cap Y'|+1} > \frac{n'}{\beta|W'|}
-    \]
-    since $(a+m)/(b+1)\ge m$ for any $m>0$ and any $a,b>0$ such that $a/b\ge m$.  Therefore, the separation $(X''',Y''')$ contradicts the maximality of $|X'|$ in the choice of $(X',Y')$.
-  \end{clmproof}
-
-  \begin{clm}
-    $N_G(X)\subseteq X'$.
-  \end{clm}
-
-  \begin{clmproof}
-    It must be the case that $N_{G'}[L]\subseteq X'$ since, otherwise, there would be an edge $vv'$ of $G'$ with $v\in N_{G'}(L)$ and $v'\in L$ such that $\{v,v'\}\not\subseteq X'$ and $\{v,v'\}\not\subseteq Y'$.  This would contradict the fact that $(X',Y')$ is a separation of $G$.
-    Therefore $N_G(X)\subseteq N_{G'}(L)\subseteq X'$.
-  \end{clmproof}
-
-  Let
-  \[
-    \widehat{X}:=X\cup X'\setminus L \text{ and let } \widehat{Y}:=Y'\cup W \enspace .
-  \]
-  \begin{clm}
-    $(\widehat{X},\widehat{Y})$ is a separation of $G$.
-  \end{clm}
-
-  \begin{clmproof}
-    We first show that $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
-    The vertices in $\widehat{X}\cup\widehat{Y}$ are contained $X\cup V(G')\subseteq V(G)\cup L$.
-    By definition $L\cap \widehat{X}=\emptyset$. By \cref{no_l_in_y}, $L\cap \widehat{X}=\emptyset$. Thus $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
-    Next we show that $\widehat{X}\cup\widehat{Y}\supseteq V(G)$.  Since $X\cup Y=V(G)$, each vertx of $G$ is in $X$ or is in $Y\setminus X$.
-    For each $v\in X$, $v\in \widehat{X}$.  For each $v\in Y\setminus X$,
-    \begin{enumerate*}[label=(\alph*)]
-      \item $v\in X'$, in which case $v\in \widehat{X}$;
-      or \item $v\in Y'$ in which case $v\in\widehat{Y}$.
-    \end{enumerate*}
-    Thus $V(G)\subseteq \widehat{X}\cup\widehat{Y}\subseteq V(G)$, so $\widehat{X}\cup\widehat{Y}= V(G)$.
-
-    What remains is to verify that for each edge $vw$ of $G$, $\{v,w\}\subseteq \widehat{X}$ or $\{v,w\}\subseteq\widehat{Y}$.
-    Without loss of generality (at least) one of the following applies:
-    \begin{enumerate}[nosep,nolistsep,label=(\roman*)]
-      % \item $v\in X\cap W$: In this case $v\in\widehat{X}$ and $v\in\widehat{Y}$.
-      \item $v\in X$: In this case $v\in\widehat{X}$ and $w\in N_G[X]\subseteq\widehat{X}$.
-      \item $v\in N_G(X)$: In this case $w\in X$ or $w\in Y\setminus X$.  In the former case $v\in N_G(X)\subseteq X$ and $w\in X\subseteq \widehat{X}$. In the latter case $v,w\in Y\setminus X$.  Since $(X',Y')$ is a separation of $G'\supseteq G[Y\setminus X]$, either $v,w\in X'\subseteq \widehat{X}$ or $v,w\in Y'\subseteq\widehat{Y}$. \qedhere
-    \end{enumerate}
-  \end{clmproof}
-
-  Next we show that $(\widehat{X},\widehat{Y})$ contradicts the maximality of $X$ in the choice of $(X,Y)$.
-
-  \begin{clm}
-    $|\widehat{X}|/|\widehat{X}\cap\widehat{Y}|>n/(\beta|W|)$.
-  \end{clm}
-
-  \begin{clmproof}
-    Since $Y'\subseteq Y\setminus X$, $X\cap \hat{Y}=X\cap W$. Since $X'\subseteq Y\setminus X$,
-    \[
-      X'\cap \widehat{Y}=X'\cap (Y'\cup W)=X'\cap (Y'\cup (W\cap X))=X'\cap Y' \enspace .
-    \]
-    Therefore, $|\widehat{X}\cap\widehat{Y}|=|X'\cap Y'|+|X\cap W|$.
-    On the other hand,
-    \begin{align*}
-      |\widehat{X}|
-        & = |X| + |X'| - |L| \\
-        & = |X| + |X'| - (n'-|Y\setminus X|) \\
-        & = |X| + |X'| - (n'-(n-|X|)) \\
-        & = |X'| - (n'-n)) \\
-        & = |X'| + \frac{|W\cap X|n}{\beta|W|} \\
-    \end{align*}
-    Now recall that
-    \begin{align*}
-      \frac{|X'|}{|X'\cap Y'|}
-        & >  \frac{n'}{\beta'|W'|} = \frac{n}{\beta|W|} \enspace .
-    \end{align*}
+  Consider the graph $H':=H[B\setminus A]$.  Let $W':=W\setminus A$ and let $\Delta':=\Delta-|A\cap W|$. Notice that $|W'|=|W\setminus A|=|W|-|A\cap W|$. Therefore $\Delta' \le \tfrac{2}{3}|W|-|A\cap W|\le \tfrac{2}{3}(|W|-|A\cap W|)=\tfrac{2}{3}|W'|$.  Therefore, $H'$, $W'$, $\Delta'$, and 
+  $r':=r-1$ satisfy the conditions on $H$, $W$, $\Delta$, and $r$ (respectively) required to apply the lemma.  By the inductive hypothesis, there exists a separation $(P',Q')$ of $H'$ of order at most $a(r-1)$, which satisfies \cref{splits_w} or \cref{smaller_y} with $H$, $W$, $\Delta$, and $r$ replaced by $H'$, $W'$, $\Delta'$, and $r'$, respectively. 
+  
+  % Consider the separation $(P,Q):=(A\cup P',Q')$. The order of $(P,Q)$ is
+  % \begin{align*}
+  %   |P\cap Q| & \le |A\cap Q'|+|P'\cap Q'| \\
+  %   & \le |A\cap Q'|+ (a+\Delta)(r-1) \\
+  %   & \le |A\cap (B\cup W)|+(a+\Delta)(r-1)\\
+  %   & = |A\cap B| + |A\cap (W\setminus B)|+(a+\Delta)(r-1)\\
+  %   & = |A\cap B| + |W\setminus B|+(a+\Delta)(r-1)\\
+  %   & \le (a+\Delta)r \enspace .
+  % \end{align*}
 
 
-    Therefore,
-    \begin{align*}
-      \frac{|\widehat{X}|}{|\widehat{X}\cap\widehat{Y}|}
-        & = \frac{|X'| + \frac{|W\cap X|n}{\beta|W|}}{|X'\cap Y'|+|X\cap W|}  \\
-        & > \frac{n}{\beta|W|} \qedhere
-    \end{align*}
-  \end{clmproof}
-  Since $|\widehat{X}|>|X|$, this contradicts the maximality of $|X|$ in the choice of $(X,Y)$
-
-  Thus $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W|)=n/(\beta|W|)$.  Let $(A',B')$ be a balanced separation of $G[X\setminus Y]$ of order at most $a$.  For each vertex $v\in V(G')\setminus V(G)$, add $v$ to $A'$ if the unique neighbour of $v$ is in $A'$, otherwise add $v$ to $B'$.  This gives separation of $G'$ whose order is at most $a$.  By \cref{balanced_on_w}, $|A'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$ and $|B'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$.
-
-  Finally, let $A:=X\cup A'\cap V(G)$ and let $B:=(X\cap Y)\cup B'\cap V(G)$.  Then $(A,B)$ is a separation of $G$ with
-  \[
-    |A\cap B|\le |X\cap Y|+|A'\cap B'| \le \beta|W| + a
-  \]
-  Furthermore,
+  First suppose that $(P',Q')$ satisfies \cref{splits_w}. Let $S:=(A\cap B)\cup (P'\cap Q')$.  Then $|S|= |A\cap B|+|P'\cap Q'|\le a + a(r-1)=ar$.    We now argue that, for each component $C$ of $H-S$,  $|V(C)\cap W|\le \max\{\tfrac{2}{3}|W|,|W|-\Delta\}$.  Since $C$ contains no vertex in $S\supseteq A\cap B$, it must be that  $V(C)\subseteq A\setminus B$ or that $V(C)\subseteq B\setminus A$.  In the former case, $|V(C)\cap W|\le |(A\setminus B)\cap W|=|W|-|B\cap W|<\Delta\le\max\{\tfrac{2}{3}|W|,|W|-\Delta\}$, since $|B\cap W|\ge |(B\setminus A)\cap W|> |W|-\Delta$.  In the latter case, since $C$ contains no vertex in $S\supseteq P'\cap Q'$, it must be that $V(C)\subseteq P'\setminus Q'$ or that $V(C)\subseteq Q'\setminus P'$.  In either case, \cref{splits_w} implies that 
   \begin{align*}
-    |A\cap W| & \le |X\cap W|+(1-\tfrac{\beta'}{3})|W\setminus X| \\
-       & = |X\cap W|+(1-\tfrac{\beta'}{3})(|W|-|W\cap X|) \\
-       & = \tfrac{\beta'}{3}|X\cap W|+(1-\tfrac{\beta}{3})|W| \\
-       & \le \tfrac{\beta\beta'}{3}|W|+(1-\tfrac{\beta'}{3})|W| \\
-       & = (1-\tfrac{\beta}{3}+\tfrac{\beta\beta'}{3})|W|
+    |V(C)\cap W| = |V(C)\cap W'| 
+      & \le \max\{\tfrac{2}{3}|W'|,|W'|-\Delta'\} \\
+      & \le \max\{\tfrac{2}{3}|W|,|W'|-\Delta'\} \\
+      & = \max\{\tfrac{2}{3}|W|,|W|-|A\cap W|-(\Delta-|A\cap W|)\} \\
+      & = \max\{\tfrac{2}{3}|W|,|W|-\Delta\} \enspace . 
+  \end{align*}.
+
+  We first deal with an easy extreme case: Suppose that $|V(C)\cap W| \ge \tfrac{1}{3}|W|$ for some component $C$ of $H-S$. In this case, set $P:=V(C)\cup S$ and $Q:=B\setminus V(C)$.  Then $|(P\setminus Q)\cap W|= |V(C)\cap W|\le \max\{\tfrac{2}{3}|W|,|W|-\Delta\}$ and $|(Q\setminus P)\cap W| = |W|-|P\cap W|\le \tfrac{2}{3}|W|$.  Thus, the separation $(P,Q)$ satisfies \cref{splits_w}.  We now assume that $|V(C)\cap W|\le\tfrac{1}{3}|W|$, for each component $C$ of $H-S$.
+
+  Applying \cref{number_lemma}, with $M:=\tfrac{1}{3}|W|$ (and $W:=|W|$), the components of $H-S$ can be partitioned into two sets $X$ and $Y$ such that $\sum_{C\in X} |V(C)\cap W|\le \tfrac{1}{2}(|W|+M)=\tfrac{2}{3}|W|$ and  $\sum_{C\in Y} |V(C)\cap W|\le \tfrac{1}{2}(|W|+M)=\tfrac{2}{3}|W|$.  Therefore, taking $P:=S\cup\bigcup_{C\in X}V(C)$ and $Q:=S\cup\bigcup_{C\in Y} V(C)$ gives a separation $(P,Q)$ that satisfies \cref{splits_w}.
+  
+  Next, suppose that $(P',Q')$ satisfies \cref{smaller_y}. Let $S:=(A\cap B)\cup (A\cap W)\cup  (P'\cap Q')$.  Then 
+  \begin{align*}
+    |S| & = |A\cap B|+|(A\setminus B)\cap W|+|P'\cap Q'|\\
+      & \le a + |A\cap W| + a(r-1)+\Delta' \\
+      & = ar + \Delta \enspace . 
   \end{align*}
+  Consider the separation $(P,Q):=(A\cup P',Q'\cup(A\cap B)\cup (A\cap W))$. We now show that $(P,Q)$ satisfies the three conditions of \cref{smaller_y}.
+  First, observe that $P\cap Q=S$, so $|P\cap Q|=|S|\le (a+\Delta)r$.  By the inductive hypothesis, $W'=B\cap W\subseteq Q'$. Therefore $W=W'\cup (A\cap W)\subseteq Q$.  Finally, observe that $|V(H')|=|B\setminus A|\le \tfrac{2}{3}|V(H)|$.  Therefore, 
+  \begin{align*}
+     |Q|& =|Q'\cup(A\cap B)\cup (A\cap W)| \\
+      & \le |Q'|+|A\cap B|+|A\cap W| \\
+      & \le (\tfrac{2}{3})^{r-1}\cdot|V(H')| + a(r-1) + \Delta' + |A\cap B|+ |A\cap W| \\
+      & = (\tfrac{2}{3})^{r}\cdot|V(H)| + ar + \Delta \enspace .
+  \end{align*}
+  Therefore, $(P,Q)$ satisfies \cref{smaller_y}.
 \end{proof}
+
+
+\begin{lem}
+  Let $a\ge 1$ be an integer and let $G$ be a graph with $\sep(G)\le a$.  For any $W\subseteq V(G)$, at least one of the following is true:
+  \begin{enumerate}[nosep,nolistsep,label=(\alph*),ref=\alph*]
+    \item\label[p]{small_w} $|W|\le c_1a$\todo{$c_1\gg 1$};
+    \item\label[p]{small_y} $G$ has a separation $(X,Y)$ with $|X\cap Y|\le c_1a$, $W\subseteq Y$, and $|Y|\le c_3 a$\todo{$c_3\ge c_1$}; or
+    \item\label[p]{balances_w} $G$ has a separation $(A,B)$ such that $|A\cap (B\cup W)|<|W|$ and $|B\cap (A\cup W)|< |W|$.
+  \end{enumerate}
+\end{lem}
+
+\begin{proof}
+  We may assume that $|W|>c_1a$, otherwise \cref{small_w} holds and there is nothing to prove. Let $(X,Y)$ be a separation of $G$ such that
+  \begin{enumerate}[nosep,nolistsep,label=(\roman*),ref=\roman*]
+      \item\label[p]{has_w} $W\subseteq Y$;
+      \item\label[p]{small_order} $|X\cap Y|\le c_6a$;\todo{$0<c_6<c_1$} and
+      \item\label[p]{minimal_size} $|Y\setminus X|$ is minimum (among all separations that satisfy \cref{has_w} and \cref{small_order}).
+  \end{enumerate}
+  The separation $(X,Y)$ is well-defined because the separation $(\emptyset,V(G))$ satisfies \cref{has_w} and \cref{small_order}.  Note that, if $|V(G)|\ge c_6a$, then then $|X\cap Y|=c_6\cdot a$ since, otherwise, $|Y\setminus X|$ can be reduced by adding any element of $Y\setminus X$ to $X$.
+
+  If $|Y|\le c_3a$ then $(X,Y)$ satisfies \cref{small_y} and there is nothing more to prove.  Now assume that $|Y|> c_3a$. Let\todo{$c_7,c_8\gg 1$\newline $c_8\ge c_1$}
+  \[
+      s:=c_7|Y\setminus X|\text{ and let }\alpha:=\frac{\beta \cdot (c_7-1)|Y\setminus X|}{c_6\cdot a}\enspace.
+  \]
+  % Note that $|Y\setminus X|= |Y|-|Y\cap X|\ge (c_3-c_6)a$, so
+  % \[
+  %    \alpha \ge \frac{c_8\cdot c_7\cdot(c_3-c_6)}{c_1\cdot c_6} \mathcolor{red}{\ge 1} \enspace . \\
+  % \]
+  \todo{$\beta$ will be around $3$, I think}
+  Our intention is to use \cref{flow_vs_cut} with the parameters $s$ and $\alpha$. We first deal with the case in which $G$ has no $W$-cloud with total supply $s$ and congestion at most $\alpha$.
+
+  Suppose that $G$ has a separation $(X',Y')$ with $W\subseteq Y'$ and 
+  \begin{equation}
+    \alpha |X'\cap Y'|+|Y'\setminus X'|< s \enspace . \label{bottleneck}  
+  \end{equation}
+  Note that this implies that 
+  \[
+     |X'\cap Y'|\le \frac{s}{\alpha}=\frac{c_7\cdot c_6\cdot a}{\beta\cdot (c_7-1)} < c_6\cdot a \enspace .
+  \]
+  This immediately implies that $|Y'\setminus X'|>|Y\setminus X|$ since, otherwise, $(X',Y')$ would contradict the choice of $(X,Y)$.
+  This inequality can be rewritten as
+  \begin{align*}
+    |X'\cap Y'|
+      & \le \frac{s-|Y'\setminus X'|}{\alpha} \\
+      & = \frac{c_7\cdot c_6 \cdot a}{\beta\cdot(c_7-1)} - \frac{c_6\cdot a\cdot|Y'\setminus X'|}{\beta\cdot (c_7-1)\cdot|Y\setminus X|} \\
+      & = \frac{c_7\cdot c_6 \cdot a}{\beta\cdot(c_7-1)} - \frac{c_6\cdot a\cdot|Y\setminus X|}{\beta\cdot (c_7-1)\cdot|Y\setminus X|} \\
+      & = \frac{c_6\cdot a}{\beta} \enspace .
+  \end{align*}
+  Let $H:=G[Y']$ and observe that $W\subseteq V(H)$.
+  Apply \cref{amplifier} to $H$ to obtain a separation $(P,Q)$ that satisfies condition \cref{splits_w} or condition \cref{smaller_y} with the value $\Delta=\delta\cdot a$ and a value $r$ that satisfies:
+  \[
+     \frac{c_6}{\beta} + r \le \delta \le (1-\tfrac{1}{\beta})c_6 - r
+  \]
+
+  First suppose that $(P,Q)$ satisfies \cref{smaller_y}.  We will show that, in this case, the separation $(X^\star,Y^\star):=(X'\cup P,Q)$ contradicts the choice of $(X,Y)$. By \cref{smaller_y} we have
+  \begin{align*}
+    |Q| & \le (\tfrac{2}{3})^r\cdot |V(H)| + ar + \Delta \\
+    & = (\tfrac{2}{3})^r\cdot |Y'| + (r+\delta)a \\
+    & \le (\tfrac{2}{3})^r\cdot (|Y'\setminus X'|+|X'\cap Y'|) + (r+\delta)a \\
+    & \le (\tfrac{2}{3})^r\cdot (|Y'\setminus X'|+\alpha|X'\cap Y'|) + (r+\delta)a & \mathcolor{red}{\text{(provided that $\alpha \ge 1$)}} \\
+    & < (\tfrac{2}{3})^r\cdot s + (r+\delta)a \\
+    & = (\tfrac{2}{3})^r\cdot c_7\cdot |Y\setminus X| + (r+\delta)a \\
+    & \le (\tfrac{2}{3})^r\cdot c_7\cdot |Y\setminus X| + (r+\delta)a \\
+    & = |Y\setminus X|-(1-(\tfrac{2}{3})^r)\cdot |Y\setminus X| + (r+\delta)a \\
+    & \le |Y\setminus X|-(1-(\tfrac{2}{3})^r)c_6 a + (r+\delta) a
+    \mathcolor{red}{{}< |Y\setminus X|} \enspace .
+  \end{align*}
+  \textcolor{red}{provided that $(1-(\tfrac{2}{3})^r)\cdot (c_3-c_6) a > ar + \Delta$.}
+  The separation $(X^\star,Y^\star)$ has order
+
+  \begin{align*}
+    |X^\star\cap Y^\star|
+      & = |(X'\cup P)\cap Q| \\
+      & \le |X'\cap Q| + |P\cap Q| \\
+      & \le |X'\cap Y'| + |P\cap Q| & \text{(since $Q\subseteq V(H)=Y'$)}\\
+      & \le \frac{c_6\cdot a}{\beta} + (r+\delta)a \\
+      & = (\tfrac{c_6}{\beta} + r+\delta)a \\
+      & \mathcolor{red}{\le c_6\cdot a}  \enspace .
+  \end{align*}
+  Thus $(X^\star,Y^\star)$ is a separation of $G$ with $W\subseteq Y^\star$, $|X^\star\cap Y^\star|\le c_6\cdot a$ and $|Y^\star|=|Q|<|Y|$, which contradicts the choice of $(X,Y)$.  We conclude that $(P,Q)$ must satisfy outcome \cref{splits_w} of \cref{amplifier}.
+
+  We will now show that the separation $(A,B):=(X'\cup P,Q)$ satisfies \cref{balances_w}.  This separation has order
+  \begin{align*}
+    |A\cap B|
+    & = |(X'\cup P)\cap Q)| \\
+    & \le |X'\cap Q|+|P\cap Q| \\
+    & \le |X'\cap Y'| + |P\cap Q| \\
+    & \le \frac{c_6\cdot a}{\beta} + ar \\
+    & = \left(\frac{c_6}{\beta} + r\right)a \enspace .\\
+    % & \mathcolor{purple}{= \left(\frac{c_1\cdot c_6}{c_8} + r\right)a}
+  \end{align*}
+  Therefore, 
+  % \hussein{The separation $(P, Q)$ separates $W$, into two sides $W_p$ and $W_q$, where $|W_q| \leq |W| - \Delta$, and $|W_p| \leq \frac{1}{2}|W| + (a+ \Delta)r$, so each of them will give us different inequalities. One of these is the big side, and we want its size combined with $A\cap B$ to be less $|W|$! }
+  \begin{align*}
+    |A\cap (B\cup W)|
+    & \le |A\cap B| + |A\cap W|\\
+    & < \left(\frac{c_6}{\beta} + r\right)a + |W| - \Delta \\
+    & = \left(\frac{c_6}{\beta} + r-\delta \right)a + |W| \\
+    % & = \left(\frac{c_1\cdot c_6}{c_8} + r\right)a + |W| - \Delta \\
+    % & \mathcolor{purple}{\le \left(\frac{c_1\cdot c_6}{c_8} + r\right)a + |W| - \Delta} \\
+    & \le |W|
+    % & = |(X\cup X'\cup P)\cap (Q\cap Y)| \\
+    % & \le |X\cap Y|+|X'\cap Q|+|P\cap Q| \\
+    % & \le |X\cap Y| + |X'\cap Y'| + |P\cap Q| \\
+    % & \le c_6\cdot a + \frac{c_1\cdot c_6\cdot a}{c_8} + ar \enspace .
+  \end{align*}
+  Furthermore, 
+    \begin{align*}
+        |B\cap (A\cup W)|
+        & \le |A\cap B| + |B\cap W|\\
+        & = |A\cap B| + |Q\cap W|\\
+        & < \left(\frac{c_6}{\beta} + r\right)a + \max\{\tfrac{2}{3}|W|,|W| - \Delta\} \\
+        & = \left(\frac{c_6}{\beta} + r + \delta\right)a + |W| \\
+        % & = \left(\frac{c_6}{\beta} + r\right)a + |W| - \Delta \\
+        &\le |W| \enspace .
+  \end{align*}
+  Therefore, $(A,B)$ satisfies \cref{balances_w}.
+
+  Finally, we are left with the case in which $G$ does not contain a separation $(X',Y')$ with $W\subseteq Y'$ and $\alpha|X'\cap Y'|+|Y'\setminus X'|<s$.  In this case, \cref{flow_vs_cut} implies that $G$ has a $W$-cloud $\mathcal{F}:=(f,g)$ with total supply $s$ and congestion at most $\alpha$.
+
+  % Modify the flow $\mathcal{F}$ by setting $f(v,w):=0$ for each $v\in X\cap Y$ and call the resulting flow $\mathcal{F}'$.  In this modified flow, the vertices in $X\cap Y$ are sinks, which consume at most $\alpha|X\cap Y|=\alpha \cdot c_6\cdot a$ of the total flow.  In $\mathcal{F}'$, the amount of flow consumed by the sinks in $W\setminus X$ is at least $s':=s-\alpha \cdot c_6\cdot a$.  Let $(A',B')$ be a balanced separation of $G[Y]$\todo{Maybe $G[Y\setminus X]$ is a better option} having order at most $a$.  Modify the flow $\mathcal{F}'$ by setting $f(v,w):=0$ for each $v\in A'\cap B'$ and call the resulting flow $\mathcal{F}''$.  In $\mathcal{F}''$, the amount of flow consumed by vertices in $A'\cap B'$ is at most $\alpha\cdot a$.  Therefore, the amount of flow consumed by vertices in $W\setminus (A'\cap B')$ is at least $s'':=s'-\alpha\cdot a$.  
+  % The amount of flow in $\mathcal{F}''$ supplied by the vertices in $A'$ is at most $|A'|$.  Therefore, the amount of flow supplied by vertices in $B'\setminus A'$ that is consumed by vertices in $W\setminus ((A\cap B)\cup(X\cap Y))$ is at least
+  % \begin{align*}
+  %    s_{B'} & := s'' - |A'|  \\
+  %    & = s-(\alpha a \cdot (c_6+1) + |A'|) \\
+  %    & = |Y|-(\alpha a \cdot (c_6+1) + |A'|) \\
+  %    & = |B'\setminus A'|-((\alpha a \cdot (c_6+1) + |A'|) \\
+  %    & \ge |B'|-((\alpha a \cdot (c_6+2) \\
+  %    & \ge \tfrac{1}{3}|Y|-\alpha a \cdot (c_6+2) \\
+  %    & = \tfrac{1}{3}s-\alpha a \cdot (c_6+2)
+  % \end{align*}
+  % All of this flow is consumed by vertices in $W\setminus A'$.  Since the flow $\mathcal{F}''$ has congestion at most $\alpha$, we have $\alpha|W\setminus A'| \ge s_{B'}$ and rewriting this gives
+  % \begin{align*}
+  %    |W\setminus A'| 
+  %      & \ge \frac{s_{B'}}{\alpha} \\
+  %      & \ge \frac{\tfrac{1}{3}s-\alpha a \cdot (c_6+2)}{\alpha} \\
+  %      & \ge \frac{c_1\cdot a}{3\cdot c_8} - a \cdot (c_6+2)
+  % \end{align*}
+  % DAMN. Stuck here.
+  
+  Let $n:=|V(G_{\mathcal{F}})|$.  By \cref{tame_w_cloud}, we may assume that at least $\lfloor n/2\rfloor$ vertices of  $G_{\mathcal{F}}$ are $\mathcal{F}$-saturated.
+  % Therefore $\floor n/2\rfloor\le s$. The remaining $\lceil n/2\rceil$ vertices contribute less than $\lceil n/2\rceil$ to the total supply of $\mathcal{F}$.
+  Since $s=\sum_{v\in V(G_{\mathcal{F}})} g(v)\le \sum_{v\in V(G_{\mathcal{F}})} 1=n$, we have $\lfloor n/2\rfloor \ge (n-1)/2 \ge (s-1)/2$.  Therefore, by removing unsaturated vertices from $\mathcal{F}$ we obtain a $W$-cloud $\mathcal{F}':=(f',g')$ with total supply $s'\ge(s-1)/2$ and congestion at most $\alpha$ in which all vertices are saturated.
+  % Let $n'=s'$ be the number of vertices in $G_{\mathcal{F}'}$.
+  Then\pat{I'm cheating here. I dropped the $-1/2$} \hussein{If every saturated vertex has at most 1 hungry in neighbour, then let $sat(F)$ be the set of saturated vertices, and $unsat(F)$ the hungry ones. we have $|sat(F)| \geq |unsat(F)|$, let $s' := \sum_{v \in sat(F)} g(v)$, we have $s' + \sum_{v \in unsat(F)} g(v)= s$, since $s' = |sat(F)| \geq |unsat(F)| > \sum_{v \in unsat(F)} g(v)$, we have $2s' > s$, consquently $s' > s/2$.}
+  \begin{align*}
+     s' & \ge s/2 \\
+        & = \frac{c_7\cdot|Y\setminus X|}{2}
+  \end{align*}
+  % Since all vertices in $G_{\mathcal{F}'}$ are $\mathcal{F}'$-saturated the total supply in $\mathcal{F}'$ is an integer, so the total supply of $.
+
+  Consider the graph $G':=G[V(G_{\mathcal{F}'})\cup (Y\setminus X)]$.  Let $n':=|V(G')|$ be the number of vertices of $G'$.  Then,
+  \hussein{$s' = |V(G_{\mathcal{F}'})|$ because $d(v) = 1, v \in V(G_{\mathcal{F}'})$.}
+  \begin{align*}
+     n' & = |V(G_{\mathcal{F}'})\cup (Y\setminus X)| \\
+        & = |V(G_{\mathcal{F}'})| + |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+        & = s' + |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+        % & = s' + |Y\setminus X| \\
+        % & = s' + s/c_7 \\
+        % & \le s' + 2s'/c_7 \\
+        % & = (1+2/c_7)s' \enspace .
+  \end{align*}
+  Let $(A',B')$ be a balanced separation of $G'$ of order at most $a$. Then, $|A'|\ge n' - |B'\setminus A'|\ge \tfrac{1}{3}n'$.  In $\mathcal{F}'$, the total supply $\sum_{v\in A'}g'(v)$ originating at vertices in $A'$ is at least:
+  \begin{align*}
+    |A'\cap V(G_{\mathcal{F}'})|
+    & = |A'| - |(A'\setminus V(G_{\mathcal{F}'})| \\
+    & \ge |A'| - |Y\setminus X| \\
+    & \ge |A'| - |Y\setminus X| \\
+    & = |A'| - |A'\cap (Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge |A'| - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}n' - |Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & = \tfrac{1}{3}s' - \tfrac{2}{3}|Y\setminus X\setminus V(G_{\mathcal{F}'})| \\
+    & \ge \tfrac{1}{3}s' - \tfrac{2}{3}|Y\setminus X| \\
+    & \ge \frac{c_7\cdot|Y\setminus X|}{6} - \tfrac{2}{3}|Y\setminus X| \\
+    & = \frac{(c_7-4)\cdot |Y\setminus X|}{6} \\
+  \end{align*}
+  Construct a flow $\mathcal{F}'':=(f'',g'')$ from $\mathcal{F}'$ in which each vertex $v$ in $A'\cap B'$ is a sink.  We do this by setting $f''(v,w)=0$ for each vertex $v$ in $A'\cap B'$ and each $w\in N_{G'}(w)$, and reducing flows on other edges in order to satisfy \eqref{conservation_of_flow}.  For each edge $vw$ of $G$, $f''(v,w)\le f'(v,w)\le f(v,w)$. Therefore, the congestion of $\mathcal{F}''$ is at most the congestion of $\mathcal{F}$, which is at most $\alpha$.  Therefore, the sinks of $\mathcal{F}''$ in $A'\cap B'$ consume\todo{define consume} at most $\alpha|A'\cap B'|\le \alpha a$. Therefore, in $\mathcal{F}''$, the total supply originating at vertices in $A'$ that is consumed by vertices in $(A'\setminus B')\cap W$ is at least
+  \[
+    |A'\cap V(G_{\mathcal{F}'})| - \alpha a
+    \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6} - \alpha a
+  \]
+  Since the congestion of $\mathcal{F}''$ is at most $\alpha$, each vertex in $A'\cap W$ consumes at most $\alpha$, so
+\hussein{the left hand-side is the flow towards $W \cap A'\setminus B'$ generated by vertices in $A'$.}
+  \[
+    \frac{(c_7-4)\cdot |Y\setminus X|}{6} - \alpha a \le \alpha\cdot|(A'\setminus B')\cap W| \enspace .
+  \]
+  Rewriting this gives
+  \begin{align*}
+   |(A'\setminus B')\cap W|
+    & \ge \frac{(c_7-4)\cdot |Y\setminus X|}{6\alpha} - a \\
+    & = \left(\frac{(c_7-4)\cdot c_6}{6\beta(c_7-1)} - 1\right) a \\
+    & ............. \\
+    % & \mathcolor{purple}{\ge \frac{(c_7-4)\cdot |Y\setminus X|}{6 \cdot \frac{c_8 \cdot s}{c_1 \cdot c_6 \cdot a}} - a}\\
+    % & \mathcolor{purple}{\ge \frac{(c_7-4)\cdot |Y\setminus X| \cdot c_1 \cdot c_6}{6 \cdot c_8 \cdot s}a - a} \\
+    % & \text{-> replace s by } c_7\cdot |Y\setminus X|\\  
+    % & \mathcolor{purple}{\ge \frac{(c_7-4)\cdot |Y\setminus X| \cdot c_1 \cdot c_6}{6 \cdot c_8 \cdot c_7 \cdot |Y \setminus X|}a - a}\\
+    % & \text{-> simplify}\\
+    % & \mathcolor{purple}{\ge \frac{(c_7-4) \cdot c_1 \cdot c_6}{6 \cdot c_8 \cdot c_7}a - a} \\
+    % & \mathcolor{red}{\ge \left(\frac{(c_7-4) \cdot c_1 \cdot c_6}{6 \cdot c_8 \cdot c_7} - 1\right)a}\\
+    % & = \left(\frac{(c_7-4)\cdot c_1\cdot c_6\cdot|Y\setminus X|-1}{6\cdot c_8\cdot s}\right)a \\
+    % & = \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a
+  \end{align*}
+  % Therefore,
+  % \begin{align*}
+  %  |(B'\setminus A')\cap W|
+  %   & = |W|-|A'\cap W| \\
+  %   & \le |W|- \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \enspace .
+  % \end{align*}
+  The preceding argument shows that, (for very large $c_7$), $B'$ avoids roughly $(c_6/6\beta)a$ elements of $W$.  This is not good enough, because it only shows that combining $(X,Y)$ with $(A',B')$ will produce a separation of order at most $(X\cap Y)+(A'\cap B')-(c_6/6\beta)a = (1-1/6\beta)c_6+c_1> c_1$.  However, we can also study what the separation $(A',B')$ does to $X\cap Y$.  Note that at most $|Y\setminus X|$ units of flow are generated by vertices in $Y\setminus X$.  Therefore, at least $(c_7-1)|Y\setminus X|$ units of flow are generated by vertices in $X$.  All of this flow passes through the $c_6 a$ vertices in $X\cap Y$.  Arguing just like we do above, we can show that
+  \hussein{Not if I understood the problem here, but we only need at most half of $X\cap Y$. Because if $(A',B')$ are nested in $G(F)$, we just need $(A',B')$(this is the best case.) The worst case if $(A',B')$ and $(X, Y)$ are crossed. then, $(A',B')$ splits $X \cap Y$ into two halves which we need the minimum to disconnect $G$... I can also argue that every vertex in saturated, if $\alpha \in \mathbb{N}$.}
+  
+  \hussein{But, I am still worried about $\alpha \cdot |W|$ being greater than $s$!!}
+  \hussein{I repeated the calculation above on paper with my own assumption, and it still not enough!!
+  $c_1 - \frac{1}{3\beta}c_6 + \frac{1}{2}c_6>c_1.$}
+\hussein{}
+  
+  \begin{align*}
+    |(A'\setminus B')\cap (X\cap Y)| 
+    & \ge \frac{(c_7-5)\cdot |Y\setminus X|}{6\alpha} \\
+    & = \left(\frac{(c_7-5)\cdot c_6}{6\beta(c_7-1)}-1\right)a
+  \end{align*}
+  Now, take $c_7$ to be huge, so that $(c_7-5)/(c_7-1)\approx 1$.  
+  Let $S:=(X\cap Y)\cup (A'\cap B')$.  Consider some component $C$ of $G-S$:
+  \begin{itemize}
+    \item If $V(C)\subseteq X$, then $N_G(V(C))$ contains at most $c_6 a$ elements from $X\cap Y$, at most $a$ elements from $(A'\cap B')\setminus (X\cap Y)$ and no elements from $W\setminus (X\cap Y)$.
+
+    \item If $V(C)\subseteq Y\cap B'$, then $N_G(V(C))$ contains at most $(1-1/6\beta) c_6a$ elements of $X\cap Y$ and at most $c_1a - c_6a/\beta$ elements of $W$.  This still isn't good enough, but I think it gives us a chance.  The flow $\mathcal{F}''$ is obtained by splitting $\mathcal{F}'$ into a part contained in $A'\setminus B'$ and another part contained in $B'\setminus A'$.  I'm hoping that we can repeat this recursively on these two flows.  After $r$ steps, we should have parts that are adjacent to $(1-1/6\beta)^r c_6a$ vertices in $X\cap Y$ and that are adjacent to $c_1-rc_6a/6\beta$ vertices in $W$ and adjacent to $ar$ vertices in the separator we're building. .......
+  \end{itemize}
+
+  
+  Therefore,
+
+  \hussein{the last term should be $|(A'\setminus B' )\cap W|$. right? But the second line, I think it is correct.}
+  \begin{align*}
+    |B'\cap (A'\cup W)|
+    & =  |B'\cap A'| + |W|-|(B'\cap A')\cap W|-|(B'\setminus A')\cap W| \\
+    & =  |B'\cap A'| + |W|-|A'\cap W| \\
+    & \mathcolor{red}{= |W| + a - |A' \cap W|}\\
+    & \le |W| +  \left( \mathcolor{red}{1} - \frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \\
+    & \le |W| +  \left( \mathcolor{red}{1} - \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7}  \mathcolor{purple}{+1}\right)a \\
+    & \le |W| +  \left( 2 - \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7} \right)a \\
+    & \mathcolor{red}{\le |W|-c_6\cdot a}
+  \end{align*}
+\hussein{I added plus $a = |A'\cap B'|$. (the red line), I might be wrong!}
+  
+  A symmetric argument shows the same bound for $|A'\cap (B'\cup W)|$.
+
+  Finally, consider the separation $(A,B):=(X\cup A',B'\cap Y)$. Then
+  \begin{align*}
+    |A\cap (B\cup W)|
+    & = |(X\cup A')\cap ((B'\cap Y)\cup W)| \\
+    & \le |X\cap Y| + |A'\cap (B'\cup W)|\\
+    & \le c_6\cdot a + |W| - c_6\cdot a = |W| \enspace .
+    % |B'\cap (A'\cup W)|
+    % & =  |B'\cap A'| + |W|-|(B'\cap A')\cap W|-|(B'\setminus A')\cap W| \\
+    % & =  |B'\cap A'| + |W|-|A'\cap W| \\
+    % & \le |W|- \left(\frac{(c_7-4)\cdot c_1\cdot c_6-1}{6\cdot c_8\cdot c_7}\right)a \enspace .
+  \end{align*}
+  and
+  \begin{align*}
+    |B\cap (A\cup W)|
+    & = |(B'\cap Y)\cap (X\cup A')| \\
+    & \le |Y\cap X| + |B'\cap A'| \\
+    & \le c_6\cdot a + a \\
+    & \le \mathcolor{red}{|W|}
+  \end{align*}
+  Therefore, the separation $(A,B)$ satisfies \cref{balances_w}.
+\end{proof}
+
+\section{On computing the Constants}
+We have to chose $\Delta$ satisfying the following inequalities.
+\begin{align*}
+    \frac{c_1\cdot c_6 \cdot a}{c_8} + (a + \Delta)r \leq c_6 a \\
+    \Delta r \leq c_6a - \frac{c_1\cdot c_6 \cdot a}{c_8} - ar\\
+    \Delta \leq \frac{c_6\cdot a}{r} - \frac{c_1\cdot c_6 \cdot a}{c_8 \cdot r} - a
+\end{align*}
+We also can find a lower bound on $\Delta$.
+
+\begin{align*}
+     \left(c_6 + \frac{c_1\cdot c_6}{c_8} + r\right)a + |W| - \Delta \le |W|\\
+     \left(c_6 + \frac{c_1\cdot c_6}{c_8} + r\right) a  \leq \Delta \\
+    c_6 \cdot a + \frac{c_1 \cdot c_6}{c_8} a + ra \leq \Delta
+\end{align*}
+Thus, $\Delta$ must satisfies the followings at the same time. 
+\begin{equation}
+c_6 \cdot a + \frac{c_1 \cdot c_6}{c_8} a + ra \leq \Delta \leq \frac{c_6\cdot a}{r} - \frac{c_1\cdot c_6 \cdot a}{c_8 \cdot r} - a
+\end{equation}
+
+\begin{equation}
+\mathcolor{red}{\frac{c_1 \cdot c_6}{c_8} a} + ra \leq \Delta \leq \frac{c_6\cdot a}{r} - \frac{c_1\cdot c_6 \cdot a}{c_8 \cdot r} - a
+\end{equation}
+
+
+let $c' = \frac{c_1 \cdot c_6}{ c_ 8}$,
+$$c_6 \cdot a + c'a + ra \leq \Delta \leq \frac{c_6 \cdot a}{r} + \frac{c'\cdot a}{r} - a \leq c_6a + c'a - a$$
+Which is a contradiction since $r > 0$.
+Note that the upper bound comes from the change of $ar$ to $(a + \Delta)r$ in Lemma 4. 
+
+\subsection*{Constraint on $c_8$}
+We want to satisfy this constraint.
+\begin{align*}
+|W| +  \left( 2 - \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7} \right)a  & \mathcolor{red}{\le |W|-c_6\cdot a}\\
+\left( 2 - \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7} \right)a 
+     & \mathcolor{red}{\le -c_6\cdot a}\\
+\left( 2 - \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7} \right) 
+     &\mathcolor{red}{\le -c_6}\\
+2 &\leq \frac{(c_7-4)\cdot c_1\cdot c_6}{6\cdot c_8\cdot c_7} - c_6\\
+2 &\leq \left(\frac{(c_7-4)\cdot c_1}{6\cdot c_8\cdot c_7} - 1\right) c_6
+\end{align*}
+The coefficient of $c_6$ must be positive, 
+\begin{align*}
+    0 & < \frac{(c_7-4)\cdot c_1}{6\cdot c_8\cdot c_7} - 1\\
+    1 & < \frac{(c_7-4)\cdot c_1}{6\cdot c_8\cdot c_7}
+\end{align*}
+As $c_8 \geq c_1$ this is false. \hussein{I think the idea is right, but I am missing something!}
+\subsection{An attempt to Fix the problem above!}
+\hussein{I think the upper bound on $s'$ is not precise!! I have to think about it.}
+
+We started with a flow $\mathcal{F}$ with these parameters:
+$$s = c_7 |Y \setminus X| \quad \quad \alpha=\frac{c_8 \cdot s}{c_1 \cdot c_6 \cdot a}.$$
+Then, we constructed a flow $\mathcal{F}'$ with total supply $s'$ and congestion $\alpha$. \hussein{Here, I know $s' \geq c_7/2 |Y\setminus X|$, but maybe I can say, I will remove vertices from $G_{\mathcal{F}'}$ to attain this bound.}
+$$s' = \frac{c_7}{2} |Y \setminus X|.$$
+Let $G_{\mathcal{F}'}$ be the graph induced on the vertices of $G$ with positive demand ($d(v) = 1, v\in V(G)$). We have,
+$$|G_{\mathcal{F}'}| = \frac{c_7}{2}|Y \setminus X|$$
+Now, we consider the subgraph $G' = G[V(G_{\mathcal{F}'})\cup (Y\setminus X)].$ we have
+$$n' := |V(G')| \leq s' + |Y \setminus X| = \frac{c_7}{2}|Y \setminus X| + |Y \setminus X|.$$
+Consider a balanced separation $(A', B')$ of $G'$ with order at most $a$. Since $(A', B')$ is balanced, we have
+$$|A'\setminus B'| \leq \frac{2}{3} n' \quad \text{ and } \quad |B'\setminus A'| \leq \frac{2}{3}n'$$
+\hussein{I believe $(A', B')$ split $W$ into two haves, at least. So, I want to see how big a portion of $W$ can be. Therefore, I want $A'\setminus B'$ to have as many supplier as possible.}
+
+Suppose, $|A'\setminus B'|$ is maximised i.e 
+\begin{align*}
+|A'\setminus B'| & = \frac{2}{3}n'\\
+& = \frac{2}{3}(s' + |Y \setminus X|) \\
+& = \frac{2}{3}s' + \frac{2}{3}|Y \setminus X| \\
+& = \frac{2}{3}\frac{c_7}{2}|Y\setminus X| + \frac{2}{3}|Y \setminus X|\\
+& = \frac{c_7}{3}|Y \setminus X| + \frac{2}{3}|Y \setminus X|.\\
+\end{align*}
+Let $s_{A'}$ be the supply generated by the vertices of $A'\setminus B'$, then
+$$s_{A'} = \sum_{v\in A'\setminus B'} d(v) = |A'\setminus B'| = \frac{c_7}{3} |Y \setminus X| + \frac{2}{3}|Y \setminus X|$$
+At most $\alpha a$ supply unit, my pass through $A'\cap B'$ (by the definition of the congestion at a vertex). \hussein{I think, I have to increase the supply in $A'$ to increase the size of $W_{A'}$}. The remaining supply that are directed towards $W_{A'} = W \cap (A'\setminus B')$ is
+$$s_{W_{A'}} = s_{A'} - \alpha a = \frac{c_7}{3} |Y \setminus X| + \frac{2}{3}|Y \setminus X| - \alpha a.$$ 
+The size of $W_{A'}$ is,
+\begin{align*}
+|W_{A'}| & \leq \frac{s_{W'}}{\alpha}  \\
+         & = \frac{(c_7 + 2)}{3 \alpha}|Y \setminus X| - a\\
+         & = \frac{(c_7 + 2)}{3 \cdot \frac{c_8 s}{c_1 \cdot c_6 \cdot a}}|Y\setminus X| - a\\
+         & = \frac{c_1 \cdot c_6 \cdot (c_7 + 2) \cdot a}{3 \cdot c_8 \cdot c_7 \cdot |Y \setminus X|}|Y \setminus X| - a\\
+         & = \frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a - a\\
+\end{align*}
+Our goal is to have,  
+$$|W_{A'}| + |A' \cap B'| + |X \cap Y| \leq |W|.$$
+More precisely, \hussein{I think I can replace $c_6$ by $c_6/2$, but that is not important for now.}
+$$\frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a + c_6 \cdot a \leq |W|.$$
+\hussein{Now, I want to repeat the same thing but for the small side.}
+Let $W_{B'} = W \cap B'$. First, We can go as follow.
+\begin{align*}
+    |W_{B'}| & \leq |W| - |W_{A'}|\\
+    & \leq |W| - \frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a + a
+\end{align*}
+This gives as the constraint:
+$$|W_{B'}| + |A'\cap B'| + |X\cap Y| \leq |W|,$$
+precisely,
+$$|W| - \frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a + a + a + c_6 \cdot a \leq |W|$$
+$$ - \frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a + 2a + c_6 \cdot a \leq 0$$
+$$ c_6 \cdot a \leq \frac{c_1 \cdot c_6 \cdot (c_7 + 2)}{3 \cdot c_8 \cdot c_7}a - 2a.$$
+\hussein{I hope this make some sense!!!}
+
+Alternatively:\\
+We know $A' \setminus B'$ has $s_{A'}$ supplier, then $B'\setminus A'$ has 
+\begin{align*}
+s_{B'} & = s' - s_{A'}  \\
+& = \frac{c_7}{2} |Y\setminus X| - \frac{c_7}{3}|Y\setminus X| - \frac{2}{3}|Y \setminus X|\\
+& = \frac{3c_7 - 2c_7 - 4}{6}|Y\setminus X|\\
+& = \frac{c_7 - 4 }{6} |Y \setminus X|.\\
+\end{align*}
+\hussein{Here, I might subtract $\alpha a$, but I already did in the previous part, I should be consistent between the two.}
+let $$s_{B'} = \frac{c_7 - 4 }{6} |Y \setminus X| - \alpha a$$.
+We want to bound $|W_{B'}|$,
+\begin{align*}
+|W_{B'}| & \leq \frac{s_{B'}}{\alpha}\\    
+& \leq \frac{c_7 - 4}{6 \alpha}|Y\setminus X| - a\\
+& \leq \frac{c_7 - 4}{6 \frac{c_8 \cdot s}{c_1 \cdot c_6 \cdot a}}|Y \setminus X| - a\\
+& \leq \frac{c_1 \cdot c_6 \cdot (c_7 - 4) \cdot a}{6 c_8 \cdot c_7 \cdot |Y \setminus X|}|Y\setminus X| - a\\
+& \leq \frac{c_1 \cdot c_6 \cdot (c_7 - 4)}{6 c_8 \cdot c_7}\cdot a - a
+\end{align*}
+Our goal is to have
+$$|W_{B'}| + |A' \cap B'| + |X \cap Y| \leq |W|.$$
+Precisely,
+$$\frac{c_1 \cdot c_6 \cdot (c_7 - 4)}{6 \cdot c_8 \cdot c_7}\cdot a + c_6 \cdot a \leq |W|.$$
+\hussein{Now, how the two bounds on $|W_{B'}|$ compares to each other, and do they make sense.}
+\hussein{If we plugin some numbers. The two bounds on $W_{A'}$ and $W_{B'}$ will not add up to $W$, I think because the flow decreases, or we are using a smaller flow, less number of vertices in $W$, is going to consume it. (unless there is nothing wrong in my calculation)!}
+\subsubsection{$|W|$ and $\alpha$}
+We have, 
+$$|W| \cdot \alpha \geq c_1 \cdot a \frac{c_8 \cdot s}{c_1 \cdot c_6\cdot a} \geq \frac{c_8}{c_6}s.$$
+I am obliged to choose $c_8 > c_1$ so it satisfies one of the constraints. But then, $|W| \alpha$ will be higher than $s$. 
+\hussein{Because of this big difference between $|W| \alpha$ and $s$, the calculation above becomes a bit meaningless.}
+
+% \begin{lem}
+%   Let $a\ge 1$, let $G$ be a graph with $\sep(G)\le a$, let $W\subseteq V(G)$, and let $(X,Y)$ be a separation of $G$ such that $W\subseteq Y$ and $|X|/|X\cap Y| > n/(\beta|W|)$.  Then there exists a separation $(A,B)$ of $G$ of order at most $\beta|W|+a$ such that
+%   \[
+%   \max\{|A\cap W|,|B\cap W|\}\le \left(1-\tfrac{\beta}{3}+\tfrac{\beta^2}{3}\right)|W| \enspace .
+%   \]
+% \end{lem}
+
+% \begin{proof}
+%   Among all separations $(X,Y)$ that satisfy the conditions of the lemma, choose one that maximizes $|X|$.    Let $W':=W\setminus X$.
+%   Create a new graph $G'\supseteq G[Y\setminus X]$ as follows:  Let
+%   \[
+%     n':=n\left(1-\frac{|W\cap X|}{\beta|W|}\right) \enspace .
+%   \]
+%   Add a set $L$ of $n'-|Y\setminus X|$ degree-$1$ vertices to $G[Y\setminus X]$ adjacent to the vertices in $N_G(X)$, and distributed as equally as possible.  For each $v\in N_G(X)$, let $L_v$ be the subset of $L$ adjacent to $v$.
+
+%   Let
+%   \[
+%     \beta' = \frac{\beta|W|n'}{|W'|n}
+%   \]
+%   We will show that $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W'|)=n/(\beta|W|)$.  By \cref{flow_vs_cut_n}, it suffices to show that $G'$ has no separation $(X',Y')$ with $W'\subseteq Y'$ and $|X'|/|X'\cap Y'|>n'/(\beta|W'|)$.  Assume for the sake of contradiction that such a separation exists and, among all such separations, choose one that maximizes $|X'|$ and, subject to this, minimizes $|Y'|$.
+
+%   \begin{clm}\label{no_l_in_y}
+%     $L\cap Y'=\emptyset$.
+%   \end{clm}
+
+%   \begin{clmproof}
+%     Let $v$ be a vertex in $N_G(X)$. Since $L=\bigcup_{v\in N_G(X)}L_v$, we need only show that $L_v\cap Y'=\emptyset$.
+%     Let $v'$ be an arbitrary vertex in $L_v$.  If $\{v,v'\}\subseteq X'$, then the separation $(X',Y'\setminus\{v'\})$ contradicts the minimality of $Y'$ in the choice of $(X',Y')$.  If $v\in X'$ and $v'\not\in X'$ then the separation $(X'\cup\{v'\},Y'\setminus\{v'\})$ contradicts the maximality of $X'$ in the choice of $(X',Y')$.
+
+%     Thus, $v\not\in X'$.  Let $X'':=X'\setminus L_v$, consider the separation $(X'',Y')$ and observe that
+%     \[
+%       \frac{X''}{|X''\cap Y'|}=\frac{|X'\setminus L_v|}{|(X'\setminus L_v)\cap Y'|}
+%      = \frac{|X'|-|X'\cap L_v|}{|X'\cap Y'|-|X'\cap L_v|} > \frac{n'}{\beta|W'|}
+%     \]
+%     since $(a-x)/(b-x) \ge a/c$ for any $a,b,x$ with $0\le x<b<a$.  Then the separation $(X''',Y'''):=(X''\cup L_v\cup \{v\},Y'\setminus L_v)$ satisfies
+%     \[
+%       \frac{|X'''|}{|X'''\cap Y'''|} =
+%       \frac{|X''\cup L_v\cup \{v\}|}{|(X''\cup L_v\cup\{v\})\cap (Y'\setminus L_v)|} = \frac{|X''|+n'/(\beta|W'|)+1}{|X''\cap Y'|+1} > \frac{n'}{\beta|W'|}
+%     \]
+%     since $(a+m)/(b+1)\ge m$ for any $m>0$ and any $a,b>0$ such that $a/b\ge m$.  Therefore, the separation $(X''',Y''')$ contradicts the maximality of $|X'|$ in the choice of $(X',Y')$.
+%   \end{clmproof}
+
+%   \begin{clm}
+%     $N_G(X)\subseteq X'$.
+%   \end{clm}
+
+%   \begin{clmproof}
+%     It must be the case that $N_{G'}[L]\subseteq X'$ since, otherwise, there would be an edge $vv'$ of $G'$ with $v\in N_{G'}(L)$ and $v'\in L$ such that $\{v,v'\}\not\subseteq X'$ and $\{v,v'\}\not\subseteq Y'$.  This would contradict the fact that $(X',Y')$ is a separation of $G$.
+%     Therefore $N_G(X)\subseteq N_{G'}(L)\subseteq X'$.
+%   \end{clmproof}
+
+%   Let
+%   \[
+%     \widehat{X}:=X\cup X'\setminus L \text{ and let } \widehat{Y}:=Y'\cup W \enspace .
+%   \]
+%   \begin{clm}
+%     $(\widehat{X},\widehat{Y})$ is a separation of $G$.
+%   \end{clm}
+
+%   \begin{clmproof}
+%     We first show that $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
+%     The vertices in $\widehat{X}\cup\widehat{Y}$ are contained $X\cup V(G')\subseteq V(G)\cup L$.
+%     By definition $L\cap \widehat{X}=\emptyset$. By \cref{no_l_in_y}, $L\cap \widehat{X}=\emptyset$. Thus $\widehat{X}\cup\widehat{Y}\subseteq V(G)$.
+%     Next we show that $\widehat{X}\cup\widehat{Y}\supseteq V(G)$.  Since $X\cup Y=V(G)$, each vertx of $G$ is in $X$ or is in $Y\setminus X$.
+%     For each $v\in X$, $v\in \widehat{X}$.  For each $v\in Y\setminus X$,
+%     \begin{enumerate*}[label=(\alph*)]
+%       \item $v\in X'$, in which case $v\in \widehat{X}$;
+%       or \item $v\in Y'$ in which case $v\in\widehat{Y}$.
+%     \end{enumerate*}
+%     Thus $V(G)\subseteq \widehat{X}\cup\widehat{Y}\subseteq V(G)$, so $\widehat{X}\cup\widehat{Y}= V(G)$.
+
+%     What remains is to verify that for each edge $vw$ of $G$, $\{v,w\}\subseteq \widehat{X}$ or $\{v,w\}\subseteq\widehat{Y}$.
+%     Without loss of generality (at least) one of the following applies:
+%     \begin{enumerate}[nosep,nolistsep,label=(\roman*)]
+%       % \item $v\in X\cap W$: In this case $v\in\widehat{X}$ and $v\in\widehat{Y}$.
+%       \item $v\in X$: In this case $v\in\widehat{X}$ and $w\in N_G[X]\subseteq\widehat{X}$.
+%       \item $v\in N_G(X)$: In this case $w\in X$ or $w\in Y\setminus X$.  In the former case $v\in N_G(X)\subseteq X$ and $w\in X\subseteq \widehat{X}$. In the latter case $v,w\in Y\setminus X$.  Since $(X',Y')$ is a separation of $G'\supseteq G[Y\setminus X]$, either $v,w\in X'\subseteq \widehat{X}$ or $v,w\in Y'\subseteq\widehat{Y}$. \qedhere
+%     \end{enumerate}
+%   \end{clmproof}
+
+%   Next we show that $(\widehat{X},\widehat{Y})$ contradicts the maximality of $X$ in the choice of $(X,Y)$.
+
+%   \begin{clm}
+%     $|\widehat{X}|/|\widehat{X}\cap\widehat{Y}|>n/(\beta|W|)$.
+%   \end{clm}
+
+%   \begin{clmproof}
+%     Since $Y'\subseteq Y\setminus X$, $X\cap \hat{Y}=X\cap W$. Since $X'\subseteq Y\setminus X$,
+%     \[
+%       X'\cap \widehat{Y}=X'\cap (Y'\cup W)=X'\cap (Y'\cup (W\cap X))=X'\cap Y' \enspace .
+%     \]
+%     Therefore, $|\widehat{X}\cap\widehat{Y}|=|X'\cap Y'|+|X\cap W|$.
+%     On the other hand,
+%     \begin{align*}
+%       |\widehat{X}|
+%         & = |X| + |X'| - |L| \\
+%         & = |X| + |X'| - (n'-|Y\setminus X|) \\
+%         & = |X| + |X'| - (n'-(n-|X|)) \\
+%         & = |X'| - (n'-n)) \\
+%         & = |X'| + \frac{|W\cap X|n}{\beta|W|} \\
+%     \end{align*}
+%     Now recall that
+%     \begin{align*}
+%       \frac{|X'|}{|X'\cap Y'|}
+%         & >  \frac{n'}{\beta'|W'|} = \frac{n}{\beta|W|} \enspace .
+%     \end{align*}
+
+
+%     Therefore,
+%     \begin{align*}
+%       \frac{|\widehat{X}|}{|\widehat{X}\cap\widehat{Y}|}
+%         & = \frac{|X'| + \frac{|W\cap X|n}{\beta|W|}}{|X'\cap Y'|+|X\cap W|}  \\
+%         & > \frac{n}{\beta|W|} \qedhere
+%     \end{align*}
+%   \end{clmproof}
+%   Since $|\widehat{X}|>|X|$, this contradicts the maximality of $|X|$ in the choice of $(X,Y)$
+
+%   Thus $G'$ has a $W'$-cloud with total supply $n'$ and congestion at most $n'/(\beta'|W|)=n/(\beta|W|)$.  Let $(A',B')$ be a balanced separation of $G[X\setminus Y]$ of order at most $a$.  For each vertex $v\in V(G')\setminus V(G)$, add $v$ to $A'$ if the unique neighbour of $v$ is in $A'$, otherwise add $v$ to $B'$.  This gives separation of $G'$ whose order is at most $a$.  \textcolor{red}{[There's a big problem here.  We can't be sure that the resulting separation is a balanced separation of $G'$! This means we can't apply \cref{balanced_on_w}]}  By \cref{balanced_on_w}, $|A'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$ and $|B'\cap W\setminus X|\le (1-\tfrac{\beta'}{3})|W\setminus X|+2a$.
+
+%   Finally, let $A:=X\cup A'\cap V(G)$ and let $B:=(X\cap Y)\cup B'\cap V(G)$.  Then $(A,B)$ is a separation of $G$ with
+%   \[
+%     |A\cap B|\le |X\cap Y|+|A'\cap B'| \le \beta|W| + a
+%   \]
+%   Furthermore,
+%   \begin{align*}
+%     |A\cap W| & \le |X\cap W|+(1-\tfrac{\beta'}{3})|W\setminus X| \\
+%        & = |X\cap W|+(1-\tfrac{\beta'}{3})(|W|-|W\cap X|) \\
+%        & = \tfrac{\beta'}{3}|X\cap W|+(1-\tfrac{\beta}{3})|W| \\
+%        & \le \tfrac{\beta\beta'}{3}|W|+(1-\tfrac{\beta'}{3})|W| \\
+%        & = (1-\tfrac{\beta}{3}+\tfrac{\beta\beta'}{3})|W|
+%   \end{align*}
+% \end{proof}
 
 
 
