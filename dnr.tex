@@ -135,6 +135,7 @@ We define the \defin{boundary} of $r_d$ as $\mathdefin{\boundary(r_d)}:=V(G_d)\c
 
 The following construction of a separation tree using balanced separations (or variants of this using balanced separators) are fairly standard.
 
+\hussein{I think you mean there exists $h$ instead of for every $d$.}
 \begin{lem}\label{separation_tree}
   Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then, for every $d\ge 0$, $G$ has a separation tree $T$ of height at most $h$ such that, for each $d\in\{0,\ldots,h\}$ and for each node $x\in V(T)$ of depth $d$, $|V(\interior(x))|\le n\cdot (\tfrac{2}{3})^d$ and $|\boundary(x)|\le da$.
 \end{lem}
@@ -190,6 +191,7 @@ Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\sub
   \item There exists $Z\subseteq W_{\ell+1}$ with $|Z|=s_{\ell+1}$ that separates $V(G)\setminus W_{\ell}$ and $W$. \label{separated}
 \end{enumerate}
 
+\hussein{In this lemma, if we consumed all the vertices of $G$ by appending each time a $|W|$ vertices, then $s_{\ell + 1} = |W| \geq w$, contradicting $d$!}
 \begin{lem}\label{w_sequence}
   For any graph $G$, any $W\subseteq V(G)$ and any non-negative integer $w\le |W_0|$, there exists a $W$-sequence of width $w$ in $G$.
 \end{lem}
