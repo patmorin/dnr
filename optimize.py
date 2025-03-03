@@ -2,18 +2,20 @@
 import numpy as np
 import math
 
+a = 2+1/6
+b = 3
 
 def bag_size1(t,d):
-    return (2*t-1)+d+1
+    return (2*t)+d+1
 
 def bag_size2(t, d):
-    return 2*t*(2/3)**(d) + 5*d
+    return check(t,d) + d
 
 def check(t, d):
-    return 2*t*(2/3)**(d) + 4*d
+    return 2*t*(2/3)**(d) + (b+1)*d
 
 def optimal_t(d):
-    return (4*d) / (1-2*(2/3)**(d))
+    return ((b+1)*d) / (1-a*(2/3)**(d))
 
 
 # print("t(5) = {}".format(t(5)))
