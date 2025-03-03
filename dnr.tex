@@ -40,9 +40,12 @@
 \DeclareMathOperator{\len}{len}
 \DeclareMathOperator{\sep}{sn}
 \DeclareMathOperator{\tw}{tw}
+\DeclareMathOperator{\width}{width}
 \DeclareMathOperator{\pw}{pw}
 \DeclareMathOperator{\bw}{bw}
 \DeclareMathOperator{\td}{td}
+\DeclareMathOperator{\depth}{depth}
+\DeclareMathOperator{\height}{height}
 \DeclareMathOperator{\diam}{diam}
 \DeclareMathOperator{\radius}{radius}
 \DeclareMathOperator{\pth}{path}
@@ -69,6 +72,7 @@
 \newcommand{\hussein}[1]{\textcolor{purple}{HH: #1}}
 
 \title{\MakeUppercase{Dvo\v{r}ák-Norin Revisited}}
+\title{\MakeUppercase{Separation Number and Treewidth, Revisited}}
 
 \author{Hussein Houdrouge, Bobby Miraftab, and Pat Morin}
 
@@ -87,18 +91,41 @@
 
 \section{Introduction}
 
-In this paper every graph $G$ is undirected simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)|$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
+In this paper every graph $G$ is undirected and simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{tree decomposition} of a graph $G$ is a collection $\mathcal{T}:=(B_x:x\in V(T))$ of vertex subsets of $G$, called \defin{bags}, that is indexed by the vertices of a tree $T$ and such that
+\begin{enumerate*}[label=(\roman*)]
+  \item\label{covers_edges} for each $vw\in E(G)$, there exists $x\in V(T)$ such that $\{v,w\}\subseteq B_x$; and
+  \item\label{connectivity} for each vertex $v$ of $G$, $T[\{x\in V(T): v\in B_x]$ is a non-empty (connected) subtree of $T$.
+\end{enumerate*}
+The \defin{width}, of a tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ is $\mathdefin{\width(\mathcal{T})}:=\max\{|B_x|:x\in V(T)\}-1$. The \defin{treewidth} of a graph $G$ is $\mathdefin{\tw(G)}:=\min\{\width(\mathcal{T}):\text{$\mathcal{T}$ is a tree decomposition of $G$}\}$.
 
-We reprove the following result of \citet{dvorak.norin:treewidth}.
+A \defin{separation} $(A,B)$ of a graph $G$ is a pair of subsets of $V(G)$ with $A\cup B= V(G)$ and such that, for each edge $vw$ of $G$, $\{v,w\}\subseteq A$ or $\{v,w\}\subseteq B$.  The \defin{order} of a separation $(A,B)$ is $|A\cap B|$.  A separation $(A,B)$ is \defin{balanced} if $|A\setminus B|\le \tfrac{2}{3}|V(G)|$ and $|B\setminus A|\le \tfrac{2}{3}|V(G)|$.  The \defin{separation number} $\mathdefin{\sep(G)}$ of a graph $G$ is the minimum integer $a$ such that every subgraph of $G$ has a balanced separation of order at most $a$.
+
+A short argument due to \citet{robertson.seymour:graph} that has many generalizations shows that for any graph $G$, $\sep(G)\le \tw(G)+1$ .  We reprove the weak converse of this fact, first proven by \citet{dvorak.norin:treewidth}.
 \begin{thm}\label{main_result}
-  There exists a constant $c$ such that, for every graph $G$, $\tw(G)\le c\sep(G)$.
+  There exists a constant $c$ such that, for every graph $G$, $\tw(G)\le c\cdot \sep(G)$.
 \end{thm}
 
-\pat{Currently, the best bound I have on $c$ is $67$.}
+Let $W$ be a subset of the vertices in a graph $G$.  A separation $(A,B)$ of $G$ is \defin{$W$-balanced} if $|(A\setminus B)\cap W|\le \tfrac{2}{3}|W|$ and $|(A\setminus B)\cap W|\le \tfrac{2}{3}|W|$.  If, for every subset $W\subseteq V(G)$, $G$ has a $W$-balanced separator of order $a$, then  $\tw(G)<4a$.  Indeed, a tree decomposition of $G$ can be constructed iteratively by an algorithm that maintains a separation $(X,Y)$ of order at most $3a$, and a tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ of $G[Y]$ of width less than $ca$ in which some bag $B_x$ contains all vertices in $W:=X\cap Y$.  To extend $\mathcal{T}$, the algorithm takes a $W$-balanced separation $(A,B)$ of $G[X]$ of order at most $a$ and creates a leaf $x'$ in $T$ adjacent to $x$ with $B_{x'}:=W\cup (A\cap B)$.\footnote{A $W$-balanced separation $(A,B)$ of $G[X]$ can be obtained from a $W$-balanced separation $(A',B')$ of $G$ by setting $(A,B):=(A'\cap X,B'\cap X)$.}  Note that $|B_{x'}|\le |W|+|A\cap B|\le 4a$, so the width of $\mathcal{T}$ is still less than $4a$. 
+% This gives a tree decomposition of $G[Y']:=G[Y\cup (A\cap B)]$.
+Let $X_A:=A$, $Y_A:=X\cup(A\cap B)$, $G_A:=G[X_A\cup Y_A]$ and $W_A:=X_A\cap Y_A$.  Then $\mathcal{T}$ is a tree decomposition $G[Y_A]$ of width less than $4a$ and $(X_A,Y_A)$ is a separation of $G_A$ of order $|W_A|\le|W\cap A|+|A\cap B|\le \tfrac{2}{3}|W|+a\le 3a$. The algorithm then inductively extends $\mathcal{T}$ to a tree decomposition of $G_A$.  Let $X_B:=B$, $Y_B:=X\cup A$, $G_B:=G$, and $W_B:=X_B\cap Y_B$.  Then $\mathcal{T}$ is a tree decomposition of $Y_B$ of width less than $4a$ and $(X_B,Y_B)$ is a separation of $G_B$ of order $|W_B|\le |W\cap B|+|A\cap B|\le\tfrac{2}{3}|W|+a\le 3a$.  The algorithm finishes by inductively extending $\mathcal{T}$ to a tree decomposition of $G_B=G$.
+
+An efficient implementation of the algorithm discussed in the preceding paragraph is given by \citet[Fact~2.7]{reed:tree}.  The challenge in establishing \cref{main_result} is that the balanced separations in the definition of separation number are only able to balance the entire set of vertices in an arbitrary subgraph, rather than a specific subset $W$ of vertices.  In particular, there is no reason a balanced separation $(A,B)$ of $G[X]$ should have $|(A\setminus B)\cap W|<|W|$ and $|(B\setminus A)\cap W|<|W|$.
+
+\citet{dvorak.norin:treewidth} prove \cref{main_result} with the constant $c=15$. Their proof is by contradiction and makes use of the relationship between treewidth and brambles established by \citet{seymour.thomas:graph}.  Essentially, they show that if $\tw(G)>15\sep(G)$, then there exists an $\alpha$-tame $W$-cloud (a special kind of network flow) which contradicts the choice of a haven (a special kind of flap assignment) that is derived from a bramble of order $15\sep(G)$.  The crux of their proof \cite[Proof of Lemma~7]{dvorak.norin:treewidth} involves showing that, for a \emph{carefully chosen} $W\subseteq V(G)$, a balanced separation of the subgraph induced by the saturated and hungry vertices of an $\alpha$-tame $W$-cloud is, by necessity, also balanced over the set $W$ of sinks in the $W$-cloud. This leads to a contradiction related to the choice of $W$.
+
+In the current paper, we prove \cref{main_result} with the constant $c=\mathcolor{red}{48/(1-2\cdot(2/3)^5)+2< 66.1621}$.  Despite the larger constant, we believe that the proof given here has a number of advantages.  The proof is constructive: It proves that $\tw(G)\le c\cdot \sep(G)$ by constructing a tree decomposition of $G$ having width at most $c\cdot\sep(G)$.  The proof requires fewer definitions and previous results: It does not use brambles, havens, or network flows.  Brambles and havens are avoided entirely.  The use of network flows is replaced by a collection of paths obtained from repeated applications of the simplest version of Menger's Theorem on vertex-disjoint paths in (unweighted undirected) graphs.  
+
+Most importantly, the proof given here is built around a generalization of $W$-balanced separations:  For a sufficiently large $t>0$ and an \emph{arbitrary} $W\subseteq V(G)$ of size at least $t\cdot \sep(G)$, there exists a subgraph $H$ of $G$ with $W\subseteq V(G)$ such that any balanced separation of $H$ must necessarily balance both $W$ and the set $Z:=N_G(V(G)\setminus V(H))$ of vertices that separate $V(G)\setminus V(H)$ from $W$. With this tool in hand, recursively taking balanced separations of subgraphs of $H$ gives an algorithm for constructing a tree decomposition of $G$ that is similar in spirit to the algorithm outlined above.
+
+% The identification of the subgraph $H$ described above is related to what we consider the crux of the proof in \cite{dvorak.norin:treewidth}.  However, we define $H$ using repeated applications of Menger's Theorem, which increases the number of vertices in $H$ by $|W|$ at each step.  The closest thing to an equivalent notion in \cite{dvorak.norin:treewidth} is the graph $F$ that appears in the proof of Lemma~7. There, the graph $F$ is obtained by taking a special kind of network flow $f$ (an $\alpha$-tame $W$-cloud) in which the only sinks are the vertices in $W$ (for a \emph{carefully chosen} $W\subseteq V(G)$) and $F$ is defined to be the subgraph of $G$ induced by the (the hungry and saturated) vertices of $G$ that participate in $f$.
 
 \section{Preliminaries}
 
-Let $G$ be a graph and let $S,T\subseteq V(G)$. An \defin{$S$-$T$ path} in $G$ is a path in $G$ whose first vertex is in $S$ and whose last vertex is in $T$.  We say that a set $Z\subseteq V(G)$ \defin{separates} $S$ and $T$ if $G-X$ has no $S$-$T$ path.  When $Z$ separates $S$ and $T$, any separation $(X,Y)$ of $G$ with $S\subseteq X$, $T\subseteq Y$ and $X\cap Y=Z$ is called an \defin{$(S,T,Z)$-separation}. To see that an $(S,T,Z)$-separation always exists, let $G_X$ be the union of all components of $G-Z$ that contain a vertex of $S$. Then $S\subseteq V(G_X)\cup Z$. Take $G_Y$ to be the union of all components of $G-Z$ not included in $G_X$. Since  every component of $G_X$ contains a vertex in $S$, no component of $G_X$ contains a vertex in $T$.  Therefore, $T\subseteq V(G_Y)\cup Z$.  Then the separation $(X,Y):=(V(G_X)\cup Z, V(G_Y)\cup Z)$ is an $(S,T,Z)$-separation.  We make use of Menger's Theorem:
+For standard graph theoretic terminology and notations, see \citet{diestel2017graph}.
+Let $G$ be a graph and let $S,T\subseteq V(G)$. An \defin{$S$-$T$ path} in $G$ is a path in $G$ whose first vertex is in $S$ and whose last vertex is in $T$.  We say that a set $Z\subseteq V(G)$ \defin{separates} $S$ and $T$ if $G-X$ has no $S$-$T$ path.  When $Z$ separates $S$ and $T$, any separation $(X,Y)$ of $G$ with $S\subseteq X$, $T\subseteq Y$ and $X\cap Y=Z$ is called an \defin{$(S,Z,T)$-separation}. To see that an $(S,Z,T)$-separation always exists, let $G_X$ be the union of all components of $G-Z$ that contain a vertex of $S$. Then $S\subseteq V(G_X)\cup Z$. Take $G_Y$ to be the union of all components of $G-Z$ not included in $G_X$. Since  every component of $G_X$ contains a vertex in $S$, no component of $G_X$ contains a vertex in $T$.  Therefore, $T\subseteq V(G_Y)\cup Z$.  Then the separation $(X,Y):=(V(G_X)\cup Z, V(G_Y)\cup Z)$ is an $(S,Z,T)$-separation.  
+
+We make use of the following vertex connectivity version of Menger's Theorem (see, for example, \citet[Theorem~3.3.1]{diestel2017graph}): \
+% \pat{We need a reference for this.}\hussein{I cited the graph theory book!}
 
 \begin{thm}[Menger's Theorem]\label{menger}
   Let $G$ be a graph and let $S$ and $T$ be subsets of $V(G)$. For each $k\in\N$, exactly one of the following is true:
@@ -108,44 +135,88 @@ Let $G$ be a graph and let $S,T\subseteq V(G)$. An \defin{$S$-$T$ path} in $G$ i
   \end{enumerate}
 \end{thm}
 
-A \defin{separation tree} of a graph $G$ is a rooted ordered binary tree that either has no nodes, or in which the root node $r_0$ is a triple $(G,A,B)$ where $(A,B)$ is a separation of $G$, the left child of $r_0$ is the root of a separation tree of $G[A]$ and the right child of $r_0$ is the root of a separation tree of $G[B]$. (If left or right child of $r_0$ is the tree with no nodes, then we treat $r_0$ as having no left or right child, respectively.)
+The \defin{depth}, $\mathdefin{\depth_T(x)}$ of a node $x$ in a rooted tree $T$ is the number of edges on the path from $x$ to the root of $T$. The \defin{height} of a rooted tree $T$ is $\mathdefin{\height(T)}:=\max\{\depth_T(x):x\in V(T)\}$. For a node $x$ in a rooted tree $T$, we let $\mathdefin{T_x}$ denote the subtree of $T$ induced by all the descendants of $x$, including $x$ itself.
+ 
+A tree decomposition $(B_x:x\in V(T))$ of a graph $G$ is \defin{rooted} if the tree $T$ is rooted.  Let $\mathcal{T}:=(B_x:x\in V(T))$ be a rooted tree decomposition of a graph $G$.    For the root $x_0$ of $T$, the \defin{boundary} of $x_0$ is $\mathdefin{\boundary_{\mathcal{T}}(x_0)}:=\emptyset$.  For a node $x$ of $T$ with parent $y$, the \defin{boundary} of $x$ is $\mathdefin{\boundary_\mathcal{T}(x)}:=B_x\cap B_y$.  The \defin{interior} of a node $x$ in $T$ is $\mathdefin{\interior_\mathcal{T}(x)}:=(\bigcup_{x'\in V(T_x)} B_{x'})\setminus \boundary(x)$.  Note that, for the root $x_0$ of $T$, $\interior_{\mathcal{T}}(x_0)=V(G)$.  From these definitions it follows that, if $T_y\supseteq T_x$, then $\interior_{\mathcal{T}}(x)\subseteq\interior_{\mathcal{T}}(y)$ and that $\interior_\mathcal{T}(x) \cup \boundary_\mathcal{T}(x)\subseteq \interior_\mathcal{T}(y) \cup \boundary_\mathcal{T}(y)$. In particular, these inclusion relations hold for every ancestor $y$ of $x$. 
 
-The \defin{depth} of a node $x$ in a separation tree $T$ is the number of edges on the path from $x$ to the root of $T$.
- The \defin{height} of a separation tree $T$ is the maximum depth of any node in $T$.
 
-Let $T$ be a separation tree of $G$ and let $r_0,\ldots,r_d$ be the path in $T$ from the root node $r_0$ to some node $r_d$ of depth $d$, and let $r_i:=(G_i,A_i,B_i)$ for each $i\in\{0,\ldots,d\}$.
-For each $i\in\{0,\ldots,p-1\}$, let
-\[
-  (C_i,\overline{C}_i):=
-  \begin{cases}
-    (A_i,B_i) & \text{if $r_{i+1}$ is the left child of $r_{i}$} \\
-    (B_i,A_i) & \text{if $r_{i+1}$ is the right child of $r_{i}$.}
-  \end{cases}
-\]
-From these definitions, it follows that $G_p := G[\bigcap_{i=0}^{p-1} C_i]$.
-We define the \defin{boundary} of $r_d$ as $\mathdefin{\boundary(r_d)}:=V(G_d)\cap(\bigcup_{i=0}^{d-1}(A_i\cap B_i))$ and the \defin{interior} of $r_d$ as $\mathdefin{\interior(r_d)}:=V(G_d) \setminus \boundary(r_d)$. These definition imply the following:
-\begin{enumerate}[nosep,nolistsep,label=(T\arabic*)]
-  \item $N_G(\interior(r_d))=\boundary(r_d)$;
-  \item\label{small_boundary} $N_G(\interior(r_d))\subseteq \bigcup_{i=0}^{d-1}(A_i\cap B_i)$; and
-  \item\label{small_interior} $\interior(r_d) = \bigcap_{i=0}^{d-1}(C_i\setminus\overline{C}_i)$.
-\end{enumerate}
+
+% A \defin{separation tree} of a graph $G$ is a rooted ordered binary tree that either has no nodes, or in which the root node $r_0$ is a triple $(G,A,B)$ where $(A,B)$ is a separation of $G$, the left child of $r_0$ is the root of a separation tree of $G[A]$ and the right child of $r_0$ is the root of a separation tree of $G[B]$. (If left or right child of $r_0$ is the tree with no nodes, then we treat $r_0$ as having no left or right child, respectively.)
+
+
+% Let $T$ be a separation tree of $G$ and let $r_0,\ldots,r_d$ be the path in $T$ from the root node $r_0$ to some node $r_d$ of depth $d$, and let $r_i:=(G_i,A_i,B_i)$ for each $i\in\{0,\ldots,d\}$.
+% For each $i\in\{0,\ldots,d-1\}$, let
+% \[
+%   (C_i,\overline{C}_i):=
+%   \begin{cases}
+%     (A_i,B_i) & \text{if $r_{i+1}$ is the left child of $r_{i}$} \\
+%     (B_i,A_i) & \text{if $r_{i+1}$ is the right child of $r_{i}$.}
+%   \end{cases}
+% \]
+% From these definitions, it follows that $G_p := G[\bigcap_{i=0}^{p-1} C_i]$.
+% We define the \defin{boundary} of $r_d$ as $\mathdefin{\boundary(r_d)}:=V(G_d)\cap(\bigcup_{i=0}^{d-1}(A_i\cap B_i))$ and the \defin{interior} of $r_d$ as $\mathdefin{\interior(r_d)}:=V(G_d) \setminus \boundary(r_d)$. These definition imply the following:
+% \begin{enumerate}[nosep,nolistsep,label=(T\arabic*)]
+%   \item $N_G(\interior(r_d))=\boundary(r_d)$;
+%   \item\label{small_boundary} $N_G(\interior(r_d))\subseteq \bigcup_{i=0}^{d-1}(A_i\cap B_i)$; and
+%   \item\label{small_interior} $\interior(r_d) = \bigcap_{i=0}^{d-1}(C_i\setminus\overline{C}_i)$.
+% \end{enumerate}
 
 % it follows that the boundary of $r_d$ is exactly the set of vertices of $G$ incident to some vertex in $\interior(r_d)$.  That is, $N_G(\interior(r_d))=\boundary(r_d)$.  In particular,
 % $N_G(\interior(r_d))$ is contained in $\bigcup_{i=0}^{d-1}(A_i\cap B_i)$.
 
-The following construction of a separation tree using balanced separations (or variants of this using balanced separators) are fairly standard.
+The following lemma allows us to restrict a rooted tree decomposition of a graph $G$ to the subgraph $G[Y]$ induced by one part of a separation $(X,Y)$ in such a way that $X\cap Y$ is contained in a single bag (the root bag) of the resulting decomposition.
 
-\hussein{I think you mean there exists $h$ instead of for every $d$.}
-\begin{lem}\label{separation_tree}
-  Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then, for every $d\ge 0$, $G$ has a separation tree $T$ of height at most $h$ such that, for each $d\in\{0,\ldots,h\}$ and for each node $x\in V(T)$ of depth $d$, $|V(\interior(x))|\le n\cdot (\tfrac{2}{3})^d$ and $|\boundary(x)|\le da$.
+\begin{lem}\label{restricted_decomp}
+    Let $\mathcal{T}':=(B'_x:x\in V(T'))$ be a rooted tree decomposition of a graph $G$, let $(X,Y)$ be a separation of $G$, and let $B_x:=(B'_x\cap Y)\cup (\interior_{\mathcal{T}'}(x) \cap X \cap Y)$ for each $x\in V(T')$.  Then $\mathcal{T}:=(B_x:x\in V(T'))$ is a tree decomposition of $G[Y]$. 
 \end{lem}
 
 \begin{proof}
-  The tree $T$ can be constructed recursively, as follows:  Fix a global value $N:=n\cdot(\tfrac{2}{3})^h$ that does not change during recursive invocations. Each recursive invocation takes a pair $(G',\partial)$ and the initial invocation is on the pair $(G,\emptyset)$.  When recursing on $(G',\partial)$, to construct a subtree $T'$ we apply the following rule:  If $|V(G')\setminus\partial|< N$, then return the empty tree. Otherwise, the root $r_0'$ of $T$ is $(G',A',B')$ where $(A',B')$ is a balanced separation of $G'-\partial$ of order at most $a$. The left child of $r_0'$ is the root of the tree obtained by recursing on $(G'[A'],A'\cap(\partial\cup B'))$ and the right child of $r_0'$ is the root of the tree obtained by recursing on $(G[B'],B'\cap(\partial\cup A'))$.
+  Let $vw$ be an edge of $G[Y]$.  Since $vw$ is also an edge of $G$ and  $\mathcal{T'}$ is a tree decomposition of $G$,  $\{v,w\}\subseteq B'_x$ for some $x\in V(T')$, so $\{v,w\}\subseteq B'_x\cap Y\subseteq  B_x$. Thus, $\mathcal{T}$ has Property~\ref{covers_edges} of tree decompositions.  
+  % We now argue that $\mathcal{T}$ also has Property~\ref{connectivity} of tree decompositions.
 
-  The bound $|\interior(x)|\le n\cdot (\tfrac{2}{3})^d$ follows from \ref{small_interior} and the bound $|\boundary(x)|\le da$ follows from \ref{small_boundary}.
-  It is straightforward to verify that, for a node $x$ that is the root of a tree obtained by recursing on $(G',\partial)$, $\boundary(x)=\partial$. Therefore, $V(G')\setminus\partial=\interior(x)$.
-  The bound on the height $h$ of $T$ follows from the bound $|\interior(x)|\le n\cdot (\tfrac{2}{3})^d$ and the fact that the algorithm returns an empty tree when $|V(G')\setminus\partial|<N=n\cdot(\tfrac{2}{3})^h$.
+  \pat{There should be a shorter proof that $\mathcal{T}$ satisfies Property~\ref{connectivity}.}
+  Suppose, for the sake of contradiction, that $\mathcal{T}$ violates Property~\ref{connectivity}.  Then there exists some $v\in Y$, some $r\ge 2$, and some path $P=x_0,\ldots,x_r$ in $T'$ with $v\in B_{x_0}$, $v\in B_{x_r}$ and $v\not\in B_{x_i}$ for some $i\in\{1,\ldots,r-1\}$.  Let $P$ be chosen so that its length, $r$, is minimum.  Then $v\not\in B_{x_i}$ for each $i\in\{1,\ldots,r-1\}$. 
+  
+  Since $\mathcal{T}'$ is a tree decomposition of $G$, $v\not\in B'_{x_0}$ or $v\not\in B'_{x_r}$ since, otherwise $v\in B_{x_i}\subseteq B'_{x_i}\cap Y$ for each $i\in\{0,\ldots,r\}$.  Assume, without loss of generality that $v\not\in B'_{x_r}$. Therefore $v\in\interior_{\mathcal{T}'}(x_r)\cap X\cap Y$.  In particular, $v\in X\cap Y$.
+  
+  Define $i^*$ so that $x_{i^*}$ is the uniqe vertex in $P$ that is ancestor of both $x_0$ and $x_r$.  Then  $\interior_{\mathcal{T}'}(x_{i^*})\supseteq \interior_{\mathcal{T}'}(x_i)$ for each $i\in\{0,\ldots,r\}$.  In particular $v\in \interior_{\mathcal{T}'}(x_r)\cap X\cap Y\subseteq\interior_{\mathcal{T}'}(x_{i^*})\cap X\cap Y\subseteq B_{x_{i}}$ for each $i\in\{i^*,\ldots,r\}$.  Therefore $i^*=r$ and $x_r$ is an ancestor of $x_0$. Furthermore, $v\not\in\interior_{\mathcal{T}'}(x_0)$ since, otherwise $v\in\interior_{\mathcal{T}'}(x_1)\cap X\cap Y\subseteq B_{x_1}$. Therefore $v\in B'_{x_0}$.  Thus $x_1$ is the parent of $x_0$, $v\in B'_{x_0}$ and $v\not\in (B'_{x_1}\cap Y)\cup (\interior_{\mathcal{T}'}(x_1)\cap X\cap Y)
+  \supseteq (B'_{x_i}\cup \interior_{\mathcal{T}'}(x_1))\cap\{v\}
+  \supseteq (\boundary_{\mathcal{T}'}(x_1)\cup \interior_{\mathcal{T}'}(x_1))\cap\{v\} \supseteq (\boundary_{\mathcal{T}'}(x_0)\cup \interior_{\mathcal{T}'}(x_0))\cap \{v\} \supseteq B'_{x_0}\cap\{v\}$. This contradicts the fact that $v\in B'_{x_0}$.
+\end{proof}
+
+
+The following construction of a tree decomposition using balanced separations (or variants of this construction using balanced separators) is fairly standard.
+
+\begin{lem}\label{separation_tree}
+  Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then, for every integer $h\ge 0$, $G$ has a rooted tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ such that
+  \begin{enumerate}[nosep,nolistsep,label=(\roman*)]
+    \item\label{height_bound} $\height(T)\le h$;
+    \item\label{size_bounds} for each $x\in V(T)$,  $|\interior_\mathcal{T}(x)|\le n\cdot(\tfrac{2}{3})^{\depth_T(x)}$ and $|\boundary(x)|\le \depth_T(x)\cdot a$;
+    \item\label{leaf_size_bounds} for each leaf $y$ of $T$, $|\interior_{\mathcal{T}}(y)|\le n\cdot(\tfrac{2}{3})^h$.
+  \end{enumerate}
+\end{lem}
+
+% \hussein{I think you mean there exists $h$ instead of for every $d$.} \pat{Yes! Fixed.}
+% \begin{lem}\label{separation_tree}
+%   % \pat{Be a little more careful. The empty tree satisfies this definition.}
+%   Let $G$ be an $n$-vertex graph with $\sep(G)\le a$.  Then, for every $h\ge 0$, $G$ has a separation tree $T$ of height at most $h$ such that, for each $d\in\{0,\ldots,h\}$ and for each node $x\in V(T)$ of depth $d$, $|V(\interior(x))|\le n\cdot (\tfrac{2}{3})^d$ and $|\boundary(x)|\le da$. 
+  
+%   Furthermore, for each node $x:=(G',A',B')$ of $T$ that has no left child, $|\interior(x)\setminus B|< n\cdot (\tfrac{2}{3})^{h}$.  For each node $x$ of $T$ that has no right child, $|\interior(x)\setminus A|< n\cdot (\tfrac{2}{3})^h$.
+% \end{lem}
+
+\begin{proof}
+  The tree decomposition $\mathcal{T}=(B_x:x\in V(T))$ and its supporting tree $T$ is constructed recursively, as follows:  Fix a global value $N:=n\cdot(\tfrac{2}{3})^h$ that does not change during recursive invocations. Each recursive invocation takes a pair $(G',\partial')$ and the initial invocation is on the pair $(G,\emptyset)$. When recursing on $(G',\partial')$ to construct a subtree $T'$ we apply the following rule:  If $|V(G')\setminus\partial'|\le N$, then $T'$ consists of a single node $x$ with $B_{x}:=V(G')$.  Otherwise, let $(A',B')$ be a balanced separation of $G'-\partial'$ of order at most $a$.  The root $x$ of $T'$ has $B_{x}:=\partial'\cup (A'\cap B')$. The left child of $x$ is the root of the tree obtained by recursing on $(G'[A'],A'\cap(\partial'\cup B'))$ and the right child of $x$ is the root of the tree obtained by recursing on $(G[B'],B'\cap(\partial'\cup A'))$.
+
+  We now show that $\boundary_{\mathcal{T}}(x)=\partial_x$, for each subtree $T_x$ rooted at $x\in V(T)$ that was constructed by a recursive invocation on $(G_x,\partial_x)$. If $\depth_T(x)=0$ then $x$ is the root of $T$ and $\boundary_{\mathcal{T}}(x)=\emptyset=\partial_x$, by definition.  
+  Now suppose $\depth_T(x)\ge 1$, the parent of $x$ is $y$ and $T_y$ is the result of a recursive invocation on $(G_y,\partial_y)$.
+  % By the inductive hypothesis $\partial_y=\boundary_{\mathcal{T}}(y))$.
+  Without loss of generality, $G_x=G[A^y]$ where $(A^y,B^y)$ is a separation of $G_y-\partial_y$.  Then $\partial_x=(A^y\cap(\partial_y\cup B^y)=(A^y\cap (\partial_y\cup (A^y\cap B^y))=A^y\cap B_y$.  If $x$ is a leaf of $T$ then $B_x=V(G_x)=A^y$, so $B_x\cap B_y=A^y\cap B_y=\partial_x$.  If $x$ is not a leaf of $T$ then $B_x=\partial_x\cup (A^x\cap B^x)$ where $(A^x,B^x)$ is a separation of $G_x-\partial_x=G[A^y\setminus (A^y\cap B_y)]=G[A^y\setminus B_y]$. In particular, $A^x\cup B^x$ contain no vertex of $B_y$, so $B_x\cap B_y=(\partial_x\cup (A^x\cap B^x))\cap B_y= \partial_x\cap B_y=\partial_x$ since $\partial_x=A^y\cap B_y\subseteq B_y$.  In either case $\boundary_{\mathcal{T}}(x)=B_x\cap B_y=\partial_x$.
+  
+  % \boundary(x)=B_x\cap B_y=B_x\cap\boundary(y)$  
+  
+  Now the bounds on $|\interior_{\mathcal{T}}(x)|$ and $|\boundary_{\mathcal{T}}(x)|$ are easily established by induction on $d:=\depth_T(x)$: When $d=0$, $|\boundary_{\mathcal{T}}(x)|=|\emptyset|=0 = 0a$ and $|\interior_{\mathcal{T}}(x)|=|V(G)\setminus\boundary_{\mathcal{T}}(x)|=n=n\cdot (\tfrac{2}{3})^0$. Now consider a node $x$ of depth $d\ge 1$ with parent $y$ that was created by a recursive invocation on $(G_y,\partial_y)=(G_y,\boundary_\mathcal{T}(y))$. Without loss of generality $T_x$ was created by a recursive invocation on $(G[A^y],\partial_x)$ where $(A^y,B^y)$ is a balanced separation of $G_y-\boundary_y=\interior_{\mathcal{T}}(y)$. Then  $|\interior_{\mathcal{T}}(x)|\le \tfrac{2}{3}\cdot |\interior_{\mathcal{T}}(y)|\le \tfrac{2}{3}\cdot (\frac{2}{3})^{d-1}\cdot n=(\tfrac{2}{3})^d\cdot n$ and $|\boundary_{\mathcal{T}}(x)|=|\partial_x|\le |\partial_y|+|A^y\cap B^y|= |\boundary_{\mathcal{T}}(y)|+|A^y\cap B^y|\le (d-1)a + a=da$.
+  
+  The bound on $\height(T)$ follows from the bound $|\interior_{\mathcal{T}}(x)|\le n\cdot (\tfrac{2}{3})^{\depth_T(x)}$ and the fact that the algorithm returns a 1-node tree (of height $0$) when $|V(G')\setminus\partial|\le N=n\cdot(\tfrac{2}{3})^h$.
 \end{proof}
 
 
@@ -179,269 +250,576 @@ The following construction of a separation tree using balanced separations (or v
 
 \section{The Proof}
 
-\pat{In hindsight, the definition of $W$-sequence should have sets $W_0,\ldots,W_{\ell}$.  This would make many of the formulas cleaner.}
+% \pat{In hindsight, the definition of $W$-sequence should have sets $W_0,\ldots,W_{\ell}$.  This would make many of the formulas cleaner.}
 
 The following definition replaces the notion of $W$-clouds in \cite{dvorak.norin:treewidth}.
 Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\subseteq W_1\subseteq\cdots\subseteq W_{\ell}\subseteq W_{\ell+1}\subseteq V(G)$ be a nested sequence of vertex subsets of $G$, and let $\Delta_i:=W_{i}\setminus W_{i-1}$ and $s_i:=|\Delta_i|$, for each $i\in\{0,\ldots,\ell+1\}$.  Then $W_0,\ldots,W_{\ell+1}$ is a \defin{$W$-sequence of width $w$} in $G$ if it satisfies the following conditions:
 \begin{enumerate}[nosep,nolistsep,label=\rm(\alph*),ref=(\alph*)]
   \item $W_0=W$.\label{w_starts}
-  \item $s_i=w$, for each $i\in\{1,\ldots,\ell\}$.\label{uniform_size}
+  \item $s_i=w$, for each $i\in\{0,\ldots,\ell\}$.\label{uniform_size}
+  \item $s_{\ell+1}\in\{0,\ldots,w-1\}$.\label{remainder}
   \item $G[W_i]$ contains $s_i$  pairwise vertex-disjoint $\Delta_i$-$W$ paths, for each $i\in\{0,\ldots,\ell+1\}$.\label{linked}
-  \item $s_{\ell+1}< w$.\label{remainder}
   \item There exists $Z\subseteq W_{\ell+1}$ with $|Z|=s_{\ell+1}$ that separates $V(G)\setminus W_{\ell}$ and $W$. \label{separated}
 \end{enumerate}
 
-\hussein{In this lemma, if we consumed all the vertices of $G$ by appending each time a $|W|$ vertices, then $s_{\ell + 1} = |W| \geq w$, contradicting $d$!}
+
+
+% \hussein{In this lemma, if we consumed all the vertices of $G$ by appending each time a $|W|$ vertices, then $s_{\ell + 1} = |W| \geq w$, contradicting $d$!}  
+% \pat{No, then we just have $s_{\ell+1}=0$.  I've changed \ref{remainder} to make it clear that this is a possibility.}
 \begin{lem}\label{w_sequence}
-  For any graph $G$, any $W\subseteq V(G)$ and any non-negative integer $w\le |W_0|$, there exists a $W$-sequence of width $w$ in $G$.
+  For every graph $G$, every $W\subseteq V(G)$ and every non-negative integer $w\le |W|$, there exists a $W$-sequence of width $w$ in $G$.
 \end{lem}
 
 \begin{proof}
   Let $W_0:=W$ and suppose that sets $W_0,\ldots,W_{i}$ have been defined that satisfy \ref{w_starts}, \ref{uniform_size} and \ref{linked} for some $i\ge 0$.  (These conditions are trivially satisfied for $i=0$.)  We now show how to construct $W_{i+1}$.
 
-  Let $w'$ be the maximum number of pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$, let $r:=\min\{w,w'\}$, and let $P_1,\ldots,P_{r}$ be pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$.  For each $j\in\{1,\ldots,r\}$ let $v_j$ be the last vertex of $P_j$ contained in $V(G)\setminus W_i$ and let $P_j'$ be the subpath of $P_j$ that begins at $v_j$ and ends at the first vertex of $P_j$ contained in $W$.  Set $W_{i+1}:=\{v_1,\ldots,v_r\}$, which implies that $s_{i+1}=|W_{i+1}|=r$.  The paths $P_1',\ldots,P_{s_{i+1}}'$ certify that $W_0,\ldots,W_{i+1}$ satisfy \ref{linked}.
+  Let $w'$ be the maximum number of pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$, let $r:=\min\{w,w'\}$, and let $P_1,\ldots,P_{r}$ be pairwise vertex-disjoint $(V(G)\setminus W_i)$-$W$ paths in $G$.  For each $j\in\{1,\ldots,r\}$ let $v_j$ be the last vertex of $P_j$ contained in $V(G)\setminus W_i$ and let $P_j'$ be the subpath of $P_j$ that begins at $v_j$ and ends at the first vertex of $P_j$ contained in $W$.  Set $W_{i+1}:=\{v_1,\ldots,v_r\}\cup W_i$, which implies that $s_{i+1}=r$.  The paths $P_1',\ldots,P_{s_{i+1}}'$ certify that $W_0,\ldots,W_{i+1}$ satisfies \ref{linked}.
 
-  If $r=w$ then $W_{i+1}$ also satisfies \ref{uniform_size} so that we now have sets $W_0,\ldots,W_{i+1}$ that satisfy \ref{w_starts}, \ref{uniform_size} and \ref{linked}.  In this case we can continue to define $W_{i+2}$ as above.
+  If $r=w$ then $W_{i+1}$ also satisfies \ref{uniform_size} so that we now a sequence $W_0,\ldots,W_{i+1}$ that satisfies \ref{w_starts}, \ref{uniform_size} and \ref{linked}.  In this case we can continue to define $W_{i+2}$ as above.
 
-  If $r< w$ then we set $\ell:=i$. Since $r< w$, $s_{\ell+1}=r<w$, so this choice of $\ell$ satisfies \ref{remainder}.  Since $G$ does not contain $k:=r+1$ pairwise vertex-disjoint $(V(G)\setminus W_{i})$-$W$ paths, \cref{menger} implies that there exists $Z\subseteq V(G)$ with $|Z|\le r$ such that $G-Z$ has no $(V(G)\setminus W_{i})$-$W_0$ path.  Since the paths $P_1',\ldots,P_{r}'$ are pairwise vertex-disjoint  $(V(G)\setminus W_{\ell})$-$W_0$ paths, $Z$ must contain at least one vertex from each of these paths, so $|Z|\ge r$. Therefore, $r\le |Z|\le r$, so $|Z|=r=s_{\ell+1}$.  Since $V(P_j')\subseteq W_{\ell+1}$ for each $j\in\{1,\ldots,s_{\ell+1}\}$, $Z\subseteq W_{\ell+1}$.  Therefore, this choice of $Z$ satisfies \ref{separated}.  Therefore, the sequence $W_0,\ldots,W_{\ell+1}$ satisfies \ref{w_starts} (a condition on $W_0$), \ref{uniform_size} (conditions on $W_1,\ldots,W_{\ell}$), \ref{linked} (conditions on $W_0,\ldots,W_{\ell+1}$), \ref{remainder} (a condition $W_{\ell+1}$), and \ref{separated} (a condition on $W_{\ell+1}$).  Thus, $W_0,\ldots,W_{\ell+1}$ is a $W$-sequence of width $w$ in $G$.
+  If $r< w$ then we set $\ell:=i$. Since $r< w$, $s_{\ell+1}=r<w$, so this choice of $\ell$ satisfies \ref{remainder}.  Since $G$ does not contain $k:=r+1$ pairwise vertex-disjoint $(V(G)\setminus W_{i})$-$W$ paths, \cref{menger} implies that there exists $Z\subseteq V(G)$ with $|Z|\le r$ such that $G-Z$ has no $(V(G)\setminus W_{\ell})$-$W$ path.  Since the paths $P_1',\ldots,P_{r}'$ are pairwise vertex-disjoint  $(V(G)\setminus W_{\ell})$-$W$ paths, $Z$ must contain at least one vertex from each of these paths, so $|Z|\ge r$. Therefore, $r\le |Z|\le r$, so $|Z|=r=s_{\ell+1}$.  Since $V(P_j')\subseteq W_{\ell+1}$ for each $j\in\{1,\ldots,s_{\ell+1}\}$, $Z\subseteq W_{\ell+1}$.  Therefore, this choice of $Z$ satisfies \ref{separated}.  Therefore, the sequence $W_0,\ldots,W_{\ell+1}$ satisfies \ref{w_starts} (a condition on $W_0$), \ref{uniform_size} (conditions on $W_1,\ldots,W_{\ell}$), \ref{remainder} (a condition $W_{\ell+1}$), \ref{linked} (conditions on $W_0,\ldots,W_{\ell+1}$), and \ref{separated} (a condition on $W_{\ell+1}$).  Thus, $W_0,\ldots,W_{\ell+1}$ is a $W$-sequence of width $w$ in $G$.
 \end{proof}
 
-One should think of $W$ as the contents of a bag in a partially constructed tree decomposition of some larger graph $G^+$.  That is $W=V(G)\cap H$ where $(V(G),H)$ is a separation of $G^+$, we have already constructed a tree decomposition of $G^+[H]$, and some bag of this decomposition includes all the vertices in $W$.  The purpose of $W$-sequences is to find a separator $S$ that splits $G$ in such a way that each component of $G-(W\cup S)$ is incident to at most $|W|$ vertices in $W\cup S$.  We will use the next two lemmas construct a separator $S:=Z\cup S_1\cup\cdots\cup S_p$ where $S_i$ is a balanced separator of (some subgraph of) $G[W_{\ell+1}]$, for each $i\in\{1,\ldots,p\}$.
+% One should think of $W$ as the contents of a bag in a partially constructed tree decomposition of some larger graph $G^+$.  That is $W=V(G)\cap H$ where $(V(G),H)$ is a separation of $G^+$, we have already constructed a tree decomposition of $G^+[H]$, and some bag of this decomposition includes all the vertices in $W$.  The purpose of $W$-sequences is to find a separator $S$ that splits $G$ in such a way that each component of $G-(W\cup S)$ is incident to at most $|W|$ vertices in $W\cup S$.  We will use the next two lemmas construct a separator $S:=Z\cup S_1\cup\cdots\cup S_p$ where $S_i$ is a balanced separator of (some subgraph of) $G[W_{\ell+1}]$, for each $i\in\{1,\ldots,p\}$.
 
 
-\begin{lem}\label{uniform_balance}
-  Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$. Let $(A,B)$ be a separation of $G[W_{\ell+1}]$. Then
-  \[
-     |(A\setminus B)\cap W| \le \frac{|A\setminus B|}{\ell+1} + |A\cap B|
-  \]
-\end{lem}
-
-\begin{proof}
-  Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
-  We will lower bound the number of vertices in $B\cap W$, which is sufficient, since $|(A\setminus B)\cap W|=|W|-|B\cap W|$.  For each $j\in\{0,\ldots,\ell\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$, each of which contains exactly one vertex in $W$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)
-
-  The paths in $\mathcal{P}_0$ consist of a single vertex in $W$, which is also in $B$.
-  For $j\in\{1,\ldots,\ell+1\}$, since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $|A\cap B|$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-|A\cap B|$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\mathcal{P}_0\cup \bigcup_{j=1}^{\ell+1} \mathcal{P}_j'$. Then,
-  \[
-    |\mathcal{P}|=|\mathcal{P}_0|+\sum_{j=1}^{\ell+1}|\mathcal{P}_j'| \ge \sum_{j=0}^{\ell+1}|\mathcal{P}_j| - (\ell+1)\cdot|A\cap B|
-    = |B|-(\ell+1)\cdot|A\cap B| \enspace .
-  \]
-  Each path in $\mathcal{P}$ ends at a vertex in $B\cap W$.  A vertex $w\in B\cap W$ is \defin{full} if $w$ is the endpoint of $\ell+2$ paths in $\mathcal{P}$.  If $w$ is full, then $w$ is the endpoint of exactly one path in $\mathcal{P}'_j$ for each $j\in\{0,\ldots,\ell+1\}$.  Since $|\mathcal{P}'_{\ell+1}|\le s_{\ell+1}$, there are at most $s_{\ell+1}$ vertices in $W\setminus A$ that are full.  The full vertices of $W\setminus A$ account for at most $s_{\ell+1}\cdot (\ell+2)$ paths in $\mathcal{P}$. Each of the other vertices of $B\cap W$ accounts for at most $\ell+1$ paths in $\mathcal{P}$.  Therefore,
-  \begin{align*}
-     |B\cap W|
-     & \ge \frac{s_{\ell+1}\cdot (\ell+2)}{\ell+2} + \frac{|\mathcal{P}|-s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
-     & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-\frac{s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
-     & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-s_{\ell+1}
-     - \frac{s_{\ell+1}}{\ell+1}\\
-     & = \frac{|\mathcal{P}|}{\ell+1}
-     - \frac{s_{\ell+1}}{\ell+1}\\
-     & \ge \frac{|B|-(\ell+1)\cdot|A\cap B|}{\ell+1}
-     - \frac{s_{\ell+1}}{\ell+1}\\
-     & = \frac{|W_{\ell+1}|-|A\setminus B|}{\ell+1}
-     - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
-     & = \frac{s_{\ell+1}+(\ell+1)\cdot|W|-|A\setminus B|}{\ell+1}
-     - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
-     % & = \frac{(\ell+1)\cdot|W|-|S|-(\ell+2)\cdot|A\cap B|}{\ell+1} \\
-     & = |W|-\frac{|A\setminus B|}{\ell+1}-|A\cap B|
-  \end{align*}
-  Therefore,
-  \[
-    |(A\setminus B)\cap W|=|W|-|B\cap W|\le \frac{|A\setminus B|}{\ell+1}+ |A\cap B| \enspace . \qedhere
-  \]
-\end{proof}
-
-
-% \begin{lem}\label{w_splitter}
-%   Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$. Let $i\in\{0,\ldots,\ell+1\}$ and let $(A,B)$ be a separation of $G[W_{i}]$ of order at most $a$.
+% \begin{lem}\label{uniform_balance}
+%   Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$. Let $(A,B)$ be a separation of $G[W_{\ell+1}]$. Then
 %   \[
-%     |A\cap W_0|\le |W_0|-\frac{|B|}{i+1}+a \enspace .
+%      |(A\setminus B)\cap W| \le \frac{|A\setminus B|\mathcolor{red}{{}+|\mathcal{P}^{B,A}|}}{\ell+1} + |A\cap B|
 %   \]
 % \end{lem}
 
 % \begin{proof}
-%   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
-%   For each $j\in\{0,\ldots,\ell\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)  Since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $a$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-a$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\bigcup_{j=1}^{\ell} \mathcal{P}_j'$. Then,
+%   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W$-sequence.
+%   We will lower bound the number of vertices in $B\cap W$, which is sufficient, since $|(A\setminus B)\cap W|=|W|-|B\cap W|$.  For each $j\in\{0,\ldots,\ell+1\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$, each of which contains exactly one vertex in $W$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)
+
+%   Each path in $\mathcal{P}_0$ consists of a single vertex in $W$, which is also in $B$.
+%   For $j\in\{1,\ldots,\ell+1\}$, since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $|A\cap B|$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-|A\cap B|$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\mathcal{P}_0\cup \bigcup_{j=1}^{\ell+1} \mathcal{P}_j'$. Then,
 %   \[
-%     |\mathcal{P}|=\sum_{j=0}^{i}|\mathcal{P}_j'| \ge \sum_{j=0}^{i}|\mathcal{P}_j| - a(i+1)
-%     = |B|-a(i+1) \enspace .
+%     |\mathcal{P}|=|\mathcal{P}_0|+\sum_{j=1}^{\ell+1}|\mathcal{P}_j'| \ge \sum_{j=0}^{\ell+1}|\mathcal{P}_j| - (\ell+1)\cdot|A\cap B|
+%     = |B|-(\ell+1)\cdot|A\cap B| \enspace .
 %   \]
-%   Each path in $\mathcal{P}$ ends at a vertex in $W_0\setminus A$.  Each vertex in $W_0\setminus A$ is an endpoint of at most one path in $\mathcal{P}'_j$, for each $j\in\{0,\ldots,i\}$.  Therefore, each vertex in $W_0\setminus A$ is the endpoint of at most $i+1$ paths in $\mathcal{P}$.  Therefore,
-%   \[
-%     |W_0\setminus A|\ge \frac{|\mathcal{P}|}{i+1} \ge \frac{|B|}{i+1}-a \enspace .
-%   \]
+%   Each path in $\mathcal{P}$ ends at a vertex in $B\cap W$.  A vertex $w\in B\cap W$ is \defin{full} if $w$ is the endpoint of $\ell+2$ paths in $\mathcal{P}$.  If $w$ is full, then $w$ is the endpoint of exactly one path in $\mathcal{P}'_j$ for each $j\in\{1,\ldots,\ell+1\}$ (and $w$ is the unique vertex of a path in $\mathcal{P}_0$).  Let $f$ be the number of full vertices in $W\cap B$.  Since each full vertex is the endpoint of a path in $\mathcal{P}'_{\ell+1}$, $f\le |\mathcal{P}'_{\ell+1}|\le s_{\ell+1}$.  The full vertices of $W\cap B$ are the endpoints of $f\cdot (\ell+2)$ paths in $\mathcal{P}$. Therefore,  $|\mathcal{P}|-f\cdot(\ell+2)$ paths in $\mathcal{P}$ end at non-full vertices $W\cap B$.
+%   % Therefore, $W\cap B$ contains at most $s_{\ell+1}\cdot (\ell+2)/s_{\ell+1}=(\ell+2)/(\ell+1)$ full vertices.
+%   Each of the $|B\cap W|-f$ non-full vertex of $W\cap B$ is an endpoint of at most $\ell+1$ paths in $\mathcal{P}$.  Therefore,
+%   \begin{align*}
+%      |B\cap W|
+%      & = f+(|B\cap W|-f) \\
+%      & \ge 
+%      % \frac{s_{\ell+1}\cdot (\ell+2)}{\ell+2} 
+%      f
+%      + \frac{|\mathcal{P}|-f\cdot(\ell+2)}{\ell+1} \\
+%      & =\frac{|\mathcal{P}|}{\ell+1} - \frac{f}{\ell+1} \\
+%      & \ge\frac{|\mathcal{P}|}{\ell+1} - \frac{s_{\ell+1}}{\ell+1} \\
+%      % s_{\ell+1}
+%      % + \frac{|\mathcal{P}|-s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+%      % & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-\frac{s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+%      % & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-s_{\ell+1}
+%      % - \frac{s_{\ell+1}}{\ell+1}\\
+%      % & = \frac{|\mathcal{P}|}{\ell+1}
+%      % - \frac{s_{\ell+1}}{\ell+1}\\
+%      & \ge \frac{|B|-(\ell+1)\cdot|A\cap B|}{\ell+1}
+%      - \frac{s_{\ell+1}}{\ell+1}\\
+%      & = \frac{|W_{\ell+1}|-|A\setminus B|}{\ell+1}
+%      - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+%      & = \frac{s_{\ell+1}+(\ell+1)\cdot|W|-|A\setminus B|}{\ell+1}
+%      - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+%      % & = \frac{(\ell+1)\cdot|W|-|S|-(\ell+2)\cdot|A\cap B|}{\ell+1} \\
+%      & = |W|-\frac{|A\setminus B|}{\ell+1}-|A\cap B| \enspace .
+%   \end{align*}
+% \hussein{It seems to me that we are counted the paths that goes to the full vertices inside $P$ as well, then we remove them. I don't know if we can be a little bit efficient!} \pat{I thought that for a moment, too, but now I don't.  We count the number of full vertices $f$ and the number of non-full vertices $|W\cap B|-f$.}\hussein{Ok, I will read it again, I got distracted with students.}
+
 %   Therefore,
 %   \[
-%     |W_0\cap A|=|W_0|-|W_0\setminus A|\le |W_0|-\frac{|B|}{i+1}+a \enspace . \qedhere
+%     |(A\setminus B)\cap W|=|W|-|B\cap W|\le \frac{|A\setminus B|}{\ell+1}+ |A\cap B| \enspace . \qedhere
 %   \]
 % \end{proof}
 
+% \pat{Reworking:}
 
-% \begin{cor}\label{balanced_corollary}
-%   Let $G$ be a graph, let $W_0,\ldots,W_\ell,W_{\ell+1}$ be $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$, and let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$.
-%   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$
-%   Let $(A,B)$ be a separation of $G[W_{\ell+1}]$ of order at most $a$.   Then
+% \begin{lem}\label{uniform_balance}
+%   Let $G$ be a graph, let $W\subseteq V(G)$, let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, and let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$. Then
 %   \[
-%     |A\cap W_0|\le |W_0|-\frac{|\Delta_{\ell+1}| + \ell w +|W_0|}{3(\ell+2)}+a \enspace .
+%      |W\setminus B| \le \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1} + |A\cap B|
 %   \]
-% \end{cor}
+% \end{lem}
 
 % \begin{proof}
-%   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
-%   Since $(A,B)$ is balanced separation of $G[W_i]$, $|A\setminus B|\le \frac{2}{3}|W_{i}|$, so $|B|=|W_{i}|-|A\setminus B|\ge \tfrac{1}{3}|W_{i}|$.  Applying \cref{w_splitter} with $i=\ell+1$, we obtain
+%   Let $\Delta_{0},\ldots,\Delta_\ell$ be as in the definition of $W$-sequence.
+%   For each $i\in\{0,\ldots,\ell\}$, $G[W_{i}]$ contains a set $\mathcal{P}_i$ of $|W\setminus B|$ pairwise vertex-disjoint $\Delta_i$-$(W\setminus B)$ paths.  For each $i\in\{0,\ldots,\ell\}$, let $\mathcal{P}'_i\subseteq \mathcal{P}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex in $A\setminus B$ and let $\overline{\mathcal{P}}'_i:=\mathcal{P}_i\setminus \mathcal{P}'_i$.  At most $|A\cap B|$ of the paths in $\mathcal{P}_i$ contain a vertex of $A\cap B$.  Since $(A,B)$ is a separation of $G[W_{\ell+1}]$, this implies that $|\overline{\mathcal{P}}'_i|\le |A\cap B|$.
+  
+%   Each vertex of $W\setminus B$ is the last vertex of exactly one path in $\mathcal{P}_i$, for each $i\in\{0,\ldots,\ell\}$.  Since $\Delta_0,\ldots,\Delta_{\ell+1}$ are a partition of $W_{\ell+1}$, we have:
 %   \begin{align*}
-%     |A\cap W_0|
-%     & \le |W_0|-\frac{|B|}{\ell+2}+a\\
-%     & \le |W_0|-\frac{|W_{\ell}|}{3(\ell+2)}+a \\
-%     & = |W_0|-\frac{\Delta_{\ell+1} + \ell w +|W_0|}{3(\ell+2)}+a \enspace . \qedhere
+%     |W\setminus B|
+%       % & \le \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}\left(|\Delta_i\setminus B|+|\Delta_i\cap B|\right) \\
+%       & \le \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}\left(|\mathcal{P}_i'|+|\overline{\mathcal{P}}_i'|\right) \\
+%       & \le \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}\left(|\Delta_i\setminus B|+|A\cap B|\right) \\
+%       & = \frac{|W_\ell\setminus B|}{\ell+1} + |A\cap B| \\
+%       & = \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1} + |A\cap B| \enspace . \qedhere
 %   \end{align*}
+% \end{proof}
+  
+  
+% %   pairwise disjoint
 
+
+% %   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W$-sequence.
+% %   We will lower bound the number of vertices in $B\cap W$, which is sufficient, since $|(A\setminus B)\cap W|=|W|-|B\cap W|$.  For each $j\in\{0,\ldots,\ell+1\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$, each of which contains exactly one vertex in $W$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)
+
+% %   Each path in $\mathcal{P}_0$ consists of a single vertex in $W$, which is also in $B$.
+% %   For $j\in\{1,\ldots,\ell+1\}$, since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $|A\cap B|$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-|A\cap B|$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\mathcal{P}_0\cup \bigcup_{j=1}^{\ell+1} \mathcal{P}_j'$. Then,
+% %   \[
+% %     |\mathcal{P}|=|\mathcal{P}_0|+\sum_{j=1}^{\ell+1}|\mathcal{P}_j'| \ge \sum_{j=0}^{\ell+1}|\mathcal{P}_j| - (\ell+1)\cdot|A\cap B|
+% %     = |B|-(\ell+1)\cdot|A\cap B| \enspace .
+% %   \]
+% %   Each path in $\mathcal{P}$ ends at a vertex in $B\cap W$.  A vertex $w\in B\cap W$ is \defin{full} if $w$ is the endpoint of $\ell+2$ paths in $\mathcal{P}$.  If $w$ is full, then $w$ is the endpoint of exactly one path in $\mathcal{P}'_j$ for each $j\in\{1,\ldots,\ell+1\}$ (and $w$ is the unique vertex of a path in $\mathcal{P}_0$).  Let $f$ be the number of full vertices in $W\cap B$.  Since each full vertex is the endpoint of a path in $\mathcal{P}'_{\ell+1}$, $f\le |\mathcal{P}'_{\ell+1}|\le s_{\ell+1}$.  The full vertices of $W\cap B$ are the endpoints of $f\cdot (\ell+2)$ paths in $\mathcal{P}$. Therefore,  $|\mathcal{P}|-f\cdot(\ell+2)$ paths in $\mathcal{P}$ end at non-full vertices $W\cap B$.
+% %   % Therefore, $W\cap B$ contains at most $s_{\ell+1}\cdot (\ell+2)/s_{\ell+1}=(\ell+2)/(\ell+1)$ full vertices.
+% %   Each of the $|B\cap W|-f$ non-full vertex of $W\cap B$ is an endpoint of at most $\ell+1$ paths in $\mathcal{P}$.  Therefore,
+% %   \begin{align*}
+% %      |B\cap W|
+% %      & = f+(|B\cap W|-f) \\
+% %      & \ge 
+% %      % \frac{s_{\ell+1}\cdot (\ell+2)}{\ell+2} 
+% %      f
+% %      + \frac{|\mathcal{P}|-f\cdot(\ell+2)}{\ell+1} \\
+% %      & =\frac{|\mathcal{P}|}{\ell+1} - \frac{f}{\ell+1} \\
+% %      & \ge\frac{|\mathcal{P}|}{\ell+1} - \frac{s_{\ell+1}}{\ell+1} \\
+% %      % s_{\ell+1}
+% %      % + \frac{|\mathcal{P}|-s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+% %      % & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-\frac{s_{\ell+1}\cdot(\ell+2)}{\ell+1} \\
+% %      % & = s_{\ell+1} + \frac{|\mathcal{P}|}{\ell+1}-s_{\ell+1}
+% %      % - \frac{s_{\ell+1}}{\ell+1}\\
+% %      % & = \frac{|\mathcal{P}|}{\ell+1}
+% %      % - \frac{s_{\ell+1}}{\ell+1}\\
+% %      & \ge \frac{|B|-(\ell+1)\cdot|A\cap B|}{\ell+1}
+% %      - \frac{s_{\ell+1}}{\ell+1}\\
+% %      & = \frac{|W_{\ell+1}|-|A\setminus B|}{\ell+1}
+% %      - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+% %      & = \frac{s_{\ell+1}+(\ell+1)\cdot|W|-|A\setminus B|}{\ell+1}
+% %      - \frac{s_{\ell+1}}{\ell+1} - |A\cap B|\\
+% %      % & = \frac{(\ell+1)\cdot|W|-|S|-(\ell+2)\cdot|A\cap B|}{\ell+1} \\
+% %      & = |W|-\frac{|A\setminus B|}{\ell+1}-|A\cap B| \enspace .
+% %   \end{align*}
+% % \hussein{It seems to me that we are counted the paths that goes to the full vertices inside $P$ as well, then we remove them. I don't know if we can be a little bit efficient!} \pat{I thought that for a moment, too, but now I don't.  We count the number of full vertices $f$ and the number of non-full vertices $|W\cap B|-f$.}\hussein{Ok, I will read it again, I got distracted with students.}
+
+% %   Therefore,
+% %   \[
+% %     |(A\setminus B)\cap W|=|W|-|B\cap W|\le \frac{|A\setminus B|}{\ell+1}+ |A\cap B| \enspace . \qedhere
+% %   \]
+% % \end{proof}
+
+
+% % \begin{lem}\label{w_splitter}
+% %   Let $G$ be a graph and let $W_0,\ldots,W_{\ell},W_{\ell+1}$ be a $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$. Let $i\in\{0,\ldots,\ell+1\}$ and let $(A,B)$ be a separation of $G[W_{i}]$ of order at most $a$.
+% %   \[
+% %     |A\cap W_0|\le |W_0|-\frac{|B|}{i+1}+a \enspace .
+% %   \]
+% % \end{lem}
+
+% % \begin{proof}
+% %   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
+% %   For each $j\in\{0,\ldots,\ell\}$, let $B_j:=B\cap \Delta_j$ and let $\mathcal{P}_j$ be a set of $|B_j|$ pairwise vertex-disjoint $B_j$-$W$ paths in $G[W_j]$.  (The existence of $|B_j|$ such paths is part of the definition of $W$-sequence.)  Since the paths in $\mathcal{P}_j$ are pairwise vertex-disjoint, at most $a$ of the paths in $\mathcal{P}_j$ contain a vertex of $A\cap B$.  Therefore, $\mathcal{P}_j$ contains a subset $\mathcal{P}_j'$ of size at least $|\mathcal{P}_j|-a$ made up of paths that are contained in $G[B\setminus A]$.  Let $\mathcal{P}:=\bigcup_{j=1}^{\ell} \mathcal{P}_j'$. Then,
+% %   \[
+% %     |\mathcal{P}|=\sum_{j=0}^{i}|\mathcal{P}_j'| \ge \sum_{j=0}^{i}|\mathcal{P}_j| - a(i+1)
+% %     = |B|-a(i+1) \enspace .
+% %   \]
+% %   Each path in $\mathcal{P}$ ends at a vertex in $W_0\setminus A$.  Each vertex in $W_0\setminus A$ is an endpoint of at most one path in $\mathcal{P}'_j$, for each $j\in\{0,\ldots,i\}$.  Therefore, each vertex in $W_0\setminus A$ is the endpoint of at most $i+1$ paths in $\mathcal{P}$.  Therefore,
+% %   \[
+% %     |W_0\setminus A|\ge \frac{|\mathcal{P}|}{i+1} \ge \frac{|B|}{i+1}-a \enspace .
+% %   \]
+% %   Therefore,
+% %   \[
+% %     |W_0\cap A|=|W_0|-|W_0\setminus A|\le |W_0|-\frac{|B|}{i+1}+a \enspace . \qedhere
+% %   \]
+% % \end{proof}
+
+
+% % \begin{cor}\label{balanced_corollary}
+% %   Let $G$ be a graph, let $W_0,\ldots,W_\ell,W_{\ell+1}$ be $W$-sequence of width $w$ in $G$, for some $W\subseteq V(G)$ and some $w\le |W_0|$, and let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$.
+% %   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$
+% %   Let $(A,B)$ be a separation of $G[W_{\ell+1}]$ of order at most $a$.   Then
+% %   \[
+% %     |A\cap W_0|\le |W_0|-\frac{|\Delta_{\ell+1}| + \ell w +|W_0|}{3(\ell+2)}+a \enspace .
+% %   \]
+% % \end{cor}
+
+% % \begin{proof}
+% %   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $s_0,\ldots,s_{\ell+1}$ be as in the definition of $W_0$-sequence.
+% %   Since $(A,B)$ is balanced separation of $G[W_i]$, $|A\setminus B|\le \frac{2}{3}|W_{i}|$, so $|B|=|W_{i}|-|A\setminus B|\ge \tfrac{1}{3}|W_{i}|$.  Applying \cref{w_splitter} with $i=\ell+1$, we obtain
+% %   \begin{align*}
+% %     |A\cap W_0|
+% %     & \le |W_0|-\frac{|B|}{\ell+2}+a\\
+% %     & \le |W_0|-\frac{|W_{\ell}|}{3(\ell+2)}+a \\
+% %     & = |W_0|-\frac{\Delta_{\ell+1} + \ell w +|W_0|}{3(\ell+2)}+a \enspace . \qedhere
+% %   \end{align*}
+
+% % \end{proof}
+
+% % Setting $w:=|W_0|$ in \cref{balanced_corollary} we obtain:
+
+% % \begin{cor}\label{uniform_balanced_corollary}
+% %   Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$.
+% %   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$
+% %   Let $(A,B)$ be a balanced separation of $G[W_{\ell+1}]$ of order at most $a$.  Then
+% %   \[
+% %     |A\cap W_0|\le \left(\frac{2}{3}+\frac{1}{3(\ell+2)}\right)|W_0|+a \enspace .
+% %   \]
+% % \end{cor}
+
+% \begin{lem}\label{z_corollary}
+%   Let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$,  and let $Z\subseteq W_{\ell+1}$, $|Z|=|\Delta_{\ell+1}$, separate $V(G)\setminus W_{\ell}$ and $W$ in $G$.
+%   Then every $(V(G)\setminus W_{\ell},Z,W)$-separation $(X,Y)$ of $G$ has the property that, for any separation
+%   $(A,B)$ of $G[W_{\ell+1}]$,
+%   \[
+%     |Z\setminus B|\le \frac{|A\setminus B|}{\ell+2}+\frac{2\ell+2}{\ell+2}\cdot|A\cap B|  \enspace .
+%   \]
+% \end{lem}
+
+% \begin{proof}
+%   By the definition of $W$-sequence, there exists a set $\mathcal{P}_{\ell+1}$ of $|Z|$ pairwise vertex-disjoint $\Delta_{\ell+1}$-$W$ paths.  Each of the paths in $\mathcal{P}_{\ell+1}$ contains a distinct vertex in $Z$.  Let $\mathcal{P}^\star:=\{P\in\mathcal{P}_{\ell+1}: V(P)\cap (Z\setminus B)\neq\emptyset\}$, so $|\mathcal{P}^\star|=|Z\setminus B|$.  Partition $\mathcal{P}^\star$ into three sets:
+%   \begin{enumerate}[nosep,nolistsep]\setcounter{enumi}{-1}
+%       \item $\mathcal{P}^\star_0$ are the paths in $\mathcal{P}^\star$ that start at a vertex of $\Delta_{\ell+1}\setminus B$ and end at a vertex in $W\setminus B$.
+%       \item $\mathcal{P}^\star_1$ are the paths in $\mathcal{P}^\star$ that start at a vertex in $\Delta_{\ell+1}\cap B$ and end at a vertex in $W\setminus B$.
+%       \item $\mathcal{P}^\star_2$ are the paths in $\mathcal{P}^\star$ that start at a vertex in $\Delta_{\ell+1}\setminus B$ and end at a vertex in $W\cap B$.
+%   \end{enumerate}
+%   Since the paths in $\mathcal{P}_0^\star\cup\mathcal{P}_1^\star$ are pairwise vertex-disjoint and each contains a vertex of $W\setminus B$, $|\mathcal{P}_0^\star|+|\mathcal{P}_1^\star|\le|W\setminus B|$.
+%   Each path in $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ contains a vertex in $Z\setminus B$ and a vertex in $W\cap B$.  Since $(A,B)$ is a separation of $G[W_{\ell+1}]$ this implies that each path in $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ contains a vertex in $A\cap B$. Since the paths in  $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ are pairwise vertex-disjoint, this implies that $|\mathcal{P}_1^\star\cup \mathcal{P}_2^\star|\le |A\cap B|$. Therefore,
+%   \begin{equation}
+%      |Z\setminus B| = |\mathcal{P}^\star| = |\mathcal{P}_0^{\star}| + |\mathcal{P}_1^\star| + |\mathcal{P}_2^{\star}|
+%      \le |W\setminus B| + |\mathcal{P}_2^\star|
+%      \le \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1}+|A\cap B|+|\mathcal{P}_2^\star| 
+%      \enspace , \label{coolio}
+%   \end{equation}
+%   where the last inequality is an application of \cref{uniform_balance}. Since each path in $\mathcal{P}_0^\star\cup\mathcal{P}^\star_2$ starts at a distinct vertex in $|\Delta_{\ell+1}\setminus B|$, we have $|\Delta_{\ell+1}\setminus B|\ge |\mathcal{P}_0^\star|+|\mathcal{P}^\star_2|=|Z\setminus B|-|\mathcal{P}_1^\star|$.
+%   Using this inequality in \cref{coolio} we obtain
+%   \[
+%      |Z\setminus B| \le \frac{|A\setminus B|-|Z\setminus B|+|\mathcal{P}_1^\star|}{\ell+1}+|A\cap B|+|\mathcal{P}_2^\star| \enspace .
+%   \]
+%   Rewriting this equation to isolate $|Z\setminus B|$, we obtain
+%   \begin{align*}
+%      |Z\setminus B|
+%      & \le \frac{|A\setminus B|+|\mathcal{P}_1^\star|}{\ell+2} + \frac{\ell+1}{\ell+2}\cdot
+%         \left(|A\cap B|+|\mathcal{P}_2^\star|\right) \\
+%      & \le \frac{|A\setminus B|}{\ell+2} + \frac{2\ell+2}{\ell+2}\cdot|A\cap B|
+%         \enspace . \qedhere
+%   \end{align*}
 % \end{proof}
 
-% Setting $w:=|W_0|$ in \cref{balanced_corollary} we obtain:
-
-% \begin{cor}\label{uniform_balanced_corollary}
-%   Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$.
-%   % Then there exists a separation $(X,Y)$ of $G$ with $W_0\subseteq Y$
-%   Let $(A,B)$ be a balanced separation of $G[W_{\ell+1}]$ of order at most $a$.  Then
-%   \[
-%     |A\cap W_0|\le \left(\frac{2}{3}+\frac{1}{3(\ell+2)}\right)|W_0|+a \enspace .
-%   \]
-% \end{cor}
-
-
-\begin{lem}\label{z_corollary}
-  Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$ and let $Z$ be as in the definition of $W$-sequences.
+\hussein{I read this lemma, it seems correct for me. I lost the intuitive idea after the first half. I think the constant in front of $|A\setminus B|$ is $3$ as I show down in red.}
+\begin{lem}\label{z_w_bound}
+  Let $G$ be a graph, let $W\subseteq V(G)$, let $W_0,\ldots,W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$ with $\ell\ge 1$, let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$,  and let $Z\subseteq W_{\ell+1}$, $|Z|=|\Delta_{\ell+1}|$, separate $V(G)\setminus W_{\ell}$ and $W$ in $G$.
   Then every $(V(G)\setminus W_{\ell},Z,W)$-separation $(X,Y)$ of $G$ has the property that, for any separation
   $(A,B)$ of $G[W_{\ell+1}]$,
   \[
-    |(A\setminus B)\cap X\cap Y|\le \frac{|A\setminus B|}{\ell+1}+ 2\cdot|A\cap B|  \enspace .
+    |W\setminus B|+|Z\setminus B|\le \frac{2\,|A\setminus B|}{\ell+2}+3\,|A\cap B| \enspace .
   \]
 \end{lem}
 
+\pat{Something to consider: Drop $Z$ in favour of just discussing the separation $(X,Y)$.  Then the statement simplifies(?) to: \\[2ex]
+  Let $G$ be a graph, let $W\subseteq V(G)$, let $W_0,\ldots,W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$ with $\ell\ge 1$.  Then there exists a separation $(X,Y)$ of $G$ having order $|X\cap Y|=|W_{\ell+1}\setminus W_{\ell}|$ such that, for any separation $(A,B)$ of $G[W_{\ell+1}]$,
+  \[
+    |W\setminus B|+|(X\cap Y)\setminus B|\le \frac{2\,|A\setminus B|}{\ell+2}+3\,|A\cap B| \enspace .
+  \]
+} 
+
+\begin{rem}\label{easier_path}
+  The proof of \cref{z_w_bound} requires some extra effort to obtain $\ell+2$ in the denominator. The reader who is not interested in precise constants can already stop at \cref{z_b_bound} in the proof, from which the bound
+  \[
+    |W\setminus B|+|Z\setminus B|\le \frac{2|A\setminus B|}{\ell+1} + 3|A\cap B| 
+  \]
+  follows immediately.
+  This weaker bound is still sufficient to prove \cref{main_result} with the constant $c< 68$.
+\end{rem}
+
 \begin{proof}
-  Let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_\ell$.
-  From the definition of $W_0$-sequence, the set $Z\subseteq W_{\ell+1}$ of size $s_{\ell+1}:=|\Delta_{\ell+1}|$ that separates $V(G)\setminus W_\ell$ and $W$ in $G$.  Let $(X,Y)$ be an arbitrary $(V(G)\setminus W_\ell, W,Z)$-separation.
+  Let $W_{-1}:=\emptyset$ and, for each $i\in\{0,\ldots,\ell+1\}$, let $\Delta_{i}:=W_{i}\setminus W_{i-1}$ (as in the definition of $W$-sequence).
+  By the definition of $W$-sequence, $G[W_{i}]$ contains a set $\mathcal{P}_i$ of $|W\setminus B|$ pairwise vertex-disjoint $\Delta_i$-$(W\setminus B)$ paths, for each $i\in\{0,\ldots,\ell+1\}$.  \hussein{I think the last statement is not true for $\ell + 1$.}
+  
+  We begin by bounding $|W\setminus B|$ using the path sets $\mathcal{P}_0,\ldots,\mathcal{P}_{\ell}$.  For each $i\in\{0,\ldots,\ell\}$, let $\mathcal{Q}_i\subseteq \mathcal{P}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex in $A\setminus B$ and let $\overline{\mathcal{Q}}_i:=\mathcal{P}_i\setminus \mathcal{Q}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex in $B$.  Since each path in $\mathcal{Q}_i$ begins at a distinct vertex in $\Delta_i\setminus B$, $|\mathcal{Q}_i|\le|\Delta_i\setminus B|$. Each path in $\overline{\mathcal{Q}}_i$ begins at a vertex in $B$ and ends at a vertex in $W\setminus B$. Since $(A,B)$ is a separation of $G[W_{\ell+1}]$, this implies that each path in $\overline{\mathcal{Q}}_i$ contains a vertex in $A\cap B$.  Since the paths in $\overline{\mathcal{Q}}_i$ are pairwise vertex-disjoint, $|\overline{\mathcal{Q}}_i|\le |A\cap B|$.
+  
+  Each vertex $w\in W\setminus B$ is the last vertex of exactly one path in $\mathcal{P}_i$, for each $i\in\{0,\ldots,\ell\}$. Thus, each vertex $w\in W\setminus B$ is the endpoint of exactly $\ell+1$ paths in $\bigcup_{i=0}^\ell\mathcal{P}_i$.  Since $\{\Delta_0,\ldots,\Delta_{\ell+1}\}$ is a partition of $W_{\ell+1}$, we have:
+  \begin{align}
+  \begin{split}
+    |W\setminus B| 
+      & = \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}|\mathcal{P}_i| \\
+      & = \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}\left(|\mathcal{Q}_i|+|\overline{\mathcal{Q}_i}|\right) \\
+      & \le \frac{1}{\ell+1}\cdot\sum_{i=0}^{\ell}\left(|\Delta_i\setminus B|+|A\cap B|\right) \\
+      & = \frac{|W_\ell\setminus B|}{\ell+1} + |A\cap B| \\
+      & = \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1} + |A\cap B| \enspace .  \label{w_b_bound}
+  \end{split}
+  \end{align}
 
-  By the definition of $W$-sequence, $G[W_{\ell+1}]$ contains $|Z|=s_{\ell+1}$ pairwise vertex-disjoint $(V(G)\setminus W_{\ell}$)-$W_0$ paths $P_1,\ldots,P_{s_{\ell+1}}$.
-  For each $j\in\{1,\ldots,s_{\ell+1}\}$, $P_j$ contains exactly one vertex in $Z$.  For each $j\in\{1,\ldots,s_{\ell+1}\}$, let $P'_j$ be the subpath of $P_j$ that begins at the unique vertex of $P_j$ in $Z$ and ends at the first vertex of $P_j$ in $W$.
-
-  For each $z\in Z$, let $P_z$ be the path in $P'_1,\ldots,P'_{s_\ell+1}$ that begins at $z$.
-  % For each $z\in Z$, $P_z$ is contained in $G[Y]$ since the first vertex of $P_z$ is in $Z\subseteq Y$, the last vertex of $P_z$ is in $W\subseteq Y$ and $P_z$ has no internal vertex in $Z=X\cap Y$.
-  The set $\{P_z:z\in Z\setminus B\}$ contains $|Z\setminus B|=|(A\setminus B)\cap X\cap Y|$ pairwise vertex-disjoint $Z$-$W$ paths.
-  % ,
-  % each of which is contained in $Y$.
-  Since the paths in $\{P_z:z\in Z\setminus B\}$ are pairwise vertex disjoint, at most $|A\cap B|$ of these paths contain a vertex of $A\cap B$. Therefore, there are at least $|Z\setminus B|-|A\cap B|$ paths in $\{P_z:z\in Z\setminus B\}$ that are contained in $G[A\setminus B]$.  Each of these paths is contained in $G[A]$ and ends at a distinct vertex in $W\setminus B$.  Therefore,
+Next, we bound $|Z\setminus B|$.  By the definition of $W$-sequence, $G[W_{\ell+1}]$ has a set $\mathcal{R}$ of $|\Delta_{\ell+1}|=|Z|$ pairwise vertex-disjoint $\Delta_{\ell+1}$-$W$ paths.  Let $\mathcal{P}^\star:=\{P\in\mathcal{R}: V(P)\cap (Z\setminus B)\neq\emptyset\}$.\pat{Mar 3: Fixed a typo in this definition. We care about paths in $\mathcal{R}$, not $\mathcal{P}_{\ell+1}$.} Since each of the paths in $\mathcal{R}$ contains a distinct vertex in $Z$, $|\mathcal{P}^\star|=|Z\setminus B|$.  Partition $\mathcal{P}^\star$ into three sets:
+  
+\hussein{Note: there are paths that start at $W\cap B$ and end in $W\setminus B$ and avoid $Z\setminus B$. We do not care about them for now! There are not in $\mathcal{P}^*$.} \pat{Do you mean ``that start in $\Delta_{\ell+1}\setminus B$''?}
+\hussein{This is not important, the note is just to help me while I am reading. }
+  \begin{enumerate}[nosep,nolistsep]\setcounter{enumi}{-1}
+      \item $\mathcal{P}^\star_0$ are the paths in $\mathcal{P}^\star$ that start at a vertex of $\Delta_{\ell+1}\setminus B$ and end at a vertex in $W\setminus B$.
+      \item $\mathcal{P}^\star_1$ are the paths in $\mathcal{P}^\star$ that start at a vertex in $\Delta_{\ell+1}\cap B$ and end at a vertex in $W\setminus B$.
+      \item $\mathcal{P}^\star_2$ are the paths in $\mathcal{P}^\star$ that start at a vertex in $\Delta_{\ell+1}\setminus B$ and end at a vertex in $W\cap B$.
+  \end{enumerate}
+  Since the paths in $\mathcal{P}_0^\star\cup\mathcal{P}_1^\star$ are pairwise vertex-disjoint and each contains a vertex of $W\setminus B$, $|\mathcal{P}_0^\star|+|\mathcal{P}_1^\star|\le|W\setminus B|$.
+  Each path in $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ contains a vertex in $Z\setminus B$ and a vertex in $W\cap B$.  Since $(A,B)$ is a separation of $G[W_{\ell+1}]$ this implies that each path in $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ contains a vertex in $A\cap B$. Since the paths in  $\mathcal{P}_1^\star\cup \mathcal{P}_2^\star$ are pairwise vertex-disjoint, this implies that $|\mathcal{P}_1^\star\cup \mathcal{P}_2^\star|\le |A\cap B|$. Therefore,
+  \begin{equation}
+     |Z\setminus B| = |\mathcal{P}^\star| = |\mathcal{P}_0^{\star}| + |\mathcal{P}_1^\star| + |\mathcal{P}_2^{\star}|
+     \le |W\setminus B| + |\mathcal{P}_2^\star|
+     \le \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1}+|A\cap B|+|\mathcal{P}_2^\star| 
+     \enspace , \label{coolio}
+  \end{equation}
+  where the last inequality is an application of inequality~\eqref{w_b_bound}.  At this point, adding \eqref{w_b_bound} and \eqref{coolio} and using the inequality $|\mathcal{P}_2^\star| \le |\mathcal{P}_1^\star\cup\mathcal{P}_2^\star|\le |A\cap B|$ immediately gives the bound discussed in \cref{easier_path}.  With a bit more work, we can do better.  Since each path in $\mathcal{P}_0^\star\cup\mathcal{P}^\star_2$ starts at a distinct vertex in $\Delta_{\ell+1}\setminus B$, 
+  \begin{equation}
+      |\Delta_{\ell+1}\setminus B|\ge |\mathcal{P}_0^\star|+|\mathcal{P}^\star_2|=|Z\setminus B|-|\mathcal{P}_1^\star| \enspace . \label{z_b_trick} 
+  \end{equation}
+  Using inequality~\eqref{z_b_trick}  in \cref{coolio} we obtain
+  \[
+     |Z\setminus B| \le \frac{|A\setminus B|-|Z\setminus B|+|\mathcal{P}_1^\star|}{\ell+1}+|A\cap B|+|\mathcal{P}_2^\star| \enspace .
+  \]
+  Rewriting this equation to isolate $|Z\setminus B|$, we obtain
+  \begin{align}
+     |Z\setminus B|
+      & \le \frac{|A\setminus B|+|\mathcal{P}_1^\star|}{\ell+2} + \left(\frac{\ell+1}{\ell+2}\right)\cdot
+        \left(|A\cap B|+|\mathcal{P}_2^\star|\right) \\
+      & < \frac{|A\setminus B|}{\ell+2} + 
+        |A\cap B|+|\mathcal{P}_2^\star|+\tfrac{1}{3} |\mathcal{P}_1^\star|
+     % & \le \frac{|A\setminus B|}{\ell+2} + \frac{2\ell+2}{\ell+2}\cdot|A\cap B|
+        \enspace . \label{z_b_bound} 
+  \end{align}
+  (The second inequality uses the assumption that $\ell\ge 1$.) Using inequality~\eqref{z_b_trick}  in \cref{w_b_bound} we obtain, 
+  \begin{equation}
+      |W\setminus B|+\frac{|Z\setminus B|}{\ell+1}\le \frac{|A\setminus B|+|\mathcal{P}_1^\star|}{\ell+1} + |A\cap B|
+      \le \frac{|A\setminus B|}{\ell+1} + |A\cap B| +\tfrac{1}{2}|\mathcal{P}_1^\star| \enspace .  \label{w_b_bound_two}
+  \end{equation}
+  (The second inequality again uses the assumption that $\ell\ge 1$.) Adding \eqref{w_b_bound_two} and \eqref{z_b_bound} and using the fact that $\tfrac{5}{6}|\mathcal{P}_1^\star|+|\mathcal{P}_2^\star|\le|\mathcal{P}_1^\star|+|\mathcal{P}_2^\star|\le |A\cap B|$, we obtain
+  \begin{align}
+    |W\setminus B| + \left(\frac{\ell+2}{\ell+1}\right)\cdot|Z\setminus B|
+    & \le \frac{|A\setminus B|}{\ell+1} + 
+    \frac{|A\setminus B|}{\ell+2} + 2\,|A\cap B| + \tfrac{5}{6}|\mathcal{P}_1^\star|+|\mathcal{P}_2^\star| \\ 
+    & \le \frac{|A\setminus B|}{\ell+1} + 
+    \frac{|A\setminus B|}{\ell+2} + 3\,|A\cap B| \label{sum_bound}
+  \end{align}
+  We can now upper bound $|W\setminus B|+|Z\setminus B|$ by maximizing $x_0+x_1$ subject to
+  \begin{equation}
+     x_0+\left(\frac{\ell+2}{\ell+1}\right)\cdot x_1 \le R \enspace , \label{sum_bound_two}   
+  \end{equation}
+  where $R$ denotes the expression in \eqref{sum_bound}.
+  For a fixed $x_0=x^\star_0$ the maximum value of $x_1$ that satisfies \eqref{sum_bound_two} is 
+  \[ 
+    x_1 = x_1^\star:=\left(\frac{\ell+1}{\ell+2}\right)\cdot(R-x^{\star}_0)
+  \]
+  in which case 
+  \[
+     x_0 + x_1 = x^\star_0+x^\star_1 = \left(\frac{\ell+1}{\ell+2}\right)\cdot R + \frac{x^\star_0}{\ell+2} 
+  \]
+  maximizes $x_0+x_1$ subject to fixed $x_0=x_0^{\star}$.
+  This is an increasing linear function of $x_0^{\star}$.  From \eqref{w_b_bound}, we have the constraint
+  \[
+     x_0^\star \le 
+     \frac{|A\setminus B|-\mathcolor{red}{|\Delta_{\ell+1}\setminus B|}}{\ell+1}+|A\cap B|
+     \le \frac{|A\setminus B|}{\ell+1}+|A\cap B|
+  \]
+  from which we obtain the upper bound
   \begin{align*}
-     |(A\setminus B)\cap X\cap Y|-|A\cap B| \le |W\setminus B| \le
-     \frac{|A\setminus B|}{\ell+1}+2\cdot |A\cap B| \enspace ,
+    |W\setminus B|+|Z\setminus B|
+    & \le \left(\frac{\ell+1}{\ell+2}\right)\cdot R + 
+    \frac{x_0^\star}{\ell+2} \\
+    & \le \left(\frac{\ell+1}{\ell+2}\right)\left(\frac{|A\setminus B|}{\ell+1}+\frac{|A\setminus B|}{\ell+2}+3\,|A\cap B|\right)+\frac{|A\setminus B|}{(\ell+1)
+    (\ell+2)}
+    + \frac{|A\cap B|}{\ell+2}
+    \\
+    % \left(\frac{1}{\ell+2}\right)\left(}{\ell+1}+|A\cap B|\right) +\left(\frac{17(\ell+1)}{6(\ell+2)}\right)\cdot|A\cap B| \\
+    & = \frac{|A\setminus B|}{\ell+2}\cdot\left(\frac{\ell+1}{\ell+1}+\frac{\ell+1}{\ell+2}+\frac{1}{\ell+1}\right) +\left(\frac{3\ell+4}{\ell+2}\right)\cdot |A\cap B|  \\
+    & = \frac{|A\setminus B|}{\ell+2}\cdot\left(2-\frac{1}{\ell+2}+\frac{1}{\ell+1}\right) +\left(\frac{3\ell+4}{\ell+2}\right)\cdot |A\cap B|  \\
+    % & < \frac{|A\setminus B|}{\ell+2}\cdot\left(\frac{\ell+1}{\ell+1}+\frac{\ell+1}{\ell+2}+\frac{1}{(\ell+2)}\right) +\left(\frac{3\ell+4}{\ell+2}\right)\cdot |A\cap B|  \\
+    % & \text{\pat{I've added a step (previous line) that (hopefully) explains better.}}\\
+    % & \text{\pat{We just use $1/(\ell+1)(\ell+2)<1/(\ell+2)$. Please check.}}\\
+    % & \text{\hussein{The term in purple should be $1/(\ell + 1)$ because of if you expand you do not get an equality!}}\\
+    % & \text{\pat{Ah, of course!  I've got a meeting now, but I'll come back to this after.} }\\
+    % & \text{\pat{For now, I see $2+1/(\ell+1)-1/(\ell+2)\le 2+\tfrac{1}{6}$.}} \\
+    % & < \mathcolor{red}{\frac{|A\setminus B|}{\ell + 2}\left(\frac{\ell + 1}{\ell + 1} + \frac{\ell + 1}{\ell + 2} + \frac{1}{\ell + 1}\right)} + \frac{3\ell + 4}{\ell + 2}|A\cap B| ?? \\
+    % & < \mathcolor{red}{\frac{|A\setminus B|}{\ell + 2}\left(1 + \frac{(\ell + 1)^2 + \ell + 2}{(\ell + 2) (\ell + 1)} \right)}\\
+    % & < \mathcolor{red}{\frac{|A\setminus B|}{\ell + 2}\left(1 + \frac{\ell^2 +2\ell + 1 + \ell + 2}{\ell^2 + \ell + 2\ell + 2 } \right)}\\
+    % & < \mathcolor{red}{\frac{|A\setminus B|}{\ell + 2}\left(1 + \frac{\ell^2 +3\ell + 3}{\ell^2 + 3\ell + 2 } \right)}\\
+    % & < \mathcolor{red}{\frac{3|A\setminus B|}{(\ell + 2)} + 3|A\cap B|???}\\
+    % & \text{\pat{Continue here.}} \\
+    & < \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 3\,|A\cap B| \enspace . \qedhere
   \end{align*}
-  where the second inequality is an application of \cref{uniform_balance}.  Adding $|A\cap B|$ to both sides of this inequality establishes the lemma.
 \end{proof}
 
+\pat{The ${}+\tfrac{1}{6}$ is annoying, and probably unnecessary.  It could probably be eliminated by being more careful with the upper bound on $x_0^{\star}$, which is giving up $|\Delta_{\ell+1}\setminus B|/(\ell+1)\\ge (|Z\setminus B|-|\mathcal{P}_1^{\star}|)/(\ell+1)$.  We may have to iterate this argument...  I'm taking this offline to fight with it.}
+
+% \pat{Continue here.}
+
+% \begin{lem}\label{z_corollary}
+%   Let $G$ be a graph, let $W_0\subseteq\cdots\subseteq W_\ell\subseteq W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$, for some $W\subseteq V(G)$ and let $Z$ be as in the definition of $W$-sequences.
+%   Then every $(V(G)\setminus W_{\ell},Z,W)$-separation $(X,Y)$ of $G$ has the property that, for any separation
+%   $(A,B)$ of $G[W_{\ell+1}]$,
+%   \[
+%     |(A\setminus B)\cap Z|\le \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1}+ 2|A\cap B|  \enspace .
+%   \]
+% \end{lem}
+
+% \begin{proof}
+%   Let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_\ell$.
+%   % From the definition of $W$-sequence, the set $Z\subseteq W_{\ell+1}$ of size $s_{\ell+1}:=|\Delta_{\ell+1}|$ separates $V(G)\setminus W_\ell$ and $W$ in $G$.  
+%   Let $(X,Y)$ be an $(V(G)\setminus W_\ell,Z,W)$-separation.  By the definition of $W$-sequence, $G[W_{\ell+1}]$ contains a set $\mathcal{S}$ of $|Z|=s_{\ell+1}$ pairwise vertex-disjoint $\Delta_{\ell+1}$-$W$ paths, each of which contains a distinct vertex in $Z$.  For each $z\in Z$, let $P_z$ be the unique path in $\mathcal{S}$ that contains $z$. 
+%   % and let $P_z'$ be the subpath of $P_z$ that begins at $z$ and ends at the first vertex of $P_z$ contained in $W$.
+  
+%   % .  Ea
+  
+  
+%   % $P_1,\ldots,P_{s_{\ell+1}}$.
+%   % For each $j\in\{1,\ldots,s_{\ell+1}\}$, $P_j$ contains exactly one vertex in $Z$.  For each $j\in\{1,\ldots,s_{\ell+1}\}$, let $P'_j$ be the subpath of $P_j$ that begins at the unique vertex of $P_j$ in $Z$ and ends at the first vertex of $P_j$ in $W$.
+
+%   % For each $z\in Z$, let $P_z$ be the path in $P'_1,\ldots,P'_{s_\ell+1}$ that begins at $z$.
+%   % For each $z\in Z$, $P_z$ is contained in $G[Y]$ since the first vertex of $P_z$ is in $Z\subseteq Y$, the last vertex of $P_z$ is in $W\subseteq Y$ and $P_z$ has no internal vertex in $Z=X\cap Y$.
+%   The set $\{P_z:z\in Z\setminus B\}$ contains $|Z\setminus B|=|(A\setminus B)\cap Z|$ pairwise vertex-disjoint $\Delta_{\ell+1}$-$W$ paths.
+%   % ,
+%   % each of which is contained in $Y$.
+%   Since the paths in $\{P_z:z\in Z\setminus B\}$ are pairwise vertex disjoint, at most $|A\cap B|$ of these paths contain a vertex of $A\cap B$. Therefore, there are at least $|Z\setminus B|-|A\cap B|$ paths in $\{P_z:z\in Z\setminus B\}$ that are contained in $G[A\setminus B]$.  Each of these paths ends at a distinct vertex in $W\setminus B$.  Therefore,
+%   \begin{align*}
+%      |(A\setminus B)\cap Z|-|A\cap B| \le |\{P_z:z\in Z\setminus B\}| \le |W\setminus B| \le
+%      \frac{|A\setminus B|}{\ell+1}+|A\cap B| \enspace ,
+%   \end{align*}
+%   where the second inequality is an application of \cref{uniform_balance}.  Adding $|A\cap B|$ to both sides of this inequality establishes the lemma.
+% \end{proof}
+
 We are now ready to prove \cref{main_result}.
+
+\hussein{$t$ might be $33$!}  \pat{I think the previous proof gives the numbers below.}
 
 \begin{proof}[Proof of \cref{main_result}]
   Let $G$ be a graph and let $a:=\sep(G)$.  Let
   \[
-    h:=5 \quad\text{and}\quad t:=\frac{4(h+1)}{1-2\cdot(\tfrac{2}{3})^h} < 32.5811 \enspace .
+    h:=4 \quad\text{and}\quad t:=\frac{4h}{1-2\cdot(\tfrac{2}{3})^{h}} < 26.449 \enspace .
   \]
   We will show that $\tw(G)< (2t+1)a$. The proof is by induction on the number of vertices of $G$. We will prove the following stronger statement: For any graph $G$ and any non-empty subset $W\subseteq V(G)$ of size at most $ta$, $G$ has a tree decomposition $(B_x:x\in V(T))$ of width less than $(2t+1)a$ in which $W\subseteq B_x$ for some $x\in V(T)$.
 
-  If $G$ has less than $ta$ vertices, then the proof is trivial. We use a tree $T$ with a single vertex $x$ and set $B_x:=V(G)$.  We now assume that $|V(G)|\ge ta$. By adding vertices to $W$ arbitrarily, we may assume that $|W|=ta$. By \cref{w_sequence}, $G$ has a $W$-sequence $W_0,\ldots,W_{\ell+1}$ of width $|W|=ta$. Let $\Delta_0,\ldots,\Delta_{\ell+1}$, $s_0,\ldots,s_{\ell+1}$, and $Z$ be as in the definition of $W$-sequence.  Let $(X,Y)$ be a $(V(G)\setminus W_{\ell},W,Z)$-separation.
+  If $G$ has less than $ta$ vertices, then the proof is trivial. We use a tree $T$ with a single vertex $x$ and set $B_x:=V(G)$.  We now assume that $|V(G)|\ge ta$. By adding vertices to $W$ arbitrarily, we may assume that $|W|=ta$. By \cref{w_sequence}, $G$ has a $W$-sequence $W_0,\ldots,W_{\ell+1}$ of width $|W|=ta$.   Let $\Delta_0,\ldots,\Delta_{\ell+1}$, $s_0,\ldots,s_{\ell+1}$, and $Z$ be as in the definition of $W$-sequence.  Let $(X,Y)$ be a $(V(G)\setminus W_{\ell},Z,W)$-separation.
  % \pat{Don't forget to mention \cref{z_corollary} here.}
 
-  Since $|X\cap Y|=|Z|<|W|=ta$, the inductive hypothesis implies that $G[X]$ has a tree decomposition $(B_x:x\in V(T_1))$ of width at most $(t+1)a$ in which $Z\subseteq B_x$ for some $x_1\in V(T_1)$.
-
-  To finish the proof, we construct a tree decomposition $(B_x:x\in V(T_0))$ of $G[Y]$ of width at most $(t+1)a$ in which some bag $B_{x_0}$ contains $W\cup Z$.  Then the tree $T$ obtained by joining $T_0$ and $T_1$ using the edge $x_1x_0$ gives the desired tree decomposition $(B_x:x\in V(T))$. If $\ell=0$, we use the trivial tree decomposition in which $T_0$ has a single node $x_0$ where $B_{x_0}:=W\cup Z$.  Since $W\cup Z\subseteq Y$ and $|Y|=|W_1|=|W|+|Z|< 2|W|=2ta$, this decomposition has width less than $2ta$. We now assume that $\ell\ge  1$.
+  Since $|X\cap Y|=|Z|<|W|=ta$, the inductive hypothesis implies that $G[X]$ has a tree decomposition $(B_x:x\in V(T_1))$ of width less than $(2t+1)a$ in which $Z\subseteq B_x$ for some $x_1\in V(T_1)$.  To finish the proof, we construct a tree decomposition $(B_x:x\in V(T_0))$ of $G[Y]$ of width less than $(2t+1)a$ in which some bag $B_{x_0}$ contains $W\cup Z$.  Then the tree $T$ obtained by joining $T_0$ and $T_1$ using the edge $x_1x_0$ gives the desired tree decomposition $(B_x:x\in V(T))$. 
+  
+  If $\ell=0$ then we use the trivial tree decomposition in which $T_0$ has a single node $x_0$ where $B_{x_0}:=W\cup Z$.  Since $W\cup Z\subseteq Y$ and $|Y|=|W_1|=|W|+|Z|< 2|W|=(2t+1)a$, this decomposition has width less than $(2t+1)a$. We now assume that $\ell\ge  1$.
 
  % We distinguish between two cases, depending on the value of $\ell$.
 
  % If $\ell=0$, then $T_0$ consists of a single edge $x_0x_0'$ with $B_{x_0}:=W$ and $B_{x_{0}'}:=Z$.  The tree decomposition $(B_x:x\in V(T_0))$ satisfies our requirements and has width less than $|W|=ta$.
 
  % The root $r$ of $T_0$ will have the bag $B_r:=W\cup Z$.  (This already satisfies the requirement from the previous paragraph with $x_0:=x_0':=r$.)
-  Let $T_0$ be a separation tree of height at most $h$ obtained by applying \cref{separation_tree} to  $G[Y]$.  The following claim will be used to bound the width of a tree decomposition that will be derived from $T_0$.
+  % By the definition of separation number, $\sep(G[Y])\le \sep(G)\le a$.
+  Since $\ell \ge 1$, $W_0,\ldots,W_{\ell+1}$ satisfies the conditions of \cref{z_w_bound}.
+  Let $\mathcal{T}'_0:=(B'_x:x\in V(T_0'))$ be the tree decomposition of $G[W_{\ell+1}]$ obtained by applying \cref{separation_tree} to $G[W_{\ell+1}]$.  The following claim will be used to bound the width of a tree decomposition that we derive from $\mathcal{T}'_0$.
 
-   \begin{clm} \label{cell_bound}
-     For each $d\in\{0,\ldots,h\}$ and each node $x$ of $T_0$ of depth $d$,
+\hussein{I think, the 3 in lemma 6 should appears in the $3ta$!}
+  \begin{clm} \label{cell_bound}
+     For each $d\in\{0,\ldots,h\}$ and 
+     each node $x$ of $T_0$ with $|\interior_{\mathcal{T}'_0}(x)|\le (\tfrac{2}{3})^d\cdot |W_{\ell+1}|$,
      \begin{equation}
-       |\interior(x)\cap (W\cup Z)|+|\boundary(x)| \le 2ta\cdot (\tfrac{2}{3})^{d-1}+4da \label{t_bound}
+       |\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z)|  \le 2ta\cdot (\tfrac{2}{3})^{d-1}+3da \label{t_bound}
      \end{equation}
    \end{clm}
 
   % We observe that, for $d=6$ and $t\ge 34$, the bound in \eqref{t_bound} is at most $ta$.
 
   \begin{clmproof}
-  Consider the separation $(A,B):=(\interior(x)\cup\boundary(x),W_{\ell+1}\setminus\interior(x))$ of $G[W_{\ell+1}]$. By \cref{separation_tree}, $|A\cap B|=|\boundary(x)|\le da$ and $|A\setminus B|=|\interior(x)|\le |W_{\ell+1}|\cdot (\tfrac{2}{3})^{d}$.  By \cref{uniform_balance},
-  \begin{align*}
-    |\interior(x)\cap W| = |(A\setminus B)\cap W| & \le \frac{|A\setminus B|}{\ell+1} +  |A\cap B| \\
-    & \le (\tfrac{2}{3})^d\cdot \frac{|W_{\ell+1}|}{\ell+1} + da \\
-    & = (\tfrac{2}{3})^d\cdot \frac{|W|\cdot (\ell+1)+|Z|}{\ell+1} + da \\
-    & = (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|Z|}{\ell+1}\right) +  da \\
-    & < (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|W|}{\ell+1}\right) +  da
-      & \text{(since $|Z|=s_{\ell+1}<|W|$)} \\
-    & \le (\tfrac{2}{3})^d\cdot \left(\tfrac{3}{2}|W|\right) +  da
-      & \text{(since $\ell\ge 1$)} \\
-    & = (\tfrac{2}{3})^{d-1}\cdot|W| + da \enspace . \\
-  \end{align*}
+  Consider the separation 
+  \[  
+    (A,B):=(\interior_{\mathcal{T}'_0}(x)\cup\boundary_{\mathcal{T}'_0}(x),W_{\ell+1}\setminus\interior_{\mathcal{T}'_0}(x))
+  \] 
+  of $G[W_{\ell+1}]$ and observe that $A\setminus B:=\interior_{\mathcal{T}'_0}(x)$.
+  By \cref{z_w_bound},
+  % \begin{align*}
+  %   |\interior_{\mathcal{T}'_0}(x)\cap W| = |W\setminus B| 
+  %   & \le \frac{|A\setminus B|-|\Delta_{\ell+1}\setminus B|}{\ell+1} +  |A\cap B| \\
+  %   & \le \frac{|A\setminus B|-|Z\setminus B|+|A\cap B|}{\ell+1} +  |A\cap B| \\
+  %   & \le \frac{(\tfrac{2}{3})^d\cdot|W_{\ell+1}|-|Z\setminus B|+|A\cap B|}{\ell+1} +  |A\cap B| \\
+  %   & < \frac{(\tfrac{2}{3})^d\cdot(\ell+2)\cdot|W|}{\ell+1} +  |A\cap B| \\
+  %   % & = \frac{|W_\ell\setminus B|}{\ell+1} +  |A\cap B| \\
+  %   % & \le (\tfrac{2}{3})^d\cdot \frac{|W_{\ell+1}|-|\Delta_{\ell+1}\setminus B|}{\ell+1} + da \\
+  %   % & = (\tfrac{2}{3})^d\cdot \frac{|W|\cdot (\ell+1)+|Z|-|\Delta_{\ell+1}\setminus B|}{\ell+1} + da \\
+  %   % & = (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|Z|}{\ell+1}\right) +  da \\
+  %   % & < (\tfrac{2}{3})^d\cdot \left(|W|+\frac{|W|}{\ell+1}\right) +  da
+  %   %   & \text{(since $|Z|=s_{\ell+1}<|W|$)} \\
+  %   % & \le (\tfrac{2}{3})^d\cdot \left(\tfrac{3}{2}|W|\right) +  da
+  %   %   & \text{(since $\ell\ge 1$)} \\
+  %   % & = (\tfrac{2}{3})^{d-1}\cdot|W| + da = ta\cdot (\tfrac{2}{3})^{d-1}+da\enspace . \\
+  % \end{align*}
 
-  By \cref{z_corollary} and a similar calculation,
-  \[
-    |\interior(x)\cap Z|
-      = |(A\setminus B)\cap Z|
-      \le \frac{|A\setminus B|}{\ell+1} + 2\cdot |A\cap B|
-      <  (\tfrac{2}{3})^{d-1}\cdot|W| + 2da \\
-  \]
-  Therefore
+  % By \cref{z_corollary} and a similar calculation,
+  % \[
+  %   |\interior_{\mathcal{T}'_0}(x)\cap Z|
+  %     = |(A\setminus B)\cap Z|
+  %     \le \frac{|A\setminus B|}{\ell+1} + 2\cdot |A\cap B|
+  %     <  ta\cdot (\tfrac{2}{3})^{d-1} + 2da \\
+  % \]
+  % Therefore
   \begin{align*}
-    |\interior(x)\cap (W\cup Z)| + |\boundary(x)|
-      & \le |\interior(x)\cap (W\cup Z))| + da\\
-      & = |(A\setminus B)\cap (W\cup Z))| + da \\
-      & \le |(A\setminus B)\cap W| + |(A\setminus B)\cap Z))| + da \\
-      & \le 2ta\cdot(\tfrac{2}{3})^{d-1} + 4da \enspace . \qedhere
+  |\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z)| 
+  & = |(A\setminus B)\cap (W\cup Z)| \\
+  & \le |W\setminus B| + |Z\setminus B| \\
+  & \le 
+     \frac{2\,|A\setminus B|}{\ell+2} + 3\,|A\cap B| \\
+  & \le \frac{2\,(\tfrac{2}{3})^d|W_{\ell+1}|}{\ell+2} + 3\,|A\cap B| \\
+  & = \frac{2\,(\tfrac{2}{3})^d(\ell+1)|W|+|\Delta_{\ell+1}|}{\ell+2} + 3\,|A\cap B| \\
+  & < \frac{2\,(\tfrac{2}{3})^d(\ell+2)|W|}{\ell+2} + 3\,|A\cap B| \\
+  & = 2ta\cdot(\tfrac{2}{3})^d + 3da \enspace . \qedhere
   \end{align*}
   \end{clmproof}
 
- For each node $x=(G',A',B')$ of $T_0$, define
- \[
-    B_x:=(A'\cap B'\cap Y) \cup(\boundary(x)\cap Y)\cup(\interior(x)\cap (W\cup Z)) \enspace .
- \]
- Let $\mathcal{T}_0:=(B_x:x\in V(T_0))$ and let $G_0:=G[Z\cup W\cup (Y\cap (\bigcup_{x\in V(T_0)}\boundary(x))]$.
+ For each node $x$ of $T'_0$, define $B_x:=(B'_x\cap Y) \cup (\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z))$ and let $\mathcal{T}''_0:=(B_x:x\in V(T'_0))$.  By \cref{restricted_decomp} (applied with the separation $(X\cup W,Y\cup W)$), $\mathcal{T}''_0$ is a tree decomposition of $G[Y]$. \hussein{Does this require a proof?}
 
- \begin{clm}\label{tree_decomp}
-     $\mathcal{T}_0$ is a tree decomposition of $G_0$ in which $W\cup Z\subseteq B_{x_0}$ for the some node $x_0$ of $T_0$ and having width less than
-     \[
-       \max\{d:\in\{0,\ldots,h\}: \min\{2ta+(d+1)a -1, 2ta\cdot (\tfrac{2}{3})^{d-1} + (4d+1)a\} \} \enspace .
-     \]
+ \begin{clm}\label{leaf_interface}
+    For each leaf $x$ of $T'_0$, $|\boundary_{\mathcal{T}''_0}(x)|\le ta$.
  \end{clm}
 
- \begin{clmproof}
-   That $\mathcal{T}_0$ is a tree decomposition of $G[Z\cup W\cup (Y\cap (\bigcup_{x\in V(T_0)}\boundary(x))]$ is easily verified. (The key point is that, for each node $x$ of $T_0$, $(\boundary(x)\cap Y)\cup(\interior(x)\cap (W\cup Z))$ separates $\interior(x)$ and $W_{\ell+1}\setminus \interior(x)$.)
-   Let $x_0$ be the root of the separator tree $T_0$.  By definition, $\boundary(x_0)=\emptyset$ and $\interior(x_0)=Y\supseteq W\cup Z$. Therefore, $W\cup Z=\interior(x_0)\cap (W\cup Z)\subseteq B_{x_0}$.
-
-  To prove the bound on the width of $\mathcal{T}_0$ we will show taht, for each $d\in\{0,\ldots,h\}$ and each node $x\in V(T_0)$ of depth $d$,
-  \[
-    |B_x|\le \min\{2ta+(d+1)a -1, 2ta\cdot (\tfrac{2}{3})^{d-1} + (4d+1)a\} \enspace .
-  \]
-   Let $x=(G',A',B')$ be a node in $T_0$ whose depth is $d$.  By \cref{separation_tree}, we have
+ \begin{proof}
+   Let $x$ be a leaf of $T'_0$ and let $y$ be the parent of $x$.  Then $|\interior_{\mathcal{T}'_0}(x)|\le (\tfrac{2}{3})^h$ and $\boundary_{\mathcal{T}_0''}(x)=B_x\cap B_y\subseteq (B'_x\cap B'_y)\cup(\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z)) = \boundary_{\mathcal{T}_0'}(x)\cup(\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z))$. Therefore, by \cref{separation_tree} and \cref{cell_bound}
    \[
-    |B_x| \le |A'\cap B'| + |W\cup Z| + |\boundary(x)| \le |A'\cap B'| + 2ta-1 + |\boundary(x)| \le 2ta + (d+1)a - 1 \enspace .
-  \]
-  By \cref{cell_bound},
-  \[
-   |B_x| \le |A'\cap B'| + |\interior(x)\cap (W\cup Z)| + |\boundary(x)|
-    \le |A'\cap B'| + 2ta  \cdot (\tfrac{2}{3})^{d-1}+4da
-   \le 2ta\cdot (\tfrac{2}{3})^{d-1}+(4d+1)a \enspace . \qedhere
+     |\boundary_{\mathcal{T}''_0}(x)| \le |\boundary_{\mathcal{T}'_0}(x)| + |\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z)| \le ha + 2ta\cdot(\tfrac{2}{3})^{h} + 3ha =  2ta\cdot(\tfrac{2}{3})^{h} + 4ha\enspace .
    \]
+   The values of $h$ and $t$, defined above, are chosen so that the right hand side of this inequality is equal to $ta$.
+ \end{proof}
+
+  By \cref{leaf_interface}, $|\boundary_{\mathcal{T}''_0}(x)|\le ta$ for each leaf $x$ of $T_0'$.  By the inductive hypothesis, $G[\interior_{\mathcal{T}''_0}(x)\cup\boundary_{\mathcal{T}''_0}(x)]$ has a tree decomposition $\mathcal{T}^x:=(B_x:x\in V(T^x))$ of width less than $2(t+1)a$ in which some bag $B_{x_0}$ contains  $\boundary_{\mathcal{T}''_0}(x)$. Create a new tree $T_0$ from $T_0'$ by replacing each leaf $x$ of $T_0'$ with the node $x_0$ from the tree $T^x$ obtained this way.  Then $\mathcal{T}_0:=(B_x:x\in V(T_0))$ is a tree decomposition of $G[Y]$.
+  \begin{clm}\label{treewidth_bound}
+     The width of $\mathcal{T}_0$ is at most $2(t+1)a$.
+  \end{clm}
+ 
+ % \[
+ %    B_x:=\begin{cases}
+ %    (\boundary_{\mathcal{T}'_0}(x)\cap Y) \cup (\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z))
+ %    & \text{if $x$ is a leaf of $T_0$} \\
+ %    (B'_x\cap Y) \cup (\interior_{\mathcal{T}'_0}(x)\cap (W\cup Z)) 
+ %    & \text{otherwise. }
+ %    \end{cases}
+ % \]
+ % Let $G_0:=G[\bigcup_{x\in V(T_0')} B_x]$ and observe that $V(G_0)\supseteq Z\cup W$ since the root $x_0$ of $T_0'$ has $B_{x_0}\supseteq \interior_{\mathcal{T}'_0}(x_0)\cap (Z\cup W)=Y\cap(Z\cup W)=Z\cup W$.  Let $\mathcal{T}_0:=(B_x:x\in V(T_0'))$.
+
+ % \begin{clm}\label{tree_decomp}
+ %     $\mathcal{T}_0$ is a tree decomposition of $G_0$ in which $W\cup Z\subseteq B_{x_0}$ for the some node $x_0$ of $T_0$ and having width less than
+ %     \[
+ %       \max\{d:\in\{0,\ldots,h\}: \min\{2ta+(d+1)a -1, 2ta\cdot (\tfrac{2}{3})^{d-1} + (4d+1)a\} \} \enspace .
+ %     \]
+ % \end{clm}
+
+ \begin{clmproof}
+    The inductive hypothesis ensures that all bags of the tree decomposition have size at most $(2t+1)a$ except for those associated with non-leaf nodes of $T'_0$.  
+    % We will show that, for each $d\in\{0,\ldots,h-1\}$ and each non-leaf node $x$ of $T_0'$ having depth $d$,
+    Let $x$ be a non-leaf node in $T_0'$ whose depth is $d<h$. If $d=0$, then 
+    \[
+      |B_x| \le |W\cup Z| + |B'_x| \le (2ta-1)+a < (2t+1)a \enspace .
+    \]
+    If $d\ge 1$ then, by \cref{separation_tree}, $|B'_x|\le (d+1)a$ and $|\interior_{\mathcal{T}_0'}(x)|\le |W_\ell|\cdot(\tfrac{2}{3})^{d}$.
+    By \cref{cell_bound},
+    \[
+      |B_x| \le |\interior_{\mathcal{T}_0'}(x)\cap (W\cup Z)| + |B'_x|
+      \le 2ta  \cdot (\tfrac{2}{3})^{d-1}+3da + (d+1)a
+      \le 2ta\cdot (\tfrac{2}{3})^{d-1}+(4d+1)a \enspace .
+    \]
+    the right hand side of this equation is less than $(2ta+1)$ for all $d\in\{1,\ldots,h-1\}$.
   \end{clmproof}
-  The values of $h$ and $t$, above are chosen so that
-  \[
-    \max\{d:\in\{0,\ldots,h\}: \min\{2ta+(d+1)a -1, 2ta\cdot (\tfrac{2}{3})^{d-1} + (4d+1)a\} \} \le (2t+1)a\enspace .
-  \]
-  Therefore, by \cref{tree_decomp}, $\mathcal{T}_0$ has width less than $(2t+1)a$.
-
-  Finally, consider a node $x:=(G',A',B')$ of $T_0$ that has no left child.  Then $x$ has no left child because $|A'| < |W_{\ell+1}|\cdot (\tfrac{2}{3})^h$.  The argument used in the proof of \cref{cell_bound} shows that $|A'\cap V(G_0)|\le (\tfrac{2}{3})^{h}\cdot ta + 4(h+1)a$.  The values of $h$ and $t$ are defined above so that $2ta\cdot (\tfrac{2}{3})^{h} + 4(h+1)a=ta$.  Therefore $|A'\cap V(G_0)|\le ta$.  By the inductive hypothesis $G[A']$ has a tree decomposition $(B_x:x\in V(T_{L(x)}))$ of width less than $(2t+1)a$ such that $A'\cap V(G_0) \subseteq B_{x_L}$ for some $x_L\in V(T_{L(x)})$.  By adding an edge with endpoints $x$ and $x_L$ we obtain a tree decomposition of $G_0\cup G[A']$.
-
-  Similarly, if $x$ has no right child, then $G[B']$ has a tree decomposition $(B_x:x\in V(T_{R(x)}))$ of width less than $(2t+1)a$ such that $B'\cap V(G_0) \subseteq B_{x_R}$ for some $x_R\in V(T_{R(x)})$.  By adding an edge joining $x$ and $x_R$ we obtain a tree decomposition of $G_0\cup G[B']$.  Doing this for each node $x$ of $V(T_0)$ that has no left and/or right child yields the desired tree decomposition of $G[Y]$.  
+  Let $x_0$ be the root of $T_0$. Then $B_{x_0}:=B'_{x_0}\cap Y\supseteq W\cup Z$.  Therefore, $\mathcal{T}_0=(B_x:x\in V(T_0))$ is a tree decomposition of $G[Y]$ that (by \cref{treewidth_bound}) has width less than $(2t+1)a$ and there exists $x_0\in V(T_0)$ such that $W\cup Z\subseteq B_{x_0}$.  This completes the proof. 
 \end{proof}
 
 
