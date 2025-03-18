@@ -640,7 +640,7 @@ Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $
   \begin{proof}
     We first prove that $x_{\ell+1}^\star = x_0^\star+|A\cap B|$.
     By \eqref{third_constraint}, $x_{\ell+1}^\star\le x_0^\star+|A\cap B|$, so we need only show that $x_{\ell+1}^\star\ge x_0^\star+|A\cap B|$.
-    Suppose, for the sake of contradiction, that $x_{\ell+1}^\star<x_0^\star+|A\cap B|$ and let $\varepsilon := x_{\ell+1}^\star - (x_0^\star+|A\cap B|) >0$.  Let $x_0':=x_0^\star$, $y_0':=y_0^\star$, let $x_{\ell+1}':= x_{\ell+1}^\star + \varepsilon = x_0^\star+|A\cap B|$, let $y_{\ell+1}':=x_0'+y_0'-x_{\ell+1}'-1$, and let $x_i':=x_0-|A\cap B|/\ell$ and $y_i':=y_0+|A\cap B|/\ell$ for each $i\in\{1,\ldots,\ell\}$.  Then $x_0',\ldots,x_{\ell+1}',y_0',\ldots,y_{\ell+1}'$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}, and
+    Suppose, for the sake of contradiction, that $x_{\ell+1}^\star<x_0^\star+|A\cap B|$ and let $\varepsilon := x_{\ell+1}^\star - (x_0^\star+|A\cap B|) >0$.  Let $x_0':=x_0^\star$, $y_0':=y_0^\star$, let $x_{\ell+1}':= x_{\ell+1}^\star + \varepsilon = x_0^\star+|A\cap B|$, let $y_{\ell+1}':=x_0'+y_0'-x_{\ell+1}'-1$, and let $x_i':=x_0-|A\cap B|/\ell$ and $y_i':=y_0+|A\cap B|/\ell$ for each $i\in\{1,\ldots,\ell\}$.  Then $x_0',\ldots,x_{\ell+1}',y_0',\ldots,y_{\ell+1}'$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}, \textcolor{red}{[Not always: we violate \eqref{last_constraint} if $x_0^\star} > |W|-|A\cap B|-1$. We also violate \eqref{first_constraint} if $x_0^\star > |W|-|A\cap B|/\ell$.]} and
     \begin{align}
       f(x_0',\ldots,x_{\ell+1}',y_0',\ldots,y_{\ell+1}')
       & =
@@ -653,7 +653,7 @@ Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $
       (\ell+1)(x_0^\star+x_{\ell+1}^\star+\varepsilon)+\frac{(x_0^\star+x_{\ell+1}^\star+\varepsilon)(x_{\ell+1}^\star+y_{\ell+1}^\star)}{x_0^\star+y_0^\star} \\
       & >
       (\ell+1)(x_0^\star+x_{\ell+1}^\star)+\frac{(x_0^\star+x_{\ell+1}^\star)(x_{\ell+1}^\star+y_{\ell+1}^\star)}{x_0^\star+y_0^\star}  \label{tempo}
-    \end{align*}
+    \end{align}
     contradicting the choice of $x_0^\star,\ldots,x_{\ell+1}^\star,y_0^\star,\ldots,y_{\ell+1}^\star$.  This establishes that $x^\star_{\ell+1}=x^\star_0+|A\cap B|$. On the other hand, by \eqref{last_constraint}, we have $y_{\ell+1}^\star \le (x_0^\star+y_0^\star) -x_{\ell+1}^\star-1=y_0^\star-|A\cap B|-1$. If $y_{\ell+1}^\star < (x_0^\star+y_0^\star) -x_{\ell+1}^\star-1$, then the inequality in \eqref{peepo} is strict, which also contradicts the choice of $x_0^\star,\ldots,x_{\ell+1}^\star,y_0^\star,\ldots,y_{\ell+1}^\star$.  Therefore, $y_{\ell+1}^\star=y_0^\star-|A\cap B|-1$.
   \end{proof}
   Plugging \cref{optimal_choices} into \eqref{objective_2}, we obtain
@@ -661,7 +661,7 @@ Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $
     (x_0^\star+x_{\ell+1}^\star)\cdot\frac{(\ell+1)|W|+x_{\ell+1}^\star+y_{\ell+1}^\star}{|W|}
     & \le (\ell+1)(2x_0^\star + |A\cap B|) + \frac{2x_0^\star+|A\cap B|\cdot(|W|-1)}{W} \\
     & \le (\ell+2)(2x_0^\star + |A\cap B|) \enspace .
-  \end{equation}
+  \end{align*}
 
   We now show that the $x_0,\ldots,x_{\ell+1},y_0,\ldots,y_{\ell+1}$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}.  For each $i\in\{0,\ldots,\ell+1\}$, $x_i$ and $y_i$ are cardinalities of sets, so they are non-negative and therefore satisfy \eqref{first_constraint}.  By the definition of $W$-sequence $x_i+y_i=|\Delta_i|=|W|$ for each $i\in\{0,\ldots,\ell\}$, so $x_0,\ldots,x_{\ell},y_0,\ldots,y_\ell$ satisfy \eqref{second_constraint} .  Also, by the definition of $W$-sequence, $x_{\ell+1}+y_{\ell+1}=|\Delta_{\ell+1}|\le |W|-1=x_0+y_0-1$, so $x_{\ell+1}$ and $y_{\ell+1}$ satisfy \eqref{last_constraint}.  All that remains is to show $x_0,\ldots,x_{\ell+1}$ satisfy \eqref{third_constraint}.
 
