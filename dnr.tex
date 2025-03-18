@@ -582,7 +582,7 @@ Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $
   Then every $(V(G)\setminus W_{\ell},Z,W)$-separation $(X,Y)$ of $G$ has the property that, for any separation
   $(A,B)$ of $G[W_{\ell+1}]$,
   \[
-    |W\setminus B|+|Z\setminus B|\le \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2}+3\,|A\cap B| \enspace .
+    |W\setminus B|+|Z\setminus B|\le \frac{2\,|A\setminus B|}{\ell+2}+3\,|A\cap B| \enspace .
   \]
 \end{lem}
 
@@ -593,18 +593,108 @@ Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $
 %   \]
 % }
 
-\begin{rem}\label{easier_path}
-  The proof of \cref{z_w_bound} requires some extra effort to obtain $\ell+2$ in the denominator. The reader who is not interested in precise constants can already stop at \cref{z_b_bound} in the proof, from which the bound
-  \[
-    |W\setminus B|+|Z\setminus B|\le \frac{2|A\setminus B|}{\ell+1} + 3|A\cap B|
-  \]
-  follows immediately.
-  This weaker bound is still sufficient to prove \cref{main_result} with the constant $c< 69$.
-\end{rem}
+% \begin{rem}\label{easier_path}
+%   The proof of \cref{z_w_bound} requires some extra effort to obtain $\ell+2$ in the denominator. The reader who is not interested in precise constants can already stop at \cref{z_b_bound} in the proof, from which the bound
+%   \[
+%     |W\setminus B|+|Z\setminus B|\le \frac{2|A\setminus B|}{\ell+1} + 3|A\cap B|
+%   \]
+%   follows immediately.
+%   This weaker bound is still sufficient to prove \cref{main_result} with the constant $c< 69$.
+% \end{rem}
 
 \begin{proof}
   Let $W_{-1}:=\emptyset$ and, for each $i\in\{0,\ldots,\ell+1\}$, let $\Delta_{i}:=W_{i}\setminus W_{i-1}$ (as in the definition of $W$-sequence).
-  By the definition of $W$-sequence, $G[W_{i}]$ contains a set $\mathcal{P}_i$ of $|W\setminus B|$ pairwise vertex-disjoint $\Delta_i$-$(W\setminus B)$ paths, for each $i\in\{0,\ldots,\ell\}$.
+  For each $i\in\{0,\ldots,\ell+1\}$, let $x_i:=|\Delta_i\setminus B|$ and let $y_i:=|\Delta_i\cap B|$.  Then,
+  \[
+    |W\setminus B|=x_0
+    \text{,}\quad
+    |W| = x_0+y_0
+    \text{,\quad and}\quad
+    |W_\ell|=(\ell+1)(x_0+y_0)+x_{\ell+1}+y_{\ell+1} \enspace .
+  \]
+  The lemma asks for an upper bound on $x_0+|Z\setminus B|$. This quantity is closely related to $x_0+x_{\ell+1}$ so we will first focus on upper bound $x_0+x_{\ell+1}$.
+
+  We will now upper bound
+  \begin{align}
+    f(x_0,\ldots,x_{\ell+1},y_0,\ldots,y_{\ell+1})
+    % & =
+    % (x_0+x_{\ell+1})\cdot\frac{|W_{\ell+1}|}{|W|} \\
+    & = (x_0+x_{\ell+1})\cdot\frac{(\ell+1)|W|+x_{\ell+1}+y_{\ell+1}}{|W|} \label{objective_1} \\
+    & = (\ell+1)(x_0+x_{\ell+1})+\frac{(x_0+x_{\ell+1})(x_{\ell+1}+y_{\ell+1})}{|W|} \label{objective_2}
+  \end{align}
+  subject to the constraints
+  \begin{align}
+      x_i,y_i & \ge 0 & \text{for each $i\in\{0,\ldots,\ell+1\}$} \label{first_constraint}  \\
+      x_i+y_i & =|W| & \text{for each $i\in\{0,\ldots,\ell\}$}\label{second_constraint}  \\
+      x_i & \le x_0+|A\cap B| & \text{for each $i\in\{0,\ldots,\ell+1\}$} \label{third_constraint}  \\
+      % x_{\ell+1} & \le x_0+|A\cap B| \label{second_last_constraint} \\
+      x_{\ell+1}+y_{\ell+1} & \le x_0+y_0-1  \label{last_constraint}
+  \end{align}
+  (Below, we will show that $x_0,\ldots,x_{\ell+1},y_0,\ldots,y_{\ell+1}$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}.)
+  Note that, using \eqref{first_constraint}, \eqref{second_constraint}, and \eqref{last_constraint} we can easily show that \eqref{objective_2} is upper bounded by $2(\ell+2)|W|$.  Let $x_0^\star,\ldots,x_{\ell+1}^\star,y_0^\star,\ldots,y_{\ell+1}^\star$ be real values for $x_0,\ldots,x_{\ell+1},y_0,\ldots,y_{\ell+1}$ (respectively) that satisfy constraints \eqref{first_constraint}--\eqref{last_constraint} and that maximize \eqref{objective_2}.
+
+  \begin{clm}\label{optimal_choices}
+    $x_{\ell+1}^\star = x_0^\star+|A\cap B|$ and $y_{\ell+1}^\star = y_0^\star-|A\cap B|-1$.
+  \end{clm}
+
+  \begin{proof}
+    We first prove that $x_{\ell+1}^\star = x_0^\star+|A\cap B|$.
+    By \eqref{third_constraint}, $x_{\ell+1}^\star\le x_0^\star+|A\cap B|$, so we need only show that $x_{\ell+1}^\star\ge x_0^\star+|A\cap B|$.
+    Suppose, for the sake of contradiction, that $x_{\ell+1}^\star<x_0^\star+|A\cap B|$ and let $\varepsilon := x_{\ell+1}^\star - (x_0^\star+|A\cap B|) >0$.  Let $x_0':=x_0^\star$, $y_0':=y_0^\star$, let $x_{\ell+1}':= x_{\ell+1}^\star + \varepsilon = x_0^\star+|A\cap B|$, let $y_{\ell+1}':=x_0'+y_0'-x_{\ell+1}'-1$, and let $x_i':=x_0-|A\cap B|/\ell$ and $y_i':=y_0+|A\cap B|/\ell$ for each $i\in\{1,\ldots,\ell\}$.  Then $x_0',\ldots,x_{\ell+1}',y_0',\ldots,y_{\ell+1}'$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}, and
+    \begin{align}
+      f(x_0',\ldots,x_{\ell+1}',y_0',\ldots,y_{\ell+1}')
+      & =
+      (\ell+1)(x_0^\star+x_{\ell+1}')+\frac{(x_0^\star+x_{\ell+1}')(x_{\ell+1}'+y_{\ell+1}')}{x_0^\star+y_0^\star} \\
+      & =
+      (\ell+1)(x_0^\star+x_{\ell+1}')+\frac{(x_0^\star+x_{\ell+1}')(x_0^\star+y_0^\star-1)}{x_0^\star+y_0^\star}  \\
+      & \ge
+      (\ell+1)(x_0^\star+x_{\ell+1}')+\frac{(x_0^\star+x_{\ell+1}')(x_{\ell+1}^\star+y_{\ell+1}^\star)}{x_0^\star+y_0^\star} \label{peepo} \\
+      & =
+      (\ell+1)(x_0^\star+x_{\ell+1}^\star+\varepsilon)+\frac{(x_0^\star+x_{\ell+1}^\star+\varepsilon)(x_{\ell+1}^\star+y_{\ell+1}^\star)}{x_0^\star+y_0^\star} \\
+      & >
+      (\ell+1)(x_0^\star+x_{\ell+1}^\star)+\frac{(x_0^\star+x_{\ell+1}^\star)(x_{\ell+1}^\star+y_{\ell+1}^\star)}{x_0^\star+y_0^\star}  \label{tempo}
+    \end{align*}
+    contradicting the choice of $x_0^\star,\ldots,x_{\ell+1}^\star,y_0^\star,\ldots,y_{\ell+1}^\star$.  This establishes that $x^\star_{\ell+1}=x^\star_0+|A\cap B|$. On the other hand, by \eqref{last_constraint}, we have $y_{\ell+1}^\star \le (x_0^\star+y_0^\star) -x_{\ell+1}^\star-1=y_0^\star-|A\cap B|-1$. If $y_{\ell+1}^\star < (x_0^\star+y_0^\star) -x_{\ell+1}^\star-1$, then the inequality in \eqref{peepo} is strict, which also contradicts the choice of $x_0^\star,\ldots,x_{\ell+1}^\star,y_0^\star,\ldots,y_{\ell+1}^\star$.  Therefore, $y_{\ell+1}^\star=y_0^\star-|A\cap B|-1$.
+  \end{proof}
+  Plugging \cref{optimal_choices} into \eqref{objective_2}, we obtain
+  \begin{align*}
+    (x_0^\star+x_{\ell+1}^\star)\cdot\frac{(\ell+1)|W|+x_{\ell+1}^\star+y_{\ell+1}^\star}{|W|}
+    & \le (\ell+1)(2x_0^\star + |A\cap B|) + \frac{2x_0^\star+|A\cap B|\cdot(|W|-1)}{W} \\
+    & \le (\ell+2)(2x_0^\star + |A\cap B|) \enspace .
+  \end{equation}
+
+  We now show that the $x_0,\ldots,x_{\ell+1},y_0,\ldots,y_{\ell+1}$ satisfy constraints \eqref{first_constraint}--\eqref{last_constraint}.  For each $i\in\{0,\ldots,\ell+1\}$, $x_i$ and $y_i$ are cardinalities of sets, so they are non-negative and therefore satisfy \eqref{first_constraint}.  By the definition of $W$-sequence $x_i+y_i=|\Delta_i|=|W|$ for each $i\in\{0,\ldots,\ell\}$, so $x_0,\ldots,x_{\ell},y_0,\ldots,y_\ell$ satisfy \eqref{second_constraint} .  Also, by the definition of $W$-sequence, $x_{\ell+1}+y_{\ell+1}=|\Delta_{\ell+1}|\le |W|-1=x_0+y_0-1$, so $x_{\ell+1}$ and $y_{\ell+1}$ satisfy \eqref{last_constraint}.  All that remains is to show $x_0,\ldots,x_{\ell+1}$ satisfy \eqref{third_constraint}.
+
+  By the definition of $W$-sequence, $G[W_{i}]$ contains a set $\mathcal{P}_i$ of $x_i+y_i=|\Delta_i\setminus B|$ pairwise vertex-disjoint $\Delta_i$-$W$ paths, for each $i\in\{0,\ldots,\ell+1\}$.  For each $i\in\{1,\ldots,\ell+1\}$, partition $\mathcal{P}_i$ into three sets:
+  \begin{enumerate}[nosep,nolistsep]\setcounter{enumi}{-1}
+      \item $\mathcal{P}^0_i$ are the paths in $\mathcal{P}_i$ that begin at a vertex of $\Delta_{i}\setminus B$ and end at a vertex in $W\setminus B$.
+      \item $\mathcal{P}^1_i$ are the paths in $\mathcal{P}_i$ that begin at a vertex in $\Delta_{i}\cap B$ and end at a vertex in $W\setminus B$.
+      \item $\mathcal{P}^2_i$ are the paths in $\mathcal{P}_i$ that begin at a vertex in $\Delta_{i}\setminus B$ and end at a vertex in $W\cap B$.
+  \end{enumerate}
+  Since the paths in $\mathcal{P}_i^0\cup\mathcal{P}_i^1$ are pairwise vertex-disjoint and each contains a vertex of $W\setminus B$, $|\mathcal{P}_0^\star|+|\mathcal{P}_1^\star|\le|W\setminus B|=x_0$.
+  Each path in $\mathcal{P}_i^1\cup \mathcal{P}_i^2$ contains a vertex in $A\setminus B$ and a vertex in $B$.  Since $(A,B)$ is a separation of $G[W_{\ell+1}]$ this implies that each path in $\mathcal{P}_i^1\cup \mathcal{P}_i^2$ contains a vertex in $A\cap B$. Since the paths in  $\mathcal{P}_i^1\cup \mathcal{P}_i^2$ are pairwise vertex-disjoint, this implies that $|\mathcal{P}_i^1\cup \mathcal{P}_i^2|\le |A\cap B|$. Therefore,
+  \[
+    x_i = |\mathcal{P}_i^0| + |\mathcal{P}_i^2|
+    \le |\mathcal{P}_i^0| + 2|\mathcal{P}_i^1| + |\mathcal{P}_i^2|
+    \le x_0+|A\cap B| \enspace .
+  \]
+  Therefore $x_0,\ldots,x_{\ell+1}$ satisfy \eqref{third_constraint}.  Therefore,
+  \begin{align*}
+    (x_0+x_{\ell+1})\cdot\frac{|W_{\ell+1}|}{|W|}
+    & = (x_0+x_{\ell+1})\cdot\frac{(\ell+1)|W|+x_{\ell+1}+y_{\ell+1}}{|W|} \\
+    & \le (x_0^\star+x_{\ell+1}^\star)\cdot\frac{(\ell+1)|W|+x_{\ell+1}^\star+y_{\ell+1}^\star}{|W|} \\
+    & \le (\ell+2)(2x_0^\star + |A\cap B|) \enspace .
+  \end{align*}
+
+  Furthermore,
+
+
+  let $\mathcal{P}^{0}_i\subseteq \mathcal{P}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex
+
+
+
+
+
   % \hussein{I think the last statement is not true for $\ell + 1$.}
 
   We begin by bounding $|W\setminus B|$ using the path sets $\mathcal{P}_0,\ldots,\mathcal{P}_{\ell}$.  For each $i\in\{0,\ldots,\ell\}$, let $\mathcal{Q}_i\subseteq \mathcal{P}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex in $A\setminus B$ and let $\overline{\mathcal{Q}}_i:=\mathcal{P}_i\setminus \mathcal{Q}_i$ contain the paths in $\mathcal{P}_i$ that begin at a vertex in $B$.  Since each path in $\mathcal{Q}_i$ begins at a distinct vertex in $\Delta_i\setminus B$, $|\mathcal{Q}_i|\le|\Delta_i\setminus B|$. Each path in $\overline{\mathcal{Q}}_i$ begins at a vertex in $B$ and ends at a vertex in $W\setminus B$. Since $(A,B)$ is a separation of $G[W_{\ell+1}]$, this implies that each path in $\overline{\mathcal{Q}}_i$ contains a vertex in $A\cap B$.  Since the paths in $\overline{\mathcal{Q}}_i$ are pairwise vertex-disjoint, $|\overline{\mathcal{Q}}_i|\le |A\cap B|$.
