@@ -71,10 +71,13 @@
 
 \newcommand{\hussein}[1]{\textcolor{purple}{HH: #1}}
 
-\title{\MakeUppercase{Dvo\v{r}ák-Norin Revisited}}
-\title{\MakeUppercase{Separation Number and Treewidth, Revisited}}
+\title{\MakeUppercase{Separation Number and Treewidth, Revisited}%
+  \thanks{This research was partly funded by NSERC.}}
 
-\author{Hussein Houdrouge, Babak Miraftab, and Pat Morin}
+\author{Hussein Houdrouge%
+  \thanks{School of Computer Science, Carleton University.},\quad
+  Bobby Miraftab\footnotemark[2],\quad
+  and Pat Morin\footnotemark[2]}
 
 \date{}
 
@@ -259,7 +262,7 @@ The following construction of a tree decomposition using balanced separations (o
 
 % \pat{In hindsight, the definition of $W$-sequence should have sets $W_0,\ldots,W_{\ell}$.  This would make many of the formulas cleaner.}
 % \hussein{Please Pat, do not forget to omit the $s_{i}$, I can do it if needed!}
-% \pat{Yes, please do it. Thanks!} \hussein{Probably, it is better to keep them as the notation will be ugly if I replace $s_i$ by $|\Delta_i|$ in the subscript of the Paths...??} 
+% \pat{Yes, please do it. Thanks!} \hussein{Probably, it is better to keep them as the notation will be ugly if I replace $s_i$ by $|\Delta_i|$ in the subscript of the Paths...??}
 
 % \hussein{Hi Pat, did you read the comment above, so I can delete it?}
 % \pat{Yes, let's just keep the $s_i$ notation.}
@@ -568,7 +571,7 @@ Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\sub
 %   \end{proof}
 
 
-Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $(\ell+1)|W|\le |W_{\ell+1}|< (\ell+2)|W|$, so $1/(\ell+2)< |W|/|W_{\ell+1}|\le 1/(\ell+1)$.  
+Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $(\ell+1)|W|\le |W_{\ell+1}|< (\ell+2)|W|$, so $1/(\ell+2)< |W|/|W_{\ell+1}|\le 1/(\ell+1)$.
 The following lemma shows that, for any separation $(A,B)$ of $G[W_{\ell+1}]$, the size of the intersection of $A\setminus B$ with $W\cup Z$ is bounded by the order $|A\cap B|$ of $(A,B)$ and the ratio $|A\setminus B|\cdot |W|/|W_{\ell+1}|$.
 
 \begin{lem}\label{z_w_bound}
@@ -709,7 +712,7 @@ Since each of the paths in $\mathcal{R}$ contains a distinct vertex in $Z$, $|\m
     % & < \mathcolor{red}{\frac{3|A\setminus B|}{(\ell + 2)} + 3|A\cap B|???}\\
     % & \text{\pat{Continue here.}} \\
     & < \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 3\,|A\cap B| \enspace . \qedhere
-     % -\frac{|Z\setminus B|}{(\ell+1)(\ell+2)} \enspace . 
+     % -\frac{|Z\setminus B|}{(\ell+1)(\ell+2)} \enspace .
   \end{align*}
   % Rewriting this, we obtain
   % \[
