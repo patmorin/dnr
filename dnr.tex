@@ -74,7 +74,7 @@
 \title{\MakeUppercase{Dvo\v{r}ák-Norin Revisited}}
 \title{\MakeUppercase{Separation Number and Treewidth, Revisited}}
 
-\author{Hussein Houdrouge, Bobby Miraftab, and Pat Morin}
+\author{Hussein Houdrouge, Babak Miraftab, and Pat Morin}
 
 \date{}
 
@@ -94,7 +94,7 @@
 In this paper every graph $G$ is undirected and simple with vertex set $V(G)$ and edge set $E(G)$.  A \defin{tree decomposition} of a graph $G$ is a collection $\mathcal{T}:=(B_x:x\in V(T))$ of vertex subsets of $G$, called \defin{bags}, that is indexed by the vertices of a tree $T$ and such that
 \begin{enumerate*}[label=(\roman*)]
   \item\label{covers_edges} for each $vw\in E(G)$, there exists $x\in V(T)$ such that $\{v,w\}\subseteq B_x$; and
-  \item\label{connectivity} for each vertex $v$ of $G$, $T[\{x\in V(T): v\in B_x]$ is a non-empty (connected) subtree of $T$.
+  \item\label{connectivity} for each vertex $v$ of $G$, $T[\{x\in V(T): v\in B_x\}]$ is a non-empty (connected) subtree of $T$.
 \end{enumerate*}
 The \defin{width}, of a tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ is $\mathdefin{\width(\mathcal{T})}:=\max\{|B_x|:x\in V(T)\}-1$. The \defin{treewidth} of a graph $G$ is $\mathdefin{\tw(G)}:=\min\{\width(\mathcal{T}):\text{$\mathcal{T}$ is a tree decomposition of $G$}\}$.
 
@@ -106,7 +106,7 @@ A short argument due to \citet{robertson.seymour:graph}, which has many generali
 \end{thm}
 
 To put \cref{main_result} into context, consider the following classic result of \citet{robertson.seymour:graph}.
-Let $W$ be a subset of the vertices in a graph $G$.  A separation $(A,B)$ of $G$ is \defin{$W$-balanced} if $|(A\setminus B)\cap W|\le \tfrac{2}{3}|W|$ and $|(A\setminus B)\cap W|\le \tfrac{2}{3}|W|$.
+Let $W$ be a subset of the vertices in a graph $G$.  A separation $(A,B)$ of $G$ is \defin{$W$-balanced} if $|(A\setminus B)\cap W|\le \tfrac{2}{3}|W|$ and $|(B\setminus A)\cap W|\le \tfrac{2}{3}|W|$.
 
 \begin{thm}[\citet{robertson.seymour:graph}]\label{w_balanced_theorem}
     Let $G$ be a graph with the property that, for each $W\subseteq V(G)$, $G$ has a $W$-balanced separation of order at most $a$. Then  $\tw(G)<4a$.
@@ -114,17 +114,18 @@ Let $W$ be a subset of the vertices in a graph $G$.  A separation $(A,B)$ of $G$
 
 The proof of \cref{w_balanced_theorem} is constructive and intuitive.  Indeed, a tree decomposition of $G$ can be constructed iteratively by an algorithm that maintains a separation $(X,Y)$ of order at most $3a$, and a tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ of $G[Y]$ of width less than $4a$ in which some bag $B_x$ contains all vertices in $W:=X\cap Y$.  To extend $\mathcal{T}$, the algorithm takes a $W$-balanced separation $(A,B)$ of $G[X]$ of order at most $a$ and creates a leaf $x'$ in $T$ adjacent to $x$ with $B_{x'}:=W\cup (A\cap B)$.\footnote{A $W$-balanced separation $(A,B)$ of $G[X]$ can be obtained from a $W$-balanced separation $(A',B')$ of $G$ by setting $(A,B):=(A'\cap X,B'\cap X)$.}  Note that $|B_{x'}|\le |W|+|A\cap B|\le 4a$, so the width of $\mathcal{T}$ is still less than $4a$.
 % This gives a tree decomposition of $G[Y']:=G[Y\cup (A\cap B)]$.
-Let $X_A:=A$, $Y_A:=Y\cup(A\cap B)$, $G_A:=G[X_A\cup Y_A]$ and $W_A:=X_A\cap Y_A$.  Then $\mathcal{T}$ is a tree decomposition $G[Y_A]$ of width less than $4a$ and $(X_A,Y_A)$ is a separation of $G_A$ of order $|W_A|\le|W\setminus B|+|A\cap B|\le \tfrac{2}{3}|W|+a\le 3a$ and a bag $B_{x'}$ of $\mathcal{T}$ contains $W_A$. The algorithm then inductively extends $\mathcal{T}$ to a tree decomposition of $G_A$.  Let $X_B:=B$, $Y_B:=Y\cup A$, $G_B:=G$, and $W_B:=X_B\cap Y_B$.  Then $\mathcal{T}$ is a tree decomposition of $Y_B$ of width less than $4a$ and $(X_B,Y_B)$ is a separation of $G_B$ of order $|W_B|\le |W\cap B|+|A\cap B|\le\tfrac{2}{3}|W|+a\le 3a$ and a bag $B_{x'}$ of $\mathcal{T}$ contains $W_B$.  The algorithm finishes by inductively extending $\mathcal{T}$ to a tree decomposition of $G_B=G$.
+Let $X_A:=A$, $Y_A:=Y\cup(A\cap B)$, $G_A:=G[X_A\cup Y_A]=G[Y\cup A]$ and $W_A:=X_A\cap Y_A$.  Then $\mathcal{T}$ is a tree decomposition $G[Y_A]$ of width less than $4a$ and $(X_A,Y_A)$ is a separation of $G_A$ of order $|W_A|\le|W\setminus B|+|A\cap B|\le \tfrac{2}{3}|W|+a\le 3a$ and a bag $B_{x'}$ of $\mathcal{T}$ contains $W_A$. The algorithm then inductively extends $\mathcal{T}$ to a tree decomposition of $G_A$ of width less than $4a$.  Let $X_B:=B$, $Y_B:=Y\cup A$, $G_B:=G$, and $W_B:=X_B\cap Y_B$.  Then $\mathcal{T}$ is a tree decomposition of $Y_B$ of width less than $4a$ and $(X_B,Y_B)$ is a separation of $G_B$ of order $|W_B|\le |W\cap B|+|A\cap B|\le\tfrac{2}{3}|W|+a\le 3a$ and a bag $B_{x'}$ of $\mathcal{T}$ contains $W_B$.  The algorithm finishes by inductively extending $\mathcal{T}$ to a tree decomposition of $G_B=G$ of width less than $4a$.
 
 % An efficient implementation of the algorithm discussed in the preceding paragraph is given by \citet[Fact~2.7]{reed:tree}.
 
-The challenge in establishing \cref{main_result} is that the balanced separations in the definition of separation number are only able to balance the entire set of vertices in an arbitrary subgraph of $G$, rather than separating $G$ in such a way the vertices in a specific $W\subseteq V(G)$ are balanced.  In the language of the previous paragraph, there is no reason that a balanced separation $(A,B)$ of $G[X]$ should have $|(A\setminus B)\cap W|<|W|$ and $|(B\setminus A)\cap W|<|W|$.
+The challenge in establishing \cref{main_result} is that the balanced separations in the definition of separation number are only guaranteed to balance the entire set of vertices in an arbitrary subgraph of $G$, rather than separating $G$ in such a way the vertices in a specific $W\subseteq V(G)$ are balanced.  In the language of the previous paragraph, there is no reason that a balanced separation $(A,B)$ of $G[X]$ should have $|(A\setminus B)\cap W|<|W|$ and $|(B\setminus A)\cap W|<|W|$.
 
-\citet{dvorak.norin:treewidth} prove \cref{main_result} with the constant $c=15$. Their proof is by contradiction and makes use of the relationship between treewidth and brambles established by \citet{seymour.thomas:graph}.  Essentially, they show that if $\tw(G)>15\sep(G)$, then there exists an $\alpha$-tame $W$-cloud (a special kind of network flow) which contradicts the choice of a haven (a special kind of flap assignment) that is derived from a bramble of order $15\sep(G)$.  The crux of their proof \cite[Proof of Lemma~7]{dvorak.norin:treewidth} involves showing that, for a \emph{carefully chosen} $W\subseteq V(G)$, a balanced separation of the subgraph induced by the saturated and hungry vertices of an $\alpha$-tame $W$-cloud is, by necessity, also (rougly) $W$-balanced. This leads to a contradiction related to the choice of $W$.\footnote{In an earlier draft of their result, \citet{dvorak.norin:treewidth_v1}, used tangles rather than brambles and havens, and confluent flows \cite{chen.kleinberg.ea:almost} rather than $W$-clouds to establish \cref{main_result} with the constant $c=105$.  They credit an anonymous referee for help in reducing the value of $c$.}
+\citet{dvorak.norin:treewidth} prove \cref{main_result} with the constant $c=15$. Their proof is by contradiction and makes use of the relationship between treewidth and brambles established by \citet{seymour.thomas:graph}.  Essentially, they show that if $\tw(G)>15\sep(G)$, then there exists an $\alpha$-tame $W$-cloud (a special kind of network flow) which contradicts the choice of a haven (a special kind of flap assignment) that is derived from a bramble of order $15\sep(G)$.  The crux of their proof \cite[Proof of Lemma~7]{dvorak.norin:treewidth} involves showing that, for a \emph{carefully chosen} $W\subseteq V(G)$, a balanced separation of the subgraph $H\subseteq G$ induced by the saturated and hungry vertices of an $\alpha$-tame $W$-cloud is, by necessity, also (rougly) $W$-balanced. This leads to a contradiction related to the choice of $W$.\footnote{In an earlier draft of their result, \citet{dvorak.norin:treewidth_v1}, used tangles rather than brambles and havens, and confluent flows \cite{chen.kleinberg.ea:almost} rather than $W$-clouds to establish \cref{main_result} with the constant $c=105$.  They credit an anonymous referee for help in reducing the value of $c$.}
 
-In the current paper, we prove \cref{main_result} with the constant $c=7776/139< 55.943$.  Despite the larger constant, we believe that the proof given here has a number of advantages.  The proof is constructive: It proves that $\tw(G)\le c\cdot \sep(G)$ by constructing a tree decomposition of $G$ having width less than $c\cdot\sep(G)$.  The proof requires fewer definitions and previous results: It does not use brambles, havens, or network flows.  Brambles and havens are avoided entirely.  The use of network flows is replaced by a collection of paths obtained from repeated applications of the simplest version of Menger's Theorem on vertex-disjoint paths in (unweighted undirected) graphs.
+In the current paper, we prove \cref{main_result} with the constant $c=7915/139< 56.943$.  Despite the larger constant, we believe that the proof given here has a number of advantages.  The proof is constructive: It proves that $\tw(G)\le c\cdot \sep(G)$ by constructing a tree decomposition of $G$ having width less than $c\cdot\sep(G)$.  The proof requires fewer definitions and previous results: It does not use brambles, havens, or network flows.  Brambles and havens are avoided entirely.  The use of network flows is replaced by a collection of paths obtained from repeated applications of the simplest version of Menger's Theorem on vertex-disjoint paths in (unweighted undirected) graphs.
 
-Most importantly, the proof given here is built around a generalization of $W$-balanced separations:  For a sufficiently large $t>0$ and an \emph{arbitrary} $W\subseteq V(G)$ of size at least $t\cdot \sep(G)$, there exists a subgraph $H$ of $G$ with $W\subseteq V(G)$ such that any balanced separation of $H$ must necessarily balance both $W$ and the set $Z:=N_G(V(G)\setminus V(H))$ of vertices that separate $V(G)\setminus V(H)$ from $W$. With this tool in hand, recursively taking balanced separations of subgraphs of $H$ gives an algorithm for constructing a tree decomposition of $G$ that is similar in spirit to the algorithm outlined above.
+Most importantly, the proof given here is built around a generalization of $W$-balanced separations:  For a sufficiently large $t>0$ and an \emph{arbitrary} $W\subseteq V(G)$ of size at least $t\cdot \sep(G)$, there exists a subgraph $H$ of $G$ with $W\subseteq V(H)$ and a separation $(X,Y)$ of $G$ with $W\subseteq Y$ and $V(G)\setminus V(H)\subseteq X\setminus Y$ and having order less than $|W|$ and such that any balanced separation of $H$ must necessarily balance $W\cup (X\cap Y)$.  This leads to an algorithm for constructing a tree decomposition of $G$ similar in spirit to the algorithm outlined above.
+In particular, recursively taking balanced separations of subgraphs of $H$ gives an algorithm for constructing a tree decomposition $\mathcal{T}_Y:=(B_x:x\in V(T_Y))$ of $G[Y]$ in which some bag $B_y$ contains $W\cup (X\cap Y)$.  Then, recursion/induction is used to find a tree decomposition $\mathcal{T}_X:=(B_x:x\in V(T_X))$ of $G':=G[X]$ in which some bag $B_x$ contains $W':=X\cap Y$.  Joining $T_X$ and $T_Y$ with the edge $xy$ gives a tree $T$ such that $\mathcal{T}:=(B_x:x\in V(T))$ is the desired tree decomposition of $G$.
 
 % The identification of the subgraph $H$ described above is related to what we consider the crux of the proof in \cite{dvorak.norin:treewidth}.  However, we define $H$ using repeated applications of Menger's Theorem, which increases the number of vertices in $H$ by $|W|$ at each step.  The closest thing to an equivalent notion in \cite{dvorak.norin:treewidth} is the graph $F$ that appears in the proof of Lemma~7. There, the graph $F$ is obtained by taking a special kind of network flow $f$ (an $\alpha$-tame $W$-cloud) in which the only sinks are the vertices in $W$ (for a \emph{carefully chosen} $W\subseteq V(G)$) and $F$ is defined to be the subgraph of $G$ induced by the (the hungry and saturated) vertices of $G$ that participate in $f$.
 
@@ -146,7 +147,7 @@ We make use of the following vertex connectivity version of Menger's Theorem (se
 
 The \defin{depth}, $\mathdefin{\depth_T(x)}$ of a node $x$ in a rooted tree $T$ is the number of edges on the path from $x$ to the root of $T$. The \defin{height} of a rooted tree $T$ is $\mathdefin{\height(T)}:=\max\{\depth_T(x):x\in V(T)\}$. For a node $x$ in a rooted tree $T$, we let $\mathdefin{T_x}$ denote the subtree of $T$ induced by all the descendants of $x$, including $x$ itself.
 
-A tree decomposition $(B_x:x\in V(T))$ of a graph $G$ is \defin{rooted} if the tree $T$ is rooted.  Let $\mathcal{T}:=(B_x:x\in V(T))$ be a rooted tree decomposition of a graph $G$.    For the root $x_0$ of $T$, the \defin{boundary} of $x_0$ is $\mathdefin{\boundary_{\mathcal{T}}(x_0)}:=\emptyset$.  For a node $x$ of $T$ with parent $y$, the \defin{boundary} of $x$ is $\mathdefin{\boundary_\mathcal{T}(x)}:=B_x\cap B_y$.  The \defin{interior} of a node $x$ in $T$ is $\mathdefin{\interior_\mathcal{T}(x)}:=(\bigcup_{x'\in V(T_x)} B_{x'})\setminus \boundary(x)$.  Note that, for the root $x_0$ of $T$, $\interior_{\mathcal{T}}(x_0)=V(G)$.  From these definitions it follows that, if $T_y\supseteq T_x$, then $\interior_{\mathcal{T}}(x)\subseteq\interior_{\mathcal{T}}(y)$ and that $\interior_\mathcal{T}(x) \cup \boundary_\mathcal{T}(x)\subseteq \interior_\mathcal{T}(y) \cup \boundary_\mathcal{T}(y)$. In particular, these inclusion relations hold for every ancestor $y$ of $x$.
+A tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$ of a graph $G$ is \defin{rooted} if the tree $T$ is rooted. If $x_0$ is the root of $T$, then $B_{x_0}$ is called the \defin{root bag} of $\mathcal{T}$.  Let $\mathcal{T}:=(B_x:x\in V(T))$ be a rooted tree decomposition of a graph $G$ where $x_0$ is the root of $T$.   The \defin{boundary} of $x_0$ is $\mathdefin{\boundary_{\mathcal{T}}(x_0)}:=\emptyset$.  For a node $x$ of $T$ with parent $y$, the \defin{boundary} of $x$ is $\mathdefin{\boundary_\mathcal{T}(x)}:=B_x\cap B_y$.  The \defin{interior} of a node $x$ in $T$ is $\mathdefin{\interior_\mathcal{T}(x)}:=(\bigcup_{x'\in V(T_x)} B_{x'})\setminus \boundary(x)$.  Note that, for the root $x_0$ of $T$, $\interior_{\mathcal{T}}(x_0)=V(G)$.  From these definitions it follows that, if $T_y\supseteq T_x$, then $\interior_{\mathcal{T}}(y)\supseteq\interior_{\mathcal{T}}(x)$ and that $\interior_\mathcal{T}(y) \cup \boundary_\mathcal{T}(y)\supseteq \interior_\mathcal{T}(x) \cup \boundary_\mathcal{T}(x)$. In particular, these inclusion relations hold for every ancestor $y$ of $x$.
 
 
 
@@ -175,30 +176,19 @@ A tree decomposition $(B_x:x\in V(T))$ of a graph $G$ is \defin{rooted} if the t
 
 The following lemma allows us to restrict a rooted tree decomposition of a graph $G$ to the subgraph $G[Y]$ induced by one part of a separation $(X,Y)$ in such a way that $X\cap Y$ is contained in a single bag (the root bag) of the resulting decomposition.
 
-\hussein{I think $(\interior_{\mathcal{T}'}(x) \cap X \cap Y)$ is not necessary as $(\interior_{\mathcal{T}'}(x) \cap X \cap Y) \subseteq int_{\mathcal{T}'}(x) \cap Y \subseteq B'_x \cap Y$. This operation is not contributing anything to the bag unless I am missing something!}
-
-\hussein{I think, I am wrong, $int(x)$ is everything bellow the bag of $x$ in $T$, not just the bag minus the boundary.}
-
-\hussein{To make the lemma confirms with the paragraph above, do we need to say $\mathcal{T}'$ has $X\cap Y$ in a bag?}
-
-\hussein{I think, it might be easier to prove this lemma by constructing the tree recursively. First, construct $\mathcal{T}_Y$ a tree decomposition for $G[Y]$ by intersecting every bag by $V(Y)$. Then, modify the tree bottom up... Then, it might be easy to say that the tree satisfy property $ii$ because what we gonna add to a parent node will be something equivalent to union of intersection over the children!! }
-
 \begin{lem}\label{restricted_decomp}
-    Let $\mathcal{T}':=(B'_x:x\in V(T'))$ be a rooted tree decomposition of a graph $G$, let $(X,Y)$ be a separation of $G$, and let $B_x:=(B'_x\cap Y)\cup (\interior_{\mathcal{T}'}(x) \cap X \cap Y)$ for each $x\in V(T')$.  Then $\mathcal{T}:=(B_x:x\in V(T'))$ is a tree decomposition of $G[Y]$.
+    Let $\mathcal{T}':=(B'_x:x\in V(T'))$ be a rooted tree decomposition of a graph $G$, let $(X,Y)$ be a separation of $G$, and let $B_x:=(B'_x\cap Y)\cup (\interior_{\mathcal{T}'}(x) \cap X \cap Y)$ for each $x\in V(T')$.  Then $\mathcal{T}:=(B_x:x\in V(T'))$ is a tree decomposition of $G[Y]$.  Furthermore, the root bag $B_{x_0}$ of $\mathcal{T}$ contains $X\cap Y$.
 \end{lem}
 
 \begin{proof}
-  We must show that $\mathcal{T}$ satisfies Properties~\ref{covers_edges} and \ref{connectivity} of tree decompositions.
+  The ``furthermore'' clause of the statement is immediate, since $\interior_{\mathcal{T}}(x_0)=V(G)$, so $B_{x_0}\subseteq V(G)\cap X\cap Y=X\cap Y$.
+  To show that $\mathcal{T}$ is a tree decomposition of $G$ we must show that $\mathcal{T}$ satisfies Properties~\ref{covers_edges} and \ref{connectivity} of tree decompositions.
   Let $vw$ be an edge of $G[Y]$.  Since $vw$ is also an edge of $G$ and  $\mathcal{T'}$ is a tree decomposition of $G$,  $\{v,w\}\subseteq B'_x$ for some $x\in V(T')$, so $\{v,w\}\subseteq B'_x\cap Y\subseteq  B_x$. Thus, $\mathcal{T}$ has Property~\ref{covers_edges} of tree decompositions.
   % We now argue that $\mathcal{T}$ also has Property~\ref{connectivity} of tree decompositions.
 
-  Suppose, for the sake of contradiction, that $\mathcal{T}$ violates Property~\ref{connectivity}.  Then there exists some $v\in Y$, some $r\ge 2$, and some path $P=x_0,\ldots,x_r$ in $T'$ with $v\in B_{x_0}$, $v\in B_{x_r}$ and $v\not\in B_{x_i}$ for some $i\in\{1,\ldots,r-1\}$.  Let $P$ be chosen so that its length, $r$, is minimum.  Then $v\not\in B_{x_i}$ for each $i\in\{1,\ldots,r-1\}$.
+  Suppose, for the sake of contradiction, that $\mathcal{T}$ violates Property~\ref{connectivity}.  Then there exists some $v\in Y$, some $r\ge 2$, and some path $P=x_0,\ldots,x_r$ in $T'$ with $v\in B_{x_0}$, $v\in B_{x_r}$ and $v\not\in B_{x_i}$ for some $i\in\{1,\ldots,r-1\}$.  Let $P$ be chosen so that its length, $r$, is minimum.  Then $v\not\in B_{x_i}$ for each $i\in\{1,\ldots,r-1\}$.  Since $\mathcal{T}'$ is a tree decomposition of $G$, $v\not\in B'_{x_0}$ or $v\not\in B'_{x_r}$ since, otherwise $v\in B_{x_i}\subseteq B'_{x_i}\cap Y$ for each $i\in\{0,\ldots,r\}$.  Assume, without loss of generality that $v\not\in B'_{x_r}$. Then $v\in\interior_{\mathcal{T}'}(x_r)\cap X\cap Y$ since $v\in B_{x_r}$.  In particular, $v\in X\cap Y$.
 
-  Since $\mathcal{T}'$ is a tree decomposition of $G$, $v\not\in B'_{x_0}$ or $v\not\in B'_{x_r}$ since, otherwise $v\in B_{x_i}\subseteq B'_{x_i}\cap Y$ for each $i\in\{0,\ldots,r\}$.  Assume, without loss of generality that $v\not\in B'_{x_r}$. Therefore $v\in\interior_{\mathcal{T}'}(x_r)\cap X\cap Y$.  In particular, $v\in X\cap Y$.
-
-  Define $i^*$ so that $x_{i^*}$ is the uniqe vertex in $P$ that is ancestor of both $x_0$ and $x_r$.  Then  $\interior_{\mathcal{T}'}(x_{i^*})\supseteq \interior_{\mathcal{T}'}(x_i)$ for each $i\in\{0,\ldots,r\}$.  In particular $v\in \interior_{\mathcal{T}'}(x_r)\cap X\cap Y\subseteq\interior_{\mathcal{T}'}(x_{i^*})\cap X\cap Y\subseteq B_{x_{i}}$ for each $i\in\{i^*,\ldots,r\}$.  Therefore $i^*=r$ and $x_r$ is an ancestor of $x_0$. Furthermore, $v\not\in\interior_{\mathcal{T}'}(x_0)$ since, otherwise $v\in\interior_{\mathcal{T}'}(x_1)\cap X\cap Y\subseteq B_{x_1}$. Therefore $v\in B'_{x_0}$.  Thus $x_1$ is the parent of $x_0$, $v\in B'_{x_0}$ and $v\not\in (B'_{x_1}\cap Y)\cup (\interior_{\mathcal{T}'}(x_1)\cap X\cap Y)
-  \supseteq (B'_{x_i}\cup \interior_{\mathcal{T}'}(x_1))\cap\{v\}
-  \supseteq (\boundary_{\mathcal{T}'}(x_1)\cup \interior_{\mathcal{T}'}(x_1))\cap\{v\} \supseteq (\boundary_{\mathcal{T}'}(x_0)\cup \interior_{\mathcal{T}'}(x_0))\cap \{v\} \supseteq B'_{x_0}\cap\{v\}$. This contradicts the fact that $v\in B'_{x_0}$.
+  Define $i^*$ so that $x_{i^*}$ is the unique vertex in $P$ that is an ancestor of both $x_0$ and $x_r$.  Then  $\interior_{\mathcal{T}'}(x_{i^*})\supseteq \interior_{\mathcal{T}'}(x_i)$ for each $i\in\{0,\ldots,r\}$.   In particular $v\in \interior_{\mathcal{T}'}(x_r)\cap X\cap Y\subseteq\interior_{\mathcal{T}'}(x_{i^*})\cap X\cap Y\subseteq B_{x_{i}}$ for each $i\in\{i^*,\ldots,r\}$.  Therefore $i^*=r$ and $x_r$ is an ancestor of $x_0$.  Therefore $x_1$ is the parent of $x_0$, $v\in B_{x_0}$ and $v\not\in B_{x_1}$.  If $v\in\interior_{\mathcal{T}'}(x_0)$ then $v\in\interior_{\mathcal{T}'}(x_0)\cap X\cap Y\subseteq\interior_{\mathcal{T}'}(x_1)\cap X\cap Y\subseteq B_{x_1}$, a contradiction.  Therefore $v\in B'_{x_0}$ since $v\in B_{x_0}$.  Thus $x_1$ is the parent of $x_0$, $v\in B'_{x_0}$ and $v\not\in B'_{x_1}$.  Therefore $v\in\interior_{\mathcal{T}'}(x_1)$, so $v\in\interior_{\mathcal{T}'}(x_1)\cap X\cap Y\subseteq B_{x_1}$, also a contradiction.
 \end{proof}
 
 
@@ -227,7 +217,7 @@ The following construction of a tree decomposition using balanced separations (o
   We now show that $\boundary_{\mathcal{T}}(x)=\partial_x$, for each subtree $T_x$ rooted at $x\in V(T)$ that was constructed by a recursive invocation on $(G_x,\partial_x)$. If $\depth_T(x)=0$ then $x$ is the root of $T$ and $\boundary_{\mathcal{T}}(x)=\emptyset=\partial_x$, by definition.
   Now suppose $\depth_T(x)\ge 1$, the parent of $x$ is $y$ and $T_y$ is the result of a recursive invocation on $(G_y,\partial_y)$.
   % By the inductive hypothesis $\partial_y=\boundary_{\mathcal{T}}(y))$.
-  Without loss of generality, $G_x=G[A^y]$ where $(A^y,B^y)$ is a separation of $G_y-\partial_y$.  Then $\partial_x=(A^y\cap(\partial_y\cup B^y)=(A^y\cap (\partial_y\cup (A^y\cap B^y))=A^y\cap B_y$.  If $x$ is a leaf of $T$ then $B_x=V(G_x)=A^y$, so $B_x\cap B_y=A^y\cap B_y=\partial_x$.  If $x$ is not a leaf of $T$ then $B_x=\partial_x\cup (A^x\cap B^x)$ where $(A^x,B^x)$ is a separation of $G_x-\partial_x=G[A^y\setminus (A^y\cap B_y)]=G[A^y\setminus B_y]$. In particular, $A^x\cup B^x$ contain no vertex of $B_y$, so $B_x\cap B_y=(\partial_x\cup (A^x\cap B^x))\cap B_y= \partial_x\cap B_y=\partial_x$ since $\partial_x=A^y\cap B_y\subseteq B_y$.  In either case $\boundary_{\mathcal{T}}(x)=B_x\cap B_y=\partial_x$.
+  Without loss of generality, $G_x=G[A^y]$ where $(A^y,B^y)$ is a separation of $G_y-\partial_y$.  Then $\partial_x=(A^y\cap(\partial_y\cup B^y)=(A^y\cap (\partial_y\cup (A^y\cap B^y))=A^y\cap B_y$.  If $x$ is a leaf of $T$ then $B_x=V(G_x)=A^y$, so $B_x\cap B_y=A^y\cap B_y=\partial_x$.  If $x$ is not a leaf of $T$ then $B_x=\partial_x\cup (A^x\cap B^x)$ where $(A^x,B^x)$ is a separation of $G_x-\partial_x=G[A^y\setminus (A^y\cap B_y)]=G[A^y\setminus B_y]$. In particular, $A^x\cup B^x$ contains no vertex of $B_y$, so $B_x\cap B_y=(\partial_x\cup (A^x\cap B^x))\cap B_y= \partial_x\cap B_y=\partial_x$ since $\partial_x=A^y\cap B_y\subseteq B_y$.  In either case $\boundary_{\mathcal{T}}(x)=B_x\cap B_y=\partial_x$.
 
   % \boundary(x)=B_x\cap B_y=B_x\cap\boundary(y)$
 
@@ -268,8 +258,11 @@ The following construction of a tree decomposition using balanced separations (o
 \section{The Proof}
 
 % \pat{In hindsight, the definition of $W$-sequence should have sets $W_0,\ldots,W_{\ell}$.  This would make many of the formulas cleaner.}
-\hussein{Please Pat, do not forget to omit the $s_{i}$, I can do it if needed!}
-\pat{Yes, please do it. Thanks!} \hussein{Probably, it is better to keep them as the notation will be ugly if I replace $s_i$ by $|\Delta_i|$ in the subscript of the Paths...??}
+% \hussein{Please Pat, do not forget to omit the $s_{i}$, I can do it if needed!}
+% \pat{Yes, please do it. Thanks!} \hussein{Probably, it is better to keep them as the notation will be ugly if I replace $s_i$ by $|\Delta_i|$ in the subscript of the Paths...??} 
+
+% \hussein{Hi Pat, did you read the comment above, so I can delete it?}
+% \pat{Yes, let's just keep the $s_i$ notation.}
 
 The following definition replaces the notion of $W$-clouds in \cite{dvorak.norin:treewidth}.
 Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\subseteq W_1\subseteq\cdots\subseteq W_{\ell}\subseteq W_{\ell+1}\subseteq V(G)$ be a nested sequence of vertex subsets of $G$, and let $\Delta_i:=W_{i}\setminus W_{i-1}$ and $s_i:=|\Delta_i|$, for each $i\in\{0,\ldots,\ell+1\}$.  Then $W_0,\ldots,W_{\ell+1}$ is a \defin{$W$-sequence of width $w$} in $G$ if it satisfies the following conditions:
@@ -575,7 +568,8 @@ Let $W_{-1}:=\emptyset$, let $G$ be a graph, let $W\subseteq V(G)$, let $W_0\sub
 %   \end{proof}
 
 
-Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $(\ell+1)|W|\le |W_{\ell+1}|< (\ell+2)|W|$, so $1/(\ell+2)< |W|/|W_{\ell+1}|\le 1/(\ell+1)$.  The following lemma shows that, for any separation $(A,B)$ of $G[W_{\ell+1}]$, the size of the intersection of $A\setminus B$ with $W\cup Z$ is bounded by the order $|A\cap B|$ of $(A,B)$ and the ratio $|A\setminus B|\cdot |W|/|W_{\ell+1}|$.
+Observe that, for any $W$-sequence $W_0,\ldots,W_{\ell+1}$, we have the bounds $(\ell+1)|W|\le |W_{\ell+1}|< (\ell+2)|W|$, so $1/(\ell+2)< |W|/|W_{\ell+1}|\le 1/(\ell+1)$.  
+The following lemma shows that, for any separation $(A,B)$ of $G[W_{\ell+1}]$, the size of the intersection of $A\setminus B$ with $W\cup Z$ is bounded by the order $|A\cap B|$ of $(A,B)$ and the ratio $|A\setminus B|\cdot |W|/|W_{\ell+1}|$.
 
 \begin{lem}\label{z_w_bound}
   Let $G$ be a graph, let $W\subseteq V(G)$, let $W_0,\ldots,W_{\ell+1}$ be a $W$-sequence of width $|W|$ in $G$ with $\ell\ge 1$, let $\Delta_{\ell+1}:=W_{\ell+1}\setminus W_{\ell}$,  and let $Z\subseteq W_{\ell+1}$, $|Z|=|\Delta_{\ell+1}|$, separate $V(G)\setminus W_{\ell}$ and $W$ in $G$.
@@ -694,7 +688,7 @@ Since each of the paths in $\mathcal{R}$ contains a distinct vertex in $Z$, $|\m
     |W\setminus B|+|Z\setminus B|
     & \le \left(\frac{\ell+1}{\ell+2}\right)\cdot R +
     \frac{x_0^\star}{\ell+2} \\
-    & \le \left(\frac{\ell+1}{\ell+2}\right)\left(\frac{|A\setminus B|}{\ell+1}+\frac{|A\setminus B|}{\ell+2}+2\,|A\cap B|+{?}\right)+\frac{|A\setminus B|-|Z\setminus B|}{(\ell+1)
+    & \le \left(\frac{\ell+1}{\ell+2}\right)\left(\frac{|A\setminus B|}{\ell+1}+\frac{|A\setminus B|}{\ell+2}+3\,|A\cap B|\right)+\frac{|A\setminus B|-|Z\setminus B|}{(\ell+1)
     (\ell+2)}
     + \frac{|A\cap B|}{\ell+2}
     \\
@@ -714,15 +708,15 @@ Since each of the paths in $\mathcal{R}$ contains a distinct vertex in $Z$, $|\m
     % & < \mathcolor{red}{\frac{|A\setminus B|}{\ell + 2}\left(1 + \frac{\ell^2 +3\ell + 3}{\ell^2 + 3\ell + 2 } \right)}\\
     % & < \mathcolor{red}{\frac{3|A\setminus B|}{(\ell + 2)} + 3|A\cap B|???}\\
     % & \text{\pat{Continue here.}} \\
-    & < \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 2\,|A\cap B|
-    +{?} -\frac{|Z\setminus B|}{(\ell+1)(\ell+2)} \enspace .
+    & < \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 3\,|A\cap B| \enspace . \qedhere
+     % -\frac{|Z\setminus B|}{(\ell+1)(\ell+2)} \enspace . 
   \end{align*}
-  Rewriting this, we obtain
-  \[
-  |W\setminus B|+\left(\frac{(\ell+1)(\ell+2)+1}{(\ell+1)(\ell+2)}\right)|Z\setminus B|
-   \le \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 2\,|A\cap B|
-  +{?}
-  \]
+  % Rewriting this, we obtain
+  % \[
+  % |W\setminus B|+\left(\frac{(\ell+1)(\ell+2)+1}{(\ell+1)(\ell+2)}\right)|Z\setminus B|
+  %  \le \frac{(2+\tfrac{1}{6})\,|A\setminus B|}{\ell+2} + 2\,|A\cap B|
+  % +{?}
+  % \]
 \end{proof}
 
 % \pat{The ${}+\tfrac{1}{6}$ is annoying, and probably unnecessary.  It could probably be eliminated by being more careful with the upper bound on $x_0^{\star}$, which is giving up $|\Delta_{\ell+1}\setminus B|/(\ell+1)\ge (|Z\setminus B|-|\mathcal{P}_1^{\star}|)/(\ell+1)$.  We may have to iterate this argument...  I'm taking this offline to fight with it.}
@@ -779,7 +773,7 @@ We are now ready to prove \cref{main_result}.
   By \cref{w_sequence}, $G$ has a $W$-sequence $W_0,\ldots,W_{\ell+1}$ of width $|W|$.   Let $\Delta_0,\ldots,\Delta_{\ell+1}$ and $Z$ be as in the definition of $W$-sequence.  Let $(X,Y)$ be a $(V(G)\setminus W_{\ell},Z,W)$-separation.
  % \pat{Don't forget to mention \cref{z_corollary} here.}
 
-  Since $|X\cap Y|=|Z|<|W|\le ta$, the inductive hypothesis implies that $G[X]$ has a tree decomposition $(B_x:x\in V(T_X))$ of width less than $(2t+1)a$ in which $Z\subseteq B_x$ for some $x \in V(T_X)$. To finish the proof, we construct a tree decomposition $(B_y:y\in V(T_Y))$ of $G[Y]$ of width less than $(2t+1)a$ in which some bag $B_{y}$ contains $W\cup Z$.  Then the tree $T$ obtained by joining $T_Y$ and $T_X$ using the edge $x y$ gives the desired tree decomposition $(B_x:x\in V(T))$.
+  Since $|X\cap Y|=|Z|<|W|\le ta$, the inductive hypothesis implies that $G[X]$ has a tree decomposition $\mathcal{T}_X:=(B_x:x\in V(T_X))$ of width less than $(2t+1)a$ in which $Z\subseteq B_x$ for some $x \in V(T_X)$. To finish the proof, we construct a tree decomposition $\mathcal{T}_Y:=(B_y:y\in V(T_Y))$ of $G[Y]$ of width less than $(2t+1)a$ in which some bag $B_{y}$ contains $W\cup Z$.  Then the tree $T$ obtained by joining $T_Y$ and $T_X$ using the edge $x y$ gives the desired tree decomposition $\mathcal{T}:=(B_x:x\in V(T))$.
 
   If $\ell=0$ then we use the trivial tree decomposition in which $T_Y$ has a single node $y$ where $B_{y}:=W\cup Z$.  Since $W\cup Z\subseteq Y$ and $|Y|=|W_1|=|W|+|Z|< 2|W|<(2t+1)a$, this decomposition has width less than $(2t+1)a$. We now assume that $\ell \ge  1$.
 
@@ -790,11 +784,11 @@ We are now ready to prove \cref{main_result}.
  % The root $r$ of $T_0$ will have the bag $B_r:=W\cup Z$.  (This already satisfies the requirement from the previous paragraph with $x_0:=x_0':=r$.)
   % By the definition of separation number, $\sep(G[Y])\le \sep(G)\le a$.
   Since $\ell \ge 1$, $W_0,\ldots,W_{\ell+1}$ satisfies the conditions of \cref{z_w_bound}.
-  Let $\mathcal{T}'_Y:=(B'_y:y\in V(T_Y'))$ be the tree decomposition of $G[W_{\ell+1}]$ obtained by applying \cref{separation_tree} to $G[W_{\ell+1}]$ with the height $h$ defined above.  The following claim will be used to bound the width of a tree decomposition that we derive from $\mathcal{T}'_Y$.
+  Let $\mathcal{T}'_Y:=(B'_y:y\in V(T'_Y))$ be the tree decomposition of $G[W_{\ell+1}]$ obtained by applying \cref{separation_tree} to $G[W_{\ell+1}]$ with the height $h$ defined above.  The following claim will be used to bound the width of a tree decomposition that we derive from $\mathcal{T}'_Y$.
 
   \begin{clm} \label{cell_bound}
      For each $d\in\{0,\ldots,h\}$ and
-     each node $y$ of $T_Y$ with $|\interior_{\mathcal{T}'_Y}(y)|\le (\tfrac{2}{3})^d\cdot |W_{\ell+1}|$,
+     each node $y$ of $T'_y$ with $|\interior_{\mathcal{T}'_Y}(y)|\le (\tfrac{2}{3})^d\cdot |W_{\ell+1}|$,
      \begin{equation}
        |\interior_{\mathcal{T}'_Y}(y)\cap (W\cup Z)|  \le (2+\tfrac{1}{6})ta\cdot (\tfrac{2}{3})^{d}+3da \label{t_bound}
      \end{equation}
@@ -847,7 +841,7 @@ We are now ready to prove \cref{main_result}.
   \end{align*}
   \end{clmproof}
 
- For each node $y$ of $T'_Y$, define $B_y:=(B'_y\cap Y) \cup (\interior_{\mathcal{T}'_Y}(y)\cap (W\cup Z))$ and let $\mathcal{T}''_Y:=(B_y:y\in V(T'_Y))$.  By \cref{restricted_decomp} (applied with the separation $(X\cup W,Y\cup W)$), $\mathcal{T}''_Y$ is a tree decomposition of $G[Y]$.
+ For each node $y$ of $T'_y$, define $B_y:=(B'_y\cap Y) \cup (\interior_{\mathcal{T}'_Y}(y)\cap (W\cup Z))$ and let $\mathcal{T}''_Y:=(B_y:y\in V(T'_y))$.  By \cref{restricted_decomp} (applied with the separation $(X\cup W,Y\cup W)$), $\mathcal{T}''_Y$ is a tree decomposition of $G[Y]$ in which the root bag contains $(X\cup W)\cap (Y\cup W)=Z\cup W$.
 
  \begin{clm}\label{leaf_interface}
     For each leaf $y$ of $T'_Y$, $|\boundary_{\mathcal{T}''_Y}(y)|\le ta$.
@@ -860,8 +854,7 @@ We are now ready to prove \cref{main_result}.
    The values of $h$ and $t$, defined above, are chosen so that the right hand side of this inequality is equal to $ta$.
  \end{proof}
 
-  By \cref{leaf_interface}, $|\boundary_{\mathcal{T}''_Y}(y)|\le ta$ for each leaf $y$ of $T_Y'$. Therefore, by the inductive hypothesis, $G[\interior_{\mathcal{T}''_Y}(y)\cup\boundary_{\mathcal{T}''_Y}(y)]$ has a tree decomposition $\mathcal{T}^y:=(B_y:y\in V(T^y))$ of width less than $(2t+1)a$ in which some bag $B_{y_0}$ contains  $\boundary_{\mathcal{T}''_Y}(y)$, for each leaf $y$ of $T_Y'$. Create a new tree $T_Y$ from $T_Y'$ by replacing each leaf $y$ of $T_Y'$ with the node $y_0$ from the tree $T^y$.  Then $\mathcal{T}_Y:=(B_y:y\in V(T_Y))$ is a tree decomposition of $G[Y]$.  \pat{Hussein TODO: Change $T_0$ to $T_Y$ and $T_1$ to $T_X$ above?}
-  \hussein{I am done from changing the name of the variable. I will go over it again to make sure I did not mess with the proof.}
+  By \cref{leaf_interface}, $|\boundary_{\mathcal{T}''_Y}(y)|\le ta$ for each leaf $y$ of $T_Y'$. Therefore, by the inductive hypothesis, $G[\interior_{\mathcal{T}''_Y}(y)\cup\boundary_{\mathcal{T}''_Y}(y)]$ has a tree decomposition $\mathcal{T}^y:=(B_y:y\in V(T^y))$ of width less than $(2t+1)a$ in which some bag $B_{y_0}$ contains  $\boundary_{\mathcal{T}''_Y}(y)$, for each leaf $y$ of $T_Y'$. Create a new tree $T_Y$ from $T_Y'$ by replacing each leaf $y$ of $T_Y'$ with the node $y_0$ from the tree $T^y$.  Then $\mathcal{T}_Y:=(B_y:y\in V(T_Y))$ is a tree decomposition of $G[Y]$.
   \begin{clm}\label{treewidth_bound}
      The width of $\mathcal{T}_Y$ is less than $(2t+1)a$.
   \end{clm}
